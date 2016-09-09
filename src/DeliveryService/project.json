@@ -1,4 +1,4 @@
-﻿{
+{
   "userSecretsId": "aspnet-DeliveryService-f93a2264-b3da-4f6d-885b-ec420fbbd60f",
 
   "dependencies": {
@@ -40,10 +40,11 @@
       "type": "build"
     },
     "Microsoft.VisualStudio.Web.CodeGenerators.Mvc": {
-      "version": "1.0.0-preview2-final",
-      "type": "build"
-    }
-  },
+        "version": "1.0.0-preview2-final",
+        "type": "build"
+    },
+    "Microsoft.EntityFrameworkCore": "1.0.0",
+    "MailKit": "1.4.2.1" },
 
   "tools": {
     "BundlerMinifier.Core": "2.0.238",
@@ -59,14 +60,14 @@
     }
   },
 
-  "frameworks": {
-    "netcoreapp1.0": {
-      "imports": [
-        "dotnet5.6",
-        "portable-net45+win8"
-      ]
-    }
-  },
+    "frameworks": {
+        "netcoreapp1.0": {
+            "imports": [
+                "dotnet5.6",
+                "portable-net45+win8"
+            ]
+        }
+    },
 
   "buildOptions": {
     "emitEntryPoint": true,

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DeliveryService.Controllers
 {
+    [RequireHttps]
     public class HomeController : Controller
     {
         public IActionResult Index()
@@ -13,6 +15,8 @@ namespace DeliveryService.Controllers
             return View();
         }
 
+
+        [Authorize(Roles = "Driver")]
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";

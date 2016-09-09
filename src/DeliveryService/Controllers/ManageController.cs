@@ -13,6 +13,7 @@ using DeliveryService.Services;
 namespace DeliveryService.Controllers
 {
     [Authorize]
+    [RequireHttps]
     public class ManageController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

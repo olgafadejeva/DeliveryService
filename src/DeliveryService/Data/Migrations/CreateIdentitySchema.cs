@@ -17,8 +17,7 @@ namespace DeliveryService.Data.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
+                    Name = table.Column<string>(maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
