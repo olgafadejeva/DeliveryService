@@ -35,10 +35,10 @@ namespace DeliveryServiceTests.Helpers
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders()
                      .AddErrorDescriber<CustomIdentityErrorDescriber>();
-
-            services.AddLogging();
+            
             services.AddOptions();
             var context = new DefaultHttpContext(); 
+            
             context.Features.Set<IHttpAuthenticationFeature>(new HttpAuthenticationFeature() { Handler = new TestAuthHandler() });
             services.AddSingleton<IHttpContextAccessor>(
                 new HttpContextAccessor()

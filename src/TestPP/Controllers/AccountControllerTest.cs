@@ -15,55 +15,25 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Moq;
+using Microsoft.Extensions.Options;
 
 namespace DeliveryServiceTests.Controllers
 {
     public class AccountControllerTest
     {
         private readonly IServiceProvider _serviceProvider;
-        private const String CONFIRM_CODE = "12345";
-        private const String USER_ID = "6789";
-        private const String DEFAULT_EMAIL = "test@test.com";
-        private const String DEFAULT_PASSWORD = "Password123";
 
         public AccountControllerTest()
         {
             _serviceProvider = ServiceBuilder.getServiceProvider();
         }
 
-        [Fact]
-        public async Task PassingTest()
-        {
-            var userId = "TestUserA";
-            var phone = "abcdefg";
-
-            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var userManagerResult = await userManager.CreateAsync(
-                new ApplicationUser { Id = userId, UserName = "Test", TwoFactorEnabled = true, PhoneNumber = phone },
-                "Pass@word1");
-            Assert.True(userManagerResult.Succeeded);
-
-
-            var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
-
-            var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-
-
-            var controller = new AccountController(userManager, signInManager, null, loggerFactory);
-            controller.ControllerContext.HttpContext = httpContext;
-
-
-            var result = controller.Login("return/url");
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal(viewResult.ViewData["ReturnUrl"], "return/url");
-        }
-
+        
+    
         [Fact]
         public void testGetLogin() {
-            var controller = getAccountController();
+            var controller = ControllerSupplier.getAccountController();
             var result = controller.Login("return/url");
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(viewResult.ViewData["ReturnUrl"], "return/url");
@@ -74,7 +44,7 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testPostLoginAttemptWithInvalidModel() {
             LoginViewModel model = new LoginViewModel();
-            var controller = getAccountController();
+            var controller = ControllerSupplier.getAccountController();
             controller.ViewData.ModelState.AddModelError("Key", "ErrorMessage");
             var result = (ViewResult) await controller.Login(model);
             Assert.Equal(result.Model, model);
@@ -83,9 +53,9 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testPostLoginUnknownUser() {
             LoginViewModel model = new LoginViewModel();
-            model.Email = DEFAULT_EMAIL;
-            model.Password = DEFAULT_PASSWORD;
-            var controller = getAccountController();
+            model.Email = Constants.DEFAULT_EMAIL;
+            model.Password = Constants.DEFAULT_PASSWORD;
+            var controller = ControllerSupplier.getAccountController();
             var result = (ViewResult)await controller.Login(model);
             Assert.NotEmpty(controller.ViewData.ModelState.Values);
             var allErrors = controller.ModelState.Values.SelectMany(v => v.Errors);
@@ -96,11 +66,11 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testPostLoginIncorrectPassword() {
             LoginViewModel model = new LoginViewModel();
-            model.Email = DEFAULT_EMAIL;
+            model.Email = Constants.DEFAULT_EMAIL;
             model.Password = "wrong_password";
-            var controller = getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
             var userManager = controller.getUserManager();
-            var user = await userManager.FindByIdAsync(USER_ID);
+            var user = await userManager.FindByIdAsync(Constants.USER_ID);
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
             await userManager.ConfirmEmailAsync(user, code);
 
@@ -114,9 +84,9 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testPostLoginEmailNotConfirmed() {
             LoginViewModel model = new LoginViewModel();
-            model.Email = DEFAULT_EMAIL;
-            model.Password = DEFAULT_PASSWORD;
-            var controller = getAccountControllerInstanceWithOneRegisteredUser().Result;
+            model.Email = Constants.DEFAULT_EMAIL;
+            model.Password = Constants.DEFAULT_PASSWORD;
+            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
             var result = (ViewResult)await controller.Login(model);
             Assert.NotEmpty(controller.ViewData.ModelState.Keys);
             var allErrors = controller.ModelState.Values.SelectMany(v => v.Errors);
@@ -127,12 +97,12 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testPostLoginSuccess() {
             LoginViewModel model = new LoginViewModel();
-            model.Email = DEFAULT_EMAIL;
-            model.Password = DEFAULT_PASSWORD;
-            var controller = getAccountControllerInstanceWithOneRegisteredUser().Result;
+            model.Email = Constants.DEFAULT_EMAIL;
+            model.Password = Constants. DEFAULT_PASSWORD;
+            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
 
             var userManager = controller.getUserManager();
-            var user = await userManager.FindByIdAsync(USER_ID);
+            var user = await userManager.FindByIdAsync(Constants.USER_ID);
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
             await userManager.ConfirmEmailAsync(user, code);
 
@@ -145,7 +115,7 @@ namespace DeliveryServiceTests.Controllers
 
         [Fact]
         public void testGetRegister() {
-            var controller = getAccountController();
+            var controller = ControllerSupplier.getAccountController();
             var result = controller.Register("return/url");
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(viewResult.ViewData["ReturnUrl"], "return/url");
@@ -156,7 +126,7 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testPostRegisterInvalidModel() {
             RegisterViewModel model = new RegisterViewModel();
-            var controller = getAccountController();
+            var controller = ControllerSupplier.getAccountController();
             controller.ViewData.ModelState.AddModelError("Key", "ErrorMessage");
             var result = (ViewResult)await controller.Register(model);
             Assert.Equal(result.Model, model);
@@ -165,10 +135,10 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testPostRegisterUserAlreadyExists() {
             RegisterViewModel model = new RegisterViewModel();
-            model.Email = DEFAULT_EMAIL;
-            model.Password = DEFAULT_PASSWORD;
+            model.Email = Constants.DEFAULT_EMAIL;
+            model.Password = Constants.DEFAULT_PASSWORD;
             model.FirstName = "Matt";
-            var controller = getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
             var result = (ViewResult) await controller.Register(model);
             Assert.Equal(result.Model, model);
             Assert.True(controller.ViewData.ModelState.ErrorCount == 1);
@@ -182,7 +152,7 @@ namespace DeliveryServiceTests.Controllers
             RegisterViewModel model = new RegisterViewModel();
             model.Email = "email@test.com";
             model.Password = "123";
-            var controller = getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
             var result = (ViewResult)await controller.Register(model);
             Assert.Equal(result.Model, model);
             Assert.True(controller.ViewData.ModelState.ErrorCount == 1);
@@ -190,10 +160,35 @@ namespace DeliveryServiceTests.Controllers
             Assert.True(allErrors.First().ErrorMessage.Contains("Password"));
         }
 
+       // [Fact]
+        public async Task testPostRegisterSuccess() {
+            RegisterViewModel model = new RegisterViewModel();
+            model.Email = "email@test.com";
+            model.Password = "123TestPassword";
+            var controller = ControllerSupplier.getAccountController();
+            var result = (ViewResult)await controller.Register(model);
+        }
+
+        [Fact]
+        public async Task testPostLogOff() {
+            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
+
+            //sign in a user
+            var userManager = controller.getUserManager();
+            var  user = await userManager.FindByEmailAsync(Constants.DEFAULT_EMAIL);
+            var signInManager = controller.getSignInManager();
+            await signInManager.PasswordSignInAsync(user.Email, Constants.DEFAULT_PASSWORD, false, lockoutOnFailure: false);
+
+            var result = await controller.LogOff() as RedirectToActionResult;
+            Assert.NotNull(result);
+            Assert.Equal(result.ControllerName, "Home");
+            Assert.Equal(result.ActionName, "Index");
+        }
+
         [Fact]
         public async Task testGetConfimEmailWithNullUserId() {
-            var controller = getAccountController();
-            var result = await controller.ConfirmEmail(null, CONFIRM_CODE);
+            var controller = ControllerSupplier.getAccountController();
+            var result = await controller.ConfirmEmail(null, Constants.CONFIRM_CODE);
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "Error");
@@ -202,8 +197,8 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testGetConfimEmailWithNullConfirmCode()
         {
-            var controller = getAccountController();
-            var result = await controller.ConfirmEmail(USER_ID, null);
+            var controller = ControllerSupplier.getAccountController();
+            var result = await controller.ConfirmEmail(Constants.USER_ID, null);
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "Error");
@@ -211,8 +206,8 @@ namespace DeliveryServiceTests.Controllers
 
         [Fact]
         public async Task testGetConfirmEmailForExistingUserWithWrongCode() {
-            var controller = getAccountControllerInstanceWithOneRegisteredUser().Result;
-            var result = await controller.ConfirmEmail(USER_ID, "123");
+            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var result = await controller.ConfirmEmail(Constants.USER_ID, "123");
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "Error");
@@ -221,13 +216,13 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testGetConfirmEmailForExistingUser()
         {
-            var controller = getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
             var userManager = controller.getUserManager();
             
-            var user = await userManager.FindByIdAsync(USER_ID);
+            var user = await userManager.FindByIdAsync(Constants.USER_ID);
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            var result = await controller.ConfirmEmail(USER_ID, code);
+            var result = await controller.ConfirmEmail(Constants.USER_ID, code);
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "ConfirmEmail");
@@ -235,7 +230,7 @@ namespace DeliveryServiceTests.Controllers
 
         [Fact]
         public void testGetResetPasswodWithNullCode() {
-            var controller = getAccountController();
+            var controller = ControllerSupplier.getAccountController();
             var result = controller.ResetPassword();
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Null(viewResult.Model);
@@ -245,67 +240,32 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public void testGetResetPasswod()
         {
-            var controller = getAccountController();
+            var controller = ControllerSupplier.getAccountController();
             var result = controller.ResetPassword("123");
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Null(viewResult.Model);
             Assert.Equal(viewResult.ViewName, "ResetPassword");
         }
 
-        private async Task<AccountController> getAccountControllerInstanceWithOneRegisteredUser() {
-            var userId = USER_ID;
-
-            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var userManagerResult = await userManager.CreateAsync(
-                new ApplicationUser { Id = userId, UserName = DEFAULT_EMAIL, Email = DEFAULT_EMAIL },
-                DEFAULT_PASSWORD);
-            Assert.True(userManagerResult.Succeeded);
-
-
-            var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
-
-            var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-
-
-            var controller = new AccountController(userManager, signInManager, null, loggerFactory);
-            controller.ControllerContext.HttpContext = httpContext;
-
-            controller.ControllerContext.RouteData = new RouteData();
-
-            var actionContext = new ActionContext();
-            controller.Url = new UrlHelper(actionContext);
-            
-
-            return controller;
+        [Fact]
+        public async Task testResetPasswordInvalidModelState() {
+            ForgotPasswordViewModel model = new ForgotPasswordViewModel();
+            var controller = ControllerSupplier.getAccountController();
+            controller.ViewData.ModelState.AddModelError("Key", "ErrorMessage");
+            var result = (ViewResult)await controller.ForgotPassword(model);
+            Assert.Equal(result.Model, model);
         }
 
-        private AccountController getAccountController() {
-            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
+        [Fact]
+        public async Task testPostResetPasswordUserIsNull() {
+            ForgotPasswordViewModel model = new ForgotPasswordViewModel();
+            model.Email = "test_wrong-Email@email.com";
+            var controller = ControllerSupplier.getAccountController();
+            var result = await controller.ForgotPassword(model) as ViewResult;
+            Assert.Equal(result.ViewName, "ForgotPasswordConfirmation");
 
-            var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
 
-
-            var controller = new AccountController(userManager, signInManager, null, loggerFactory);
-            controller.ControllerContext.HttpContext = httpContext;
-            controller.ControllerContext.RouteData = new RouteData();
-
-            var actionContext = new ActionContext();
-            controller.Url = new UrlHelper(actionContext);
-            return controller;
         }
-        /*
-        public static Mock<AuthMessageSender> createMockEmailSender()
-        {
-            var options = new Mock<IOptions<AuthMessageSenderOptions>>();
-
-            var messageSender = new Mock<AuthMessageSender>(options);
-            messageSender.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Verifiable();
-            return messageSender;
-        }
-        */
     }
 }
 

@@ -7,16 +7,21 @@
     "Microsoft.EntityFrameworkCore.InMemory": "1.0.0",
     "Microsoft.AspNetCore.Routing": "1.0.0",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
-    "DeliveryService": "1.0.0"
+    "DeliveryService": "1.0.0",
+    "Moq": "4.6.38-alpha"
   },
     "frameworks": {
-        "netcoreapp1.0": {
-            "dependencies": {
-                "Microsoft.NETCore.App": {
-                    "type": "platform",
-                    "version": "1.0.0"
-                }
-            }
+      "netcoreapp1.0": {
+        "imports": [
+          "dnxcore50",
+          "netcoreapp1.0"
+        ],
+        "dependencies": {
+          "Microsoft.NETCore.App": {
+            "type": "platform",
+            "version": "1.0.0"
+          }
         }
+      }
     }
 }

@@ -19,7 +19,7 @@ namespace DeliveryService.Controllers
     public class AccountController : Controller
     {
         private UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
@@ -144,7 +144,7 @@ namespace DeliveryService.Controllers
         {
             var user = GetCurrentUserAsync();
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("User {0} logged out.", user.Result.Email);
+            _logger.LogInformation("User with ID {0} logged out.", user.Id);
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
@@ -246,6 +246,11 @@ namespace DeliveryService.Controllers
         public IActionResult ResetPasswordConfirmation()
         {
             return View();
+        }
+
+        public SignInManager<ApplicationUser> getSignInManager()
+        {
+            return _signInManager;
         }
 
         #region Helpers

@@ -38,7 +38,8 @@ namespace DeliveryServiceTests.Helpers
 
         public Task SignOutAsync(SignOutContext context)
         {
-            throw new NotImplementedException();
+            context.Accept();
+            return Task.FromResult(0);
         }
     }
 }
