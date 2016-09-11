@@ -70,13 +70,23 @@ namespace DeliveryService.Controllers
 
 
                     var result = await _signInManager.PasswordSignInAsync(user.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User {0} logged in.", model.Email);
                         if (!returnUrl.ToLower().Contains("login")) {
                             return RedirectToLocal(returnUrl);
                         }
-                        return RedirectToAction(nameof(DashboardController.Index), "Dashboard");
+
+                        var userRole = _userManager.GetRolesAsync(user).Result;
+                        
+                        if (userRole.Contains(AppRole.DRIVER))
+                        {
+                            return RedirectToAction(nameof(DriverDashboardController.Index), "DriverDashboard");
+                        }
+                        else if (userRole.Contains(AppRole.SHIPPER)) {
+                            return RedirectToAction(nameof(ShipperDashboardController.Index), "ShipperDashboard");
+                        }
                     }
 
                     if (result.IsLockedOut)
@@ -141,9 +151,8 @@ namespace DeliveryService.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterDriverAsTeamMember(RegisterViewModel model, string returnUrl = null)
+        public void RegisterDriverAsTeamMember(RegisterViewModel model, string returnUrl = null)
         {
-            return null;
         }
 
         //

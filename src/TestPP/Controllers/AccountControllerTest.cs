@@ -1,22 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using DeliveryService.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using DeliveryService.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using DeliveryServiceTests.Helpers;
-using DeliveryService.Services;
 using DeliveryService.Models.AccountViewModels;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Moq;
-using Microsoft.Extensions.Options;
 
 namespace DeliveryServiceTests.Controllers
 {
@@ -97,7 +87,7 @@ namespace DeliveryServiceTests.Controllers
         }
 
         [Fact]
-        public async Task testPostLoginSuccess() {
+        public async Task testPostLoginSuccessWhenLoginNotFromHome() {
             LoginViewModel model = new LoginViewModel();
             model.Email = Constants.DEFAULT_EMAIL;
             model.Password = Constants. DEFAULT_PASSWORD;
@@ -114,6 +104,51 @@ namespace DeliveryServiceTests.Controllers
             Assert.Equal(result.ActionName, "Index");
 
         }
+
+        [Fact]
+        public async Task testPostLoginSuccessWhenLoginFromHomeShipperRole()
+        {
+            LoginViewModel model = new LoginViewModel();
+            model.Email = Constants.DEFAULT_EMAIL;
+            model.Password = Constants.DEFAULT_PASSWORD;
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
+
+            var userManager = controller.getUserManager();
+            var user = await userManager.FindByIdAsync(Constants.USER_ID);
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            await userManager.ConfirmEmailAsync(user, code);
+
+            await userManager.AddToRoleAsync(user, AppRole.SHIPPER);
+
+            var result = await controller.Login(model, "Login") as RedirectToActionResult;
+            Assert.NotNull(result);
+            Assert.Equal(result.ControllerName, "ShipperDashboard");
+            Assert.Equal(result.ActionName, "Index");
+        }
+
+        [Fact]
+        public async Task testPostLoginSuccessWhenLoginFromHomeDriverRole()
+        {
+            LoginViewModel model = new LoginViewModel();
+            model.Email = Constants.DEFAULT_EMAIL;
+            model.Password = Constants.DEFAULT_PASSWORD;
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
+
+            var userManager = controller.getUserManager();
+            var user = await userManager.FindByIdAsync(Constants.USER_ID);
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            await userManager.ConfirmEmailAsync(user, code);
+
+            await userManager.AddToRoleAsync(user, AppRole.DRIVER);
+
+            var result = await controller.Login(model, "Login") as RedirectToActionResult;
+            Assert.NotNull(result);
+            Assert.Equal(result.ControllerName, "DriverDashboard");
+            Assert.Equal(result.ActionName, "Index");
+        }
+
 
         [Fact]
         public void testGetRegister() {

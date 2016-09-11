@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace DeliveryService.Controllers
 {   
     [Authorize]
-    public class DashboardController : Controller
+    public class DriverDashboardController : Controller
     {
         public IActionResult Index()
         {
