@@ -1,4 +1,5 @@
 ﻿using DeliveryService.Models;
+using DeliveryService.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
@@ -34,7 +35,6 @@ namespace DeliveryService.Data.Initializer
                         });
                 }
             }
-
            await context.SaveChangesAsync();
         }
     }

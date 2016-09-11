@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using DeliveryService.Models;
+using DeliveryService.Models.Entities;
 
 namespace DeliveryService.Data
 {
@@ -24,5 +25,6 @@ namespace DeliveryService.Data
         }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Team> Teams { get; set; }
     }
 }

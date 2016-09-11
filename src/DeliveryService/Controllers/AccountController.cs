@@ -73,7 +73,10 @@ namespace DeliveryService.Controllers
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User {0} logged in.", model.Email);
-                        return RedirectToLocal(returnUrl);
+                        if (!returnUrl.ToLower().Contains("login")) {
+                            return RedirectToLocal(returnUrl);
+                        }
+                        return RedirectToAction(nameof(DashboardController.Index), "Dashboard");
                     }
 
                     if (result.IsLockedOut)
@@ -121,6 +124,7 @@ namespace DeliveryService.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, model.Shipper ? AppRole.SHIPPER : AppRole.DRIVER);
+                    
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
@@ -133,6 +137,13 @@ namespace DeliveryService.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterDriverAsTeamMember(RegisterViewModel model, string returnUrl = null)
+        {
+            return null;
         }
 
         //
