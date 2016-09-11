@@ -17,8 +17,9 @@ namespace DeliveryServiceTests.Helpers
     public class ControllerSupplier
     {
 
-        public static AccountController getAccountController()
+        public static  AccountController getAccountController()
         {
+
             IServiceProvider _serviceProvider = ServiceBuilder.getServiceProvider();
             var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
@@ -29,33 +30,10 @@ namespace DeliveryServiceTests.Helpers
 
             var controller = new AccountController(userManager, signInManager, createMockEmailSender().Object, loggerFactory);
             controller.ControllerContext.HttpContext = httpContext;
-           
+            controller.ControllerContext.RouteData = new RouteData();
 
-            ConfigureRouteData(controller);
-            return controller;
-        }
-
-        public static async Task<AccountController> getAccountControllerInstanceWithOneRegisteredUser()
-        {
-
-            IServiceProvider _serviceProvider = ServiceBuilder.getServiceProvider();
-            var userId = Constants.USER_ID;
-
-            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var userManagerResult = await userManager.CreateAsync(
-                new ApplicationUser { Id = userId, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL },
-                Constants.DEFAULT_PASSWORD);
-
-
-            var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
-
-            var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-
-
-            var controller = new AccountController(userManager, signInManager, createMockEmailSender().Object, loggerFactory);
-
-            controller.ControllerContext.HttpContext = httpContext;
+            var actionContext = new ActionContext();
+            controller.Url = new UrlHelper(actionContext);
             ConfigureRouteData(controller);
             return controller;
         }

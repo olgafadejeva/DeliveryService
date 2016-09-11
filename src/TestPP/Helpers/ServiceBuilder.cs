@@ -16,7 +16,8 @@ namespace DeliveryServiceTests.Helpers
 {
     public static class ServiceBuilder
     {
-        public static IServiceProvider getServiceProvider() {
+        public static IServiceProvider getServiceProvider()
+        {
             var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
             var services = new ServiceCollection();
             services.AddOptions();
@@ -35,16 +36,17 @@ namespace DeliveryServiceTests.Helpers
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders()
                      .AddErrorDescriber<CustomIdentityErrorDescriber>();
-            
+
+            services.AddLogging();
             services.AddOptions();
-            var context = new DefaultHttpContext(); 
-            
+            var context = new DefaultHttpContext();
             context.Features.Set<IHttpAuthenticationFeature>(new HttpAuthenticationFeature() { Handler = new TestAuthHandler() });
             services.AddSingleton<IHttpContextAccessor>(
                 new HttpContextAccessor()
                 {
                     HttpContext = context,
                 });
+            services.AddSingleton<HttpContext>(context);
 
             services.AddLogging();
             services.AddMvc();

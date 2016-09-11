@@ -68,7 +68,8 @@ namespace DeliveryServiceTests.Controllers
             LoginViewModel model = new LoginViewModel();
             model.Email = Constants.DEFAULT_EMAIL;
             model.Password = "wrong_password";
-            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
             var userManager = controller.getUserManager();
             var user = await userManager.FindByIdAsync(Constants.USER_ID);
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -86,7 +87,8 @@ namespace DeliveryServiceTests.Controllers
             LoginViewModel model = new LoginViewModel();
             model.Email = Constants.DEFAULT_EMAIL;
             model.Password = Constants.DEFAULT_PASSWORD;
-            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
             var result = (ViewResult)await controller.Login(model);
             Assert.NotEmpty(controller.ViewData.ModelState.Keys);
             var allErrors = controller.ModelState.Values.SelectMany(v => v.Errors);
@@ -99,8 +101,8 @@ namespace DeliveryServiceTests.Controllers
             LoginViewModel model = new LoginViewModel();
             model.Email = Constants.DEFAULT_EMAIL;
             model.Password = Constants. DEFAULT_PASSWORD;
-            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
-
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
             var userManager = controller.getUserManager();
             var user = await userManager.FindByIdAsync(Constants.USER_ID);
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -138,7 +140,8 @@ namespace DeliveryServiceTests.Controllers
             model.Email = Constants.DEFAULT_EMAIL;
             model.Password = Constants.DEFAULT_PASSWORD;
             model.FirstName = "Matt";
-            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
             var result = (ViewResult) await controller.Register(model);
             Assert.Equal(result.Model, model);
             Assert.True(controller.ViewData.ModelState.ErrorCount == 1);
@@ -152,7 +155,8 @@ namespace DeliveryServiceTests.Controllers
             RegisterViewModel model = new RegisterViewModel();
             model.Email = "email@test.com";
             model.Password = "123";
-            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
             var result = (ViewResult)await controller.Register(model);
             Assert.Equal(result.Model, model);
             Assert.True(controller.ViewData.ModelState.ErrorCount == 1);
@@ -171,8 +175,8 @@ namespace DeliveryServiceTests.Controllers
 
         [Fact]
         public async Task testPostLogOff() {
-            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
-
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
             //sign in a user
             var userManager = controller.getUserManager();
             var  user = await userManager.FindByEmailAsync(Constants.DEFAULT_EMAIL);
@@ -206,7 +210,8 @@ namespace DeliveryServiceTests.Controllers
 
         [Fact]
         public async Task testGetConfirmEmailForExistingUserWithWrongCode() {
-            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
             var result = await controller.ConfirmEmail(Constants.USER_ID, "123");
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
@@ -216,7 +221,8 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testGetConfirmEmailForExistingUser()
         {
-            var controller = ControllerSupplier.getAccountControllerInstanceWithOneRegisteredUser().Result;
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
             var userManager = controller.getUserManager();
             
             var user = await userManager.FindByIdAsync(Constants.USER_ID);
@@ -265,6 +271,16 @@ namespace DeliveryServiceTests.Controllers
             Assert.Equal(result.ViewName, "ForgotPasswordConfirmation");
 
 
+        }
+
+        private async Task populateDatabaseWithUser(AccountController controller) {
+
+            var userManager = controller.getUserManager();
+            var userManagerResult = await userManager.CreateAsync(
+                new ApplicationUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL },
+                Constants.DEFAULT_PASSWORD);
+
+            Assert.True(userManagerResult.Succeeded);
         }
     }
 }
