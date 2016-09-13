@@ -8,9 +8,10 @@ using DeliveryService.Data;
 namespace DeliveryService.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160912091728_Singular2")]
+    partial class Singular2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -157,8 +158,6 @@ namespace DeliveryService.Data.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<int?>("DriverID");
-
-                    b.Property<string>("RegistrationNumber");
 
                     b.HasKey("ID");
 

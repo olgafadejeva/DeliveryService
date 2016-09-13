@@ -11,6 +11,7 @@ using DeliveryService.Services;
 using DeliveryService.Data.Initializer;
 using Microsoft.AspNetCore.Mvc;
 using DeliveryService.Services.Config;
+using Microsoft.AspNetCore.Http;
 
 namespace DeliveryService
 {
@@ -39,8 +40,10 @@ namespace DeliveryService
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>( options => {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            },
+                ServiceLifetime.Scoped);
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                {
@@ -68,6 +71,7 @@ namespace DeliveryService
            
 
             services.Configure<AuthMessageSenderOptions>(Configuration);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         }
 

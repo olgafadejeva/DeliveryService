@@ -18,13 +18,22 @@ namespace DeliveryService.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
             base.OnModelCreating(builder);
+            
+           
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-        public DbSet<Team> Teams { get; set; }
+        public DbSet<Team> Team { get; set; }
+        public DbSet<Delivery> Delivery { get; set; }
+        public DbSet<Driver> Driver { get; set; }
+        public DbSet<Client> Client { get; set; }
+        public DbSet<Vehicle> Vehicle { get; set; }
+        public DbSet<DeliveryStatus> DeliveryStatus { get; set; }
+
     }
 }

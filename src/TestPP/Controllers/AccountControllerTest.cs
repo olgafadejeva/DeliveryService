@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using DeliveryServiceTests.Helpers;
 using DeliveryService.Models.AccountViewModels;
 using System.Linq;
+using DeliveryService.Models.Entities;
 
 namespace DeliveryServiceTests.Controllers
 {
@@ -254,19 +255,39 @@ namespace DeliveryServiceTests.Controllers
         }
 
         [Fact]
-        public async Task testGetConfirmEmailForExistingUser()
+        public async Task testGetConfirmEmailForExistingUserNotDriver()
         {
             var controller = ControllerSupplier.getAccountController();
             await populateDatabaseWithUser(controller);
             var userManager = controller.getUserManager();
             
             var user = await userManager.FindByIdAsync(Constants.USER_ID);
+            await userManager.AddToRoleAsync(user, AppRole.SHIPPER);
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
             var result = await controller.ConfirmEmail(Constants.USER_ID, code);
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "ConfirmEmail");
+        }
+
+        [Fact]
+        public async Task testGetConfirmEmailForExistingUserDriver()
+        {
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
+            var userManager = controller.getUserManager();
+
+            var user = await userManager.FindByIdAsync(Constants.USER_ID);
+            await userManager.AddToRoleAsync(user, AppRole.DRIVER);
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var result = await controller.ConfirmEmail(Constants.USER_ID, code);
+            Assert.NotNull(result);
+            var viewName = ((ViewResult)result).ViewName;
+            Assert.Equal(viewName, "ConfirmEmail");
+            var dbContext = controller.getApplicationContext();
+            Assert.Equal(dbContext.Driver.ToList<Driver>().Count, 1);
         }
 
         [Fact]

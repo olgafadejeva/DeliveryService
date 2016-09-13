@@ -1,4 +1,5 @@
 ﻿using DeliveryService.Controllers;
+using DeliveryService.Data;
 using DeliveryService.Models;
 using DeliveryService.Services;
 using Microsoft.AspNetCore.Http;
@@ -27,8 +28,10 @@ namespace DeliveryServiceTests.Helpers
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
 
+            var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
 
-            var controller = new AccountController(userManager, signInManager, createMockEmailSender().Object, loggerFactory);
+
+            var controller = new AccountController(userManager, signInManager, createMockEmailSender().Object, loggerFactory, context);
             controller.ControllerContext.HttpContext = httpContext;
             controller.ControllerContext.RouteData = new RouteData();
 
@@ -37,6 +40,26 @@ namespace DeliveryServiceTests.Helpers
             ConfigureRouteData(controller);
             return controller;
         }
+
+        public async static Task<VehiclesController> getVehiclesController()
+        {
+            IServiceProvider _serviceProvider = ServiceBuilder.getServiceProvider();
+            var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
+            var userManagerResult = await userManager.CreateAsync(
+                new ApplicationUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL },
+                Constants.DEFAULT_PASSWORD);
+            await signInManager.PasswordSignInAsync(Constants.DEFAULT_EMAIL, Constants.DEFAULT_PASSWORD, false, lockoutOnFailure: false);
+            var controller = new VehiclesController(context, httpContextAccessor);
+
+            var actionContext = new ActionContext();
+            controller.Url = new UrlHelper(actionContext);
+            return controller;
+        }
+
 
         private static void ConfigureRouteData(AccountController controller)
         {
@@ -55,6 +78,5 @@ namespace DeliveryServiceTests.Helpers
             messageSender.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Verifiable();
             return messageSender;
         }
-
     }
 }

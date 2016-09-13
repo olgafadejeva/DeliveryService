@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,10 +9,17 @@ namespace DeliveryService.Models.Entities
 {
     public class Driver
     {
-        List<Team> Teams;
+        public Driver() {
+            Vehicles = new List<Vehicle>();
+        }
 
-        List<Vehicle> Vehicles;
+        public int ID { get; set; }
 
-        List<Delivery> Deliveries;
+        public virtual ICollection<Team> Teams { get; set; }
+        public virtual ICollection<Vehicle> Vehicles { get; set; }
+
+        public virtual ICollection<Delivery> Deliveries { get; set; }
+        public virtual ApplicationUser User { get; set; }
+
     }
 }

@@ -8,9 +8,10 @@ using DeliveryService.Data;
 namespace DeliveryService.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160912155609_M3")]
+    partial class M3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -321,7 +322,7 @@ namespace DeliveryService.Data.Migrations
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Vehicle", b =>
                 {
-                    b.HasOne("DeliveryService.Models.Entities.Driver")
+                    b.HasOne("DeliveryService.Models.Entities.Driver", "Driver")
                         .WithMany("Vehicles")
                         .HasForeignKey("DriverID");
                 });

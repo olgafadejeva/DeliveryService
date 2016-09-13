@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DeliveryService.Controllers
 {   
-    [Authorize]
+    [Authorize(Roles = "Driver")]
     public class DriverDashboardController : Controller
     {
         public IActionResult Index()
         {
             return View();
         }
+
+
     }
 }

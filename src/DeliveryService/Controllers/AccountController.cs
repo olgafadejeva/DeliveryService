@@ -12,6 +12,8 @@ using DeliveryService.Models;
 using DeliveryService.Models.AccountViewModels;
 using DeliveryService.Services;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using DeliveryService.Models.Entities;
+using DeliveryService.Data;
 
 namespace DeliveryService.Controllers
 {
@@ -22,18 +24,21 @@ namespace DeliveryService.Controllers
         private SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
+        private ApplicationDbContext _context { get; }
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            ApplicationDbContext context)
         {
            
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _context = context;
         }
 
         public UserManager<ApplicationUser> getUserManager() {
@@ -74,7 +79,7 @@ namespace DeliveryService.Controllers
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User {0} logged in.", model.Email);
-                        if (!returnUrl.ToLower().Contains("login")) {
+                        if (returnUrl!=null && !returnUrl.ToLower().Contains("login")) {
                             return RedirectToLocal(returnUrl);
                         }
 
@@ -182,7 +187,23 @@ namespace DeliveryService.Controllers
                 return View("Error");
             }
             var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            if (result.Succeeded) {
+                var userRole = _userManager.GetRolesAsync(user).Result;
+                if (userRole.Contains(AppRole.DRIVER))
+                {
+                    await CreateDriverEntity(user);
+                }
+            }
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
+        }
+
+        private async Task CreateDriverEntity(ApplicationUser user)
+        {
+            var driverEntity = new Driver();
+            driverEntity.User = user;
+            _context.Driver.Add(driverEntity);
+            await _context.SaveChangesAsync();
         }
 
         //
@@ -298,6 +319,11 @@ namespace DeliveryService.Controllers
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
+        }
+
+        public ApplicationDbContext getApplicationContext()
+        {
+            return _context;
         }
 
         #endregion
