@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using DeliveryService.Data;
 
-namespace DeliveryService.Data.Migrations
+namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20160910183928_Team")]
-    partial class Team
+    [Migration("20160918182341_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -66,6 +66,70 @@ namespace DeliveryService.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("DeliveryService.Models.Entities.Client", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Client");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Entities.Delivery", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("ClientID1");
+
+                    b.Property<int?>("DriverID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ClientID1");
+
+                    b.HasIndex("DriverID");
+
+                    b.ToTable("Delivery");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Entities.DeliveryStatus", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("AssignedToId");
+
+                    b.Property<int>("DeliveryID");
+
+                    b.Property<int?>("PickedUpById");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AssignedToId");
+
+                    b.HasIndex("DeliveryID");
+
+                    b.HasIndex("PickedUpById");
+
+                    b.ToTable("DeliveryStatus");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Entities.Driver", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Driver");
+                });
+
             modelBuilder.Entity("DeliveryService.Models.Entities.Team", b =>
                 {
                     b.Property<int>("ID")
@@ -75,9 +139,33 @@ namespace DeliveryService.Data.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<int?>("DriverID");
+
+                    b.Property<string>("UserId");
+
                     b.HasKey("ID");
 
-                    b.ToTable("Teams");
+                    b.HasIndex("DriverID");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Team");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Entities.Vehicle", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("DriverID");
+
+                    b.Property<string>("RegistrationNumber");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DriverID");
+
+                    b.ToTable("Vehicle");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -185,6 +273,58 @@ namespace DeliveryService.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Entities.Delivery", b =>
+                {
+                    b.HasOne("DeliveryService.Models.Entities.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientID1");
+
+                    b.HasOne("DeliveryService.Models.Entities.Driver")
+                        .WithMany("Deliveries")
+                        .HasForeignKey("DriverID");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Entities.DeliveryStatus", b =>
+                {
+                    b.HasOne("DeliveryService.Models.Entities.Driver", "AssignedTo")
+                        .WithMany()
+                        .HasForeignKey("AssignedToId");
+
+                    b.HasOne("DeliveryService.Models.Entities.Delivery", "Delivery")
+                        .WithMany()
+                        .HasForeignKey("DeliveryID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DeliveryService.Models.Entities.Driver", "PickedUpBy")
+                        .WithMany()
+                        .HasForeignKey("PickedUpById");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Entities.Driver", b =>
+                {
+                    b.HasOne("DeliveryService.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Entities.Team", b =>
+                {
+                    b.HasOne("DeliveryService.Models.Entities.Driver")
+                        .WithMany("Teams")
+                        .HasForeignKey("DriverID");
+
+                    b.HasOne("DeliveryService.Models.ApplicationUser", "Shipper")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Entities.Vehicle", b =>
+                {
+                    b.HasOne("DeliveryService.Models.Entities.Driver")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("DriverID");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

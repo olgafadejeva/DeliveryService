@@ -1,18 +1,17 @@
-﻿using System;
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MimeKit;
-using Microsoft.Extensions.Options;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 
 namespace DeliveryService.Services
 {
-
-    public class AuthMessageSender : IEmailSender, ISmsSender
+    public class AuthMessageSenderForDevEnvironment : IEmailSender, ISmsSender
     {
-        public AuthMessageSender(IOptions<AuthMessageSenderOptions> optionsAccessor)
+        public AuthMessageSenderForDevEnvironment(IOptions<AuthMessageSenderOptions> optionsAccessor)
         {
             Options = optionsAccessor.Value;
         }
@@ -21,8 +20,8 @@ namespace DeliveryService.Services
 
         public async Task SendEmailAsync(string email, string subject, string message)
         {
-
             /*
+            
             var myMessage = new SendGrid.SendGridMessage();
             myMessage.AddTo(email);
             myMessage.From = new System.Net.Mail.MailAddress("Joe@contoso.com", "Joe Smith");
@@ -34,8 +33,10 @@ namespace DeliveryService.Services
                 Options.SendGridKey);
             // Create a Web transport for sending email.
             var transportWeb = new SendGrid.Web(credentials);
-            return transportWeb.DeliverAsync(myMessage);
+            await transportWeb.DeliverAsync(myMessage);
             */
+
+
             var emailMessage = new MimeMessage();
 
             emailMessage.From.Add(new MailboxAddress("Joe Bloggs", "jbloggs@example.com"));
@@ -44,7 +45,7 @@ namespace DeliveryService.Services
             emailMessage.Body = new TextPart("plain") { Text = message };
 
             using (var client = new SmtpClient())
-            {   
+            {
                 await client.ConnectAsync(Options.SmtpHost, Convert.ToInt32(Options.SmtpPort), SecureSocketOptions.None).ConfigureAwait(false);
                 await client.SendAsync(emailMessage).ConfigureAwait(false);
                 await client.DisconnectAsync(true).ConfigureAwait(false);
@@ -59,3 +60,4 @@ namespace DeliveryService.Services
         }
     }
 }
+

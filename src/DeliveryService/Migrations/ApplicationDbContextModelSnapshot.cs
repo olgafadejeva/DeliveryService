@@ -5,13 +5,12 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using DeliveryService.Data;
 
-namespace DeliveryService.Data.Migrations
+namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20160912091249_Entities")]
-    partial class Entities
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -73,7 +72,7 @@ namespace DeliveryService.Data.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Clients");
+                    b.ToTable("Client");
                 });
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Delivery", b =>
@@ -127,7 +126,7 @@ namespace DeliveryService.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Drivers");
+                    b.ToTable("Driver");
                 });
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Team", b =>
@@ -149,7 +148,7 @@ namespace DeliveryService.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Team");
                 });
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Vehicle", b =>
@@ -159,11 +158,13 @@ namespace DeliveryService.Data.Migrations
 
                     b.Property<int?>("DriverID");
 
+                    b.Property<string>("RegistrationNumber");
+
                     b.HasKey("ID");
 
                     b.HasIndex("DriverID");
 
-                    b.ToTable("Vehicles");
+                    b.ToTable("Vehicle");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>

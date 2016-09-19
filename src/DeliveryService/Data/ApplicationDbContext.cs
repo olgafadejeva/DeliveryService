@@ -18,7 +18,8 @@ namespace DeliveryService.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
+          //  base.Database.EnsureCreated();
+            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<DefaultConnection, Configuration>());
             base.OnModelCreating(builder);
             
            

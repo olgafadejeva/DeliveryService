@@ -2,6 +2,8 @@
 using DeliveryService.Models;
 using DeliveryService.Models.Entities;
 using DeliveryServiceTests.Helpers;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,9 +23,23 @@ namespace DeliveryServiceTests.Data
             IServiceProvider _serviceProvider = ServiceBuilder.getServiceProvider();
             context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
             userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            
 
         }
 
+        [Fact]
+        public async Task testnn() {
+            using (var client = new SmtpClient())
+            {
+                client.Connect("smtp.sendgrid.net", 25, SecureSocketOptions.None);
+                client.Authenticate("deliveryservice", "deliveryservice1");
+               // await client.SendAsync(emailMessage).ConfigureAwait(false);
+                await client.DisconnectAsync(true).ConfigureAwait(false);
+            }
+        }
+
+
+        
         [Fact]
         public async Task test()
         {
@@ -54,6 +70,5 @@ namespace DeliveryServiceTests.Data
 
             Assert.True(userManagerResult.Succeeded);
         }
-
-    }
+       }
 }
