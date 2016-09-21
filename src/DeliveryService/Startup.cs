@@ -26,13 +26,9 @@ namespace DeliveryService
 
             if (env.IsDevelopment())
             {
-                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
                 builder.AddUserSecrets();
-               
             }
-            else if (env.IsProduction()) {
-                
-            }
+           
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -67,15 +63,10 @@ namespace DeliveryService
             // Add application services.
 
             var env = services.BuildServiceProvider().GetRequiredService<IHostingEnvironment>();
-            if (!env.IsProduction()) {
-                services.AddTransient<IEmailSender, AuthMessageSenderForDevEnvironment>();
-                services.AddTransient<ISmsSender, AuthMessageSenderForDevEnvironment>();
-            }
-            else
-            {
-                services.AddTransient<IEmailSender, AuthMessageSenderForProductionEnvironment>();
-                services.AddTransient<ISmsSender, AuthMessageSenderForProductionEnvironment>();
-            }
+          
+            services.AddTransient<IEmailSender, AuthMessageSender>();
+            services.AddTransient<ISmsSender, AuthMessageSender>();
+            
 
             services.Configure<MvcOptions>(options =>
             {
@@ -83,7 +74,7 @@ namespace DeliveryService
             });
            
 
-            services.Configure<AuthMessageSenderOptions>(Configuration);
+            services.Configure<AppProperties>(Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         }

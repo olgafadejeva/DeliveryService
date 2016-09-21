@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services
 {
-    public class AuthMessageSenderOptions
-    {
-        public string SendGridUser { get; set; }
-        public string SendGridKey { get; set; }
 
+    public class AppProperties
+    { 
         public string SmtpHost { get; set; }
-        public string SmtpPort { get; set; }
+        public int SmtpPort { get; set; }
+        public string SmtpUsername { get; set; }
+        public string SmtpPassword { get; set; }
     }
 }
