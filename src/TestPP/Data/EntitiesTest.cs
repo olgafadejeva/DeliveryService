@@ -51,11 +51,11 @@ namespace DeliveryServiceTests.Data
 
             var driverEntity = new Driver();
             driverEntity.User = user;
-            context.Driver.Add(driverEntity);
+            context.Drivers.Add(driverEntity);
             await context.SaveChangesAsync();
 
 
-            var driver = context.Driver.Include(b => b.User)
+            var driver = context.Drivers.Include(b => b.User)
                 .Include(b => b.Vehicles)
                 .SingleOrDefault(m => m.User.Id == userId);
 

@@ -21,13 +21,13 @@ namespace DeliveryService.Controllers
             _context = context;
             _contextAcessor = (HttpContextAccessor) contextAccessor;
             currentUserId = _contextAcessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            driver = (Driver) from d in _context.Driver where d.User.Id == currentUserId select d;
+            driver = (Driver) from d in _context.Drivers where d.User.Id == currentUserId select d;
         }
 
         // GET: Deliveries
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Delivery.ToListAsync());
+            return View(await _context.Deliveries.ToListAsync());
         }
 
         // GET: Deliveries/Details/5
@@ -38,7 +38,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var delivery = await _context.Delivery.SingleOrDefaultAsync(m => m.ID == id);
+            var delivery = await _context.Deliveries.SingleOrDefaultAsync(m => m.ID == id);
             if (delivery == null)
             {
                 return NotFound();
@@ -77,7 +77,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var delivery = await _context.Delivery.SingleOrDefaultAsync(m => m.ID == id);
+            var delivery = await _context.Deliveries.SingleOrDefaultAsync(m => m.ID == id);
             if (delivery == null)
             {
                 return NotFound();
@@ -128,7 +128,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var delivery = await _context.Delivery.SingleOrDefaultAsync(m => m.ID == id);
+            var delivery = await _context.Deliveries.SingleOrDefaultAsync(m => m.ID == id);
             if (delivery == null)
             {
                 return NotFound();
@@ -142,15 +142,15 @@ namespace DeliveryService.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var delivery = await _context.Delivery.SingleOrDefaultAsync(m => m.ID == id);
-            _context.Delivery.Remove(delivery);
+            var delivery = await _context.Deliveries.SingleOrDefaultAsync(m => m.ID == id);
+            _context.Deliveries.Remove(delivery);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
         private bool DeliveryExists(int id)
         {
-            return _context.Delivery.Any(e => e.ID == id);
+            return _context.Deliveries.Any(e => e.ID == id);
         }
     }
 }

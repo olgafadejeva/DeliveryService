@@ -287,7 +287,7 @@ namespace DeliveryServiceTests.Controllers
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "ConfirmEmail");
             var dbContext = controller.getApplicationContext();
-            Assert.Equal(dbContext.Driver.ToList<Driver>().Count, 1);
+            Assert.Equal(dbContext.Drivers.ToList<Driver>().Count, 1);
         }
 
         [Fact]

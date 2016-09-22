@@ -11,10 +11,10 @@ namespace DeliveryService.Models.Entities
     {
         [Key]
         public int ID { get; set; }
-
-        [ForeignKey("UserId")]
-        public ApplicationUser Shipper { get; set; }
+        
         public string CompanyName { get; set; }
         public string Description { get; set; }
+
+        public virtual ICollection<Driver> Drivers { get; set; }
     }
 }

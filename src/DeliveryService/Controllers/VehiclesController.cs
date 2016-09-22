@@ -27,7 +27,7 @@ namespace DeliveryService.Controllers
             currentUserId = _contextAcessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (currentUserId != null)
             {
-                driver = context.Driver.Include(b => b.User)
+                driver = context.Drivers.Include(b => b.User)
                    .Include(b => b.Vehicles)
                    .SingleOrDefault(m => m.User.Id == currentUserId);
             }
@@ -43,7 +43,7 @@ namespace DeliveryService.Controllers
                 var user = _context.ApplicationUsers.SingleOrDefault(m => m.Id == currentUserId);
                 var driverEntity = new Driver();
                 driverEntity.User = user;
-                _context.Driver.Add(driverEntity);
+                _context.Drivers.Add(driverEntity);
                 await _context.SaveChangesAsync();
                 driver = driverEntity;
             }
@@ -58,7 +58,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle.SingleOrDefaultAsync(m => m.ID == id);
+            var vehicle = await _context.Vehicles.SingleOrDefaultAsync(m => m.ID == id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -98,7 +98,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle.SingleOrDefaultAsync(m => m.ID == id);
+            var vehicle = await _context.Vehicles.SingleOrDefaultAsync(m => m.ID == id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -122,7 +122,7 @@ namespace DeliveryService.Controllers
             {
                 try
                 {
-                    var vehicleEntity = await _context.Vehicle.SingleOrDefaultAsync(m => m.ID == id);
+                    var vehicleEntity = await _context.Vehicles.SingleOrDefaultAsync(m => m.ID == id);
                     vehicleEntity.RegistrationNumber = vehicle.RegistrationNumber;
                     _context.Update(vehicleEntity);
                     await _context.SaveChangesAsync();
@@ -151,7 +151,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.Vehicle.SingleOrDefaultAsync(m => m.ID == id);
+            var vehicle = await _context.Vehicles.SingleOrDefaultAsync(m => m.ID == id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -165,15 +165,15 @@ namespace DeliveryService.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var vehicle = await _context.Vehicle.SingleOrDefaultAsync(m => m.ID == id);
-            _context.Vehicle.Remove(vehicle);
+            var vehicle = await _context.Vehicles.SingleOrDefaultAsync(m => m.ID == id);
+            _context.Vehicles.Remove(vehicle);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
         private bool VehicleExists(int id)
         {
-            return _context.Vehicle.Any(e => e.ID == id);
+            return _context.Vehicles.Any(e => e.ID == id);
         }
 
         // for testing

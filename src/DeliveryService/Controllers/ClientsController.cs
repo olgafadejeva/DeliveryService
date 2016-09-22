@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DeliveryService.Data;
 using DeliveryService.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DeliveryService.Controllers
 {
+
+    [Authorize(Roles = "Shipper")]
     public class ClientsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,11 +21,10 @@ namespace DeliveryService.Controllers
         {
             _context = context;    
         }
-
-        // GET: Clients
+        
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Client.ToListAsync());
+            return View(await _context.Clients.ToListAsync());
         }
 
         // GET: Clients/Details/5
@@ -33,7 +35,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Client.SingleOrDefaultAsync(m => m.ID == id);
+            var client = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
             if (client == null)
             {
                 return NotFound();
@@ -72,7 +74,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Client.SingleOrDefaultAsync(m => m.ID == id);
+            var client = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
             if (client == null)
             {
                 return NotFound();
@@ -123,7 +125,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Client.SingleOrDefaultAsync(m => m.ID == id);
+            var client = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
             if (client == null)
             {
                 return NotFound();
@@ -137,15 +139,15 @@ namespace DeliveryService.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var client = await _context.Client.SingleOrDefaultAsync(m => m.ID == id);
-            _context.Client.Remove(client);
+            var client = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
+            _context.Clients.Remove(client);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
         private bool ClientExists(int id)
         {
-            return _context.Client.Any(e => e.ID == id);
+            return _context.Clients.Any(e => e.ID == id);
         }
     }
 }

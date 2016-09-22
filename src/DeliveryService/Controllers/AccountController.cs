@@ -127,6 +127,8 @@ namespace DeliveryService.Controllers
 
         //
         // POST: /Account/Register
+
+            //TODO: register after email success 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
@@ -202,7 +204,7 @@ namespace DeliveryService.Controllers
         {
             var driverEntity = new Driver();
             driverEntity.User = user;
-            _context.Driver.Add(driverEntity);
+            _context.Drivers.Add(driverEntity);
             await _context.SaveChangesAsync();
         }
 

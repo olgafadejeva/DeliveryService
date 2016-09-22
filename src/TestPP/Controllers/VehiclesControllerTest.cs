@@ -20,7 +20,7 @@ namespace DeliveryServiceTests.Controllers
             var driverEntity = new Driver();
             var user = context.ApplicationUsers.First<ApplicationUser>();
             driverEntity.User = user;
-            context.Driver.Add(driverEntity);
+            context.Drivers.Add(driverEntity);
             await context.SaveChangesAsync();
             controller.setDriver(driverEntity);
 

@@ -29,12 +29,13 @@ namespace DeliveryService.Data
         }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-        public DbSet<Team> Team { get; set; }
-        public DbSet<Delivery> Delivery { get; set; }
-        public DbSet<Driver> Driver { get; set; }
-        public DbSet<Client> Client { get; set; }
-        public DbSet<Vehicle> Vehicle { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<Delivery> Deliveries { get; set; }
+        public DbSet<Driver> Drivers { get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<DeliveryStatus> DeliveryStatus { get; set; }
+        public DbSet<Shipper> Shippers { get; set; }
 
     }
 }
