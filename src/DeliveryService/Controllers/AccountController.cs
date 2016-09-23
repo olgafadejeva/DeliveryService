@@ -196,8 +196,20 @@ namespace DeliveryService.Controllers
                 {
                     await CreateDriverEntity(user);
                 }
+                else if (userRole.Contains(AppRole.SHIPPER)) {
+                    await CreateShipperEntity(user);
+                }
             }
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
+        }
+
+        private async Task CreateShipperEntity(ApplicationUser user)
+        {
+            var shipperEntity = new Shipper();
+            shipperEntity.User = user;
+            _context.Shippers.Add(shipperEntity);
+            await _context.SaveChangesAsync();
+
         }
 
         private async Task CreateDriverEntity(ApplicationUser user)

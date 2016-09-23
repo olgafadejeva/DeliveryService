@@ -37,6 +37,60 @@ namespace DeliveryServiceTests.Controllers
             Assert.Equal(driverEntity.Vehicles.Count, 1);
             Assert.Equal(result.Model, driverEntity.Vehicles);
 
+
+        }
+
+        [Fact]
+        public async Task testEditVehicle() {
+            var controller = ControllerSupplier.getVehiclesController().Result;
+
+            //set Driver to controller
+            var context = controller.getDbContext();
+            var driverEntity = new Driver();
+            var user = context.ApplicationUsers.First<ApplicationUser>();
+            driverEntity.User = user;
+            context.Drivers.Add(driverEntity);
+            Vehicle vehicle = new Vehicle();
+            vehicle.RegistrationNumber = "123456";
+            driverEntity.Vehicles.Add(vehicle);
+            await context.SaveChangesAsync();
+            controller.setDriver(driverEntity);
+
+
+            var result = (ViewResult)controller.Index().Result;
+            Assert.NotNull(result.Model);
+            Assert.Equal(result.Model, driverEntity.Vehicles);
+
+            var vehicleViewModel = new Vehicle();
+            vehicleViewModel.ID = vehicle.ID;
+            vehicleViewModel.RegistrationNumber = "1234567";
+
+            await controller.Edit(vehicle.ID, vehicleViewModel);
+            Assert.Equal(driverEntity.Vehicles.Count, 1);
+            Assert.Equal(driverEntity.Vehicles.ToList<Vehicle>().First().RegistrationNumber, "1234567");
+
+        }
+
+        [Fact]
+        public async Task testDeleteVehicle()
+        {
+            var controller = ControllerSupplier.getVehiclesController().Result;
+
+            //set Driver to controller
+            var context = controller.getDbContext();
+            var driverEntity = new Driver();
+            var user = context.ApplicationUsers.First<ApplicationUser>();
+            driverEntity.User = user;
+            context.Drivers.Add(driverEntity);
+            Vehicle vehicle = new Vehicle();
+            vehicle.RegistrationNumber = "123456";
+            driverEntity.Vehicles.Add(vehicle);
+            await context.SaveChangesAsync();
+            controller.setDriver(driverEntity);
+
+            await controller.DeleteConfirmed(vehicle.ID);
+            Assert.Equal(driverEntity.Vehicles.Count, 0);
+
         }
 
 

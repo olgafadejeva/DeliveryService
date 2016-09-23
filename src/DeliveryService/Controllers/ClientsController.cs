@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using DeliveryService.Data;
 using DeliveryService.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace DeliveryService.Controllers
 {
@@ -16,15 +18,34 @@ namespace DeliveryService.Controllers
     public class ClientsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly HttpContextAccessor _contextAcessor;
+        private string currentUserId;
+        private Shipper shipper;
 
-        public ClientsController(ApplicationDbContext context)
+        public ClientsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor)
         {
-            _context = context;    
+            _context = context;
+            _contextAcessor = (HttpContextAccessor)contextAccessor;
+            currentUserId = _contextAcessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserId != null)
+            {
+                shipper = context.Shippers.Include(b => b.User)
+                   .Include(b => b.Clients)
+                   .SingleOrDefault(m => m.User.Id == currentUserId);
+            }
         }
         
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Clients.ToListAsync());
+            if (shipper == null) {
+                var user = _context.ApplicationUsers.SingleOrDefault(m => m.Id == currentUserId);
+                var shipperEntity = new Shipper();
+                shipperEntity.User = user;
+                _context.Shippers.Add(shipperEntity);
+                await _context.SaveChangesAsync();
+                shipper = shipperEntity;
+            }
+            return View(shipper.Clients);
         }
 
         // GET: Clients/Details/5
@@ -36,7 +57,7 @@ namespace DeliveryService.Controllers
             }
 
             var client = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
-            if (client == null)
+            if (client == null || !shipper.Clients.Contains(client))
             {
                 return NotFound();
             }
@@ -59,6 +80,7 @@ namespace DeliveryService.Controllers
         {
             if (ModelState.IsValid)
             {
+                shipper.Clients.Add(client);
                 _context.Add(client);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -75,7 +97,7 @@ namespace DeliveryService.Controllers
             }
 
             var client = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
-            if (client == null)
+            if (client == null || !shipper.Clients.Contains(client))
             {
                 return NotFound();
             }
@@ -98,7 +120,12 @@ namespace DeliveryService.Controllers
             {
                 try
                 {
-                    _context.Update(client);
+
+                    var clientEntity = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
+                    clientEntity.Email = client.Email;
+                    clientEntity.FirstName = client.FirstName;
+                    clientEntity.LastName = client.LastName;
+                    _context.Update(clientEntity);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -148,6 +175,17 @@ namespace DeliveryService.Controllers
         private bool ClientExists(int id)
         {
             return _context.Clients.Any(e => e.ID == id);
+        }
+
+        // for testing
+        public void setShipper(Shipper shipper)
+        {
+            this.shipper = shipper;
+        }
+
+        public ApplicationDbContext getDbContext()
+        {
+            return _context;
         }
     }
 }

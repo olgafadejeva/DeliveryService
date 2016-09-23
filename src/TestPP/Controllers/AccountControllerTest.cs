@@ -255,20 +255,24 @@ namespace DeliveryServiceTests.Controllers
         }
 
         [Fact]
-        public async Task testGetConfirmEmailForExistingUserNotDriver()
+        public async Task testGetConfirmEmailForExistingUserNotDriverOrShipper()
         {
             var controller = ControllerSupplier.getAccountController();
             await populateDatabaseWithUser(controller);
             var userManager = controller.getUserManager();
             
             var user = await userManager.FindByIdAsync(Constants.USER_ID);
-            await userManager.AddToRoleAsync(user, AppRole.SHIPPER);
+            await userManager.AddToRoleAsync(user, AppRole.ADMIN);
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
             var result = await controller.ConfirmEmail(Constants.USER_ID, code);
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "ConfirmEmail");
+
+            var dbContext = controller.getApplicationContext();
+            Assert.Equal(dbContext.Drivers.ToList<Driver>().Count, 0);
+            Assert.Equal(dbContext.Shippers.ToList<Shipper>().Count, 0);
         }
 
         [Fact]
@@ -288,6 +292,27 @@ namespace DeliveryServiceTests.Controllers
             Assert.Equal(viewName, "ConfirmEmail");
             var dbContext = controller.getApplicationContext();
             Assert.Equal(dbContext.Drivers.ToList<Driver>().Count, 1);
+            Assert.Equal(dbContext.Shippers.ToList<Shipper>().Count, 0);
+        }
+
+        [Fact]
+        public async Task testGetConfirmEmailForExistingUserShipperRole()
+        {
+            var controller = ControllerSupplier.getAccountController();
+            await populateDatabaseWithUser(controller);
+            var userManager = controller.getUserManager();
+
+            var user = await userManager.FindByIdAsync(Constants.USER_ID);
+            await userManager.AddToRoleAsync(user, AppRole.SHIPPER);
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var result = await controller.ConfirmEmail(Constants.USER_ID, code);
+            Assert.NotNull(result);
+            var viewName = ((ViewResult)result).ViewName;
+            Assert.Equal(viewName, "ConfirmEmail");
+            var dbContext = controller.getApplicationContext();
+            Assert.Equal(dbContext.Drivers.ToList<Driver>().Count, 0);
+            Assert.Equal(dbContext.Shippers.ToList<Shipper>().Count, 1);
         }
 
         [Fact]

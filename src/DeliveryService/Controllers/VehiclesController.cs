@@ -59,12 +59,13 @@ namespace DeliveryService.Controllers
             }
 
             var vehicle = await _context.Vehicles.SingleOrDefaultAsync(m => m.ID == id);
-            if (vehicle == null)
+            if (vehicle == null || !driver.Vehicles.Contains(vehicle))
             {
                 return NotFound();
             }
 
             return View(vehicle);
+            
         }
 
         // GET: Vehicles/Create
@@ -99,7 +100,7 @@ namespace DeliveryService.Controllers
             }
 
             var vehicle = await _context.Vehicles.SingleOrDefaultAsync(m => m.ID == id);
-            if (vehicle == null)
+            if (vehicle == null || !driver.Vehicles.Contains(vehicle))
             {
                 return NotFound();
             }
@@ -152,7 +153,7 @@ namespace DeliveryService.Controllers
             }
 
             var vehicle = await _context.Vehicles.SingleOrDefaultAsync(m => m.ID == id);
-            if (vehicle == null)
+            if (vehicle == null || !driver.Vehicles.Contains(vehicle))
             {
                 return NotFound();
             }
