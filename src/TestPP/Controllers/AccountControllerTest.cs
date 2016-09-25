@@ -157,7 +157,7 @@ namespace DeliveryServiceTests.Controllers
             var result = controller.Register("return/url");
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(viewResult.ViewData["ReturnUrl"], "return/url");
-            Assert.Null(viewResult.Model);
+            Assert.Equal(viewResult.Model.GetType(), typeof(RegisterViewModel));
             Assert.Equal(viewResult.ViewName, "Register");
         }
 
@@ -228,7 +228,7 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testGetConfimEmailWithNullUserId() {
             var controller = ControllerSupplier.getAccountController();
-            var result = await controller.ConfirmEmail(null, Constants.CONFIRM_CODE);
+            var result = await controller.ConfirmEmail(null, Constants.CONFIRM_CODE, "aa");
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "Error");
@@ -238,7 +238,7 @@ namespace DeliveryServiceTests.Controllers
         public async Task testGetConfimEmailWithNullConfirmCode()
         {
             var controller = ControllerSupplier.getAccountController();
-            var result = await controller.ConfirmEmail(Constants.USER_ID, null);
+            var result = await controller.ConfirmEmail(Constants.USER_ID, null, "aa");
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "Error");
@@ -248,7 +248,7 @@ namespace DeliveryServiceTests.Controllers
         public async Task testGetConfirmEmailForExistingUserWithWrongCode() {
             var controller = ControllerSupplier.getAccountController();
             await populateDatabaseWithUser(controller);
-            var result = await controller.ConfirmEmail(Constants.USER_ID, "123");
+            var result = await controller.ConfirmEmail(Constants.USER_ID, "123", "aa");
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "Error");
@@ -265,7 +265,7 @@ namespace DeliveryServiceTests.Controllers
             await userManager.AddToRoleAsync(user, AppRole.ADMIN);
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            var result = await controller.ConfirmEmail(Constants.USER_ID, code);
+            var result = await controller.ConfirmEmail(Constants.USER_ID, code, "aa");
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "ConfirmEmail");

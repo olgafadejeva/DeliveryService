@@ -49,7 +49,7 @@ namespace DeliveryServiceTests.Data
 
             var user = context.ApplicationUsers.SingleOrDefault(m => m.Id == userId);
 
-            var driverEntity = new Driver();
+            var driverEntity = new DeliveryService.Models.Entities.Driver();
             driverEntity.User = user;
             context.Drivers.Add(driverEntity);
             await context.SaveChangesAsync();

@@ -16,6 +16,22 @@ namespace DeliveryService.Migrations
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("DeliveryService.Entities.DriverRegistrationRequest", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("DriverEmail");
+
+                    b.Property<int>("TeamID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("TeamID");
+
+                    b.ToTable("DriverRegistrationRequests");
+                });
+
             modelBuilder.Entity("DeliveryService.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id");
@@ -306,6 +322,14 @@ namespace DeliveryService.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("DeliveryService.Entities.DriverRegistrationRequest", b =>
+                {
+                    b.HasOne("DeliveryService.Models.Entities.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("DeliveryService.Models.Entities.Client", b =>
                 {
                     b.HasOne("DeliveryService.Models.Entities.Shipper")
@@ -346,7 +370,7 @@ namespace DeliveryService.Migrations
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Driver", b =>
                 {
-                    b.HasOne("DeliveryService.Models.Entities.Team")
+                    b.HasOne("DeliveryService.Models.Entities.Team", "Team")
                         .WithMany("Drivers")
                         .HasForeignKey("TeamID");
 

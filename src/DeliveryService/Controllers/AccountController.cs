@@ -14,6 +14,8 @@ using DeliveryService.Services;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using DeliveryService.Models.Entities;
 using DeliveryService.Data;
+using DeliveryService.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DeliveryService.Controllers
 {
@@ -122,7 +124,19 @@ namespace DeliveryService.Controllers
         public IActionResult Register(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            return View("Register");
+            RegisterViewModel model = new RegisterViewModel();
+            return View("Register", model);
+        }
+
+        [HttpGet]
+        public IActionResult RegisterDriver(int teamId, string emailAddress, string firstName) {
+            RegisterViewModel model = new RegisterViewModel();
+            model.Email = emailAddress;
+            model.FirstName = firstName;
+            model.DriverRegistration = true;
+            model.DriverTeamId = teamId.ToString();
+            model.Shipper = false;
+            return View("Register", model);
         }
 
         //
@@ -134,6 +148,7 @@ namespace DeliveryService.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            model.DriverTeamId = (string) ViewData["TeamId"];
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email};
@@ -141,9 +156,17 @@ namespace DeliveryService.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, model.Shipper ? AppRole.SHIPPER : AppRole.DRIVER);
-                    
+                   // var driverRegistrationRequest = (DriverRegistrationRequest)from d in _context.DriverRegistrationRequests where d.DriverEmail == model.Email select d;
+
+
+                    var driverRegistrationRequest = _context.DriverRegistrationRequests.SingleOrDefault(m => m.DriverEmail == model.Email);
+                    int? teamIdForDriver = null;
+                    if (driverRegistrationRequest != null) {
+                        teamIdForDriver = driverRegistrationRequest.TeamID;
+                    }
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code, teamId = teamIdForDriver }, protocol: HttpContext.Request.Scheme);
                     await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                         $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
                     _logger.LogInformation("User with email {0} created a new account.", user.Email);
@@ -154,12 +177,6 @@ namespace DeliveryService.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public void RegisterDriverAsTeamMember(RegisterViewModel model, string returnUrl = null)
-        {
         }
 
         //
@@ -177,7 +194,7 @@ namespace DeliveryService.Controllers
 
         // GET: /Account/ConfirmEmail
         [HttpGet]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(string userId, string code, string teamId = null)
         {
             if (userId == null || code == null)
             {
@@ -194,13 +211,33 @@ namespace DeliveryService.Controllers
                 var userRole = _userManager.GetRolesAsync(user).Result;
                 if (userRole.Contains(AppRole.DRIVER))
                 {
-                    await CreateDriverEntity(user);
+                    if (teamId == null)
+                    {
+                        await CreateDriverEntity(user);
+                    }
+                    else {
+                        await CreateDriverEntityAllocatedToTeam(user, teamId);
+                    }
                 }
                 else if (userRole.Contains(AppRole.SHIPPER)) {
                     await CreateShipperEntity(user);
-                }
+                } 
             }
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
+        }
+
+        private async Task CreateDriverEntityAllocatedToTeam(ApplicationUser user, string teamId)
+        {
+            var driverEntity = new Driver();
+            driverEntity.User = user;
+            int idInt = Convert.ToInt32(teamId);
+            var team = await _context.Teams.SingleOrDefaultAsync(m => m.ID == idInt);
+            driverEntity.Team = team;
+            driverEntity.TeamID = idInt;
+            _context.Drivers.Add(driverEntity);
+            var completedDriverRequest = await _context.DriverRegistrationRequests.SingleOrDefaultAsync(m => m.DriverEmail == user.Email);
+            _context.DriverRegistrationRequests.Remove(completedDriverRequest);
+            await _context.SaveChangesAsync();
         }
 
         private async Task CreateShipperEntity(ApplicationUser user)

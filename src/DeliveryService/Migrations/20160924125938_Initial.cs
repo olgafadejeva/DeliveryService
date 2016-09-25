@@ -118,6 +118,26 @@ namespace DeliveryService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DriverRegistrationRequests",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    DriverEmail = table.Column<string>(nullable: true),
+                    TeamID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DriverRegistrationRequests", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_DriverRegistrationRequests_Teams_TeamID",
+                        column: x => x.TeamID,
+                        principalTable: "Teams",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Drivers",
                 columns: table => new
                 {
@@ -325,6 +345,11 @@ namespace DeliveryService.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_DriverRegistrationRequests_TeamID",
+                table: "DriverRegistrationRequests",
+                column: "TeamID");
+
+            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
@@ -428,6 +453,9 @@ namespace DeliveryService.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "DriverRegistrationRequests");
+
             migrationBuilder.DropTable(
                 name: "Deliveries");
 

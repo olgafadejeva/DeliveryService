@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using DeliveryService.Models;
 using DeliveryService.Models.Entities;
+using DeliveryService.Entities;
 
 namespace DeliveryService.Data
 {
@@ -36,6 +37,7 @@ namespace DeliveryService.Data
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<DeliveryStatus> DeliveryStatus { get; set; }
         public DbSet<Shipper> Shippers { get; set; }
+        public DbSet<DriverRegistrationRequest> DriverRegistrationRequests { get; set; }
 
     }
 }

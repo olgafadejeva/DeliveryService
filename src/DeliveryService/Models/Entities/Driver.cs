@@ -12,15 +12,20 @@ namespace DeliveryService.Models.Entities
         public Driver() {
             Vehicles = new List<Vehicle>();
             Deliveries = new List<Delivery>();
+            Team = new Team();
         }
 
+        [Key]
         public int ID { get; set; }
 
-       // public virtual ICollection<Team> Teams { get; set; }
+        public int? TeamID { get; set; }
+
+        // public virtual ICollection<Team> Teams { get; set; }
         public virtual ICollection<Vehicle> Vehicles { get; set; }
 
         public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual ApplicationUser User { get; set; }
+        public virtual Team Team { get; set; }
 
     }
 }

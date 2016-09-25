@@ -35,5 +35,13 @@ namespace DeliveryService.Models.AccountViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        public bool DriverRegistration { get; set; }
+
+        public string DriverTeamId { get; set; }
+
+        public RegisterViewModel() {
+            DriverRegistration = false;
+        }
     }
 }

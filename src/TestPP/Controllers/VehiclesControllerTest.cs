@@ -17,7 +17,7 @@ namespace DeliveryServiceTests.Controllers
 
             //set Driver to controller
             var context = controller.getDbContext();
-            var driverEntity = new Driver();
+            var driverEntity = new DeliveryService.Models.Entities.Driver();
             var user = context.ApplicationUsers.First<ApplicationUser>();
             driverEntity.User = user;
             context.Drivers.Add(driverEntity);
@@ -46,7 +46,7 @@ namespace DeliveryServiceTests.Controllers
 
             //set Driver to controller
             var context = controller.getDbContext();
-            var driverEntity = new Driver();
+            var driverEntity = new DeliveryService.Models.Entities.Driver();
             var user = context.ApplicationUsers.First<ApplicationUser>();
             driverEntity.User = user;
             context.Drivers.Add(driverEntity);
@@ -78,7 +78,7 @@ namespace DeliveryServiceTests.Controllers
 
             //set Driver to controller
             var context = controller.getDbContext();
-            var driverEntity = new Driver();
+            var driverEntity = new DeliveryService.Models.Entities.Driver();
             var user = context.ApplicationUsers.First<ApplicationUser>();
             driverEntity.User = user;
             context.Drivers.Add(driverEntity);

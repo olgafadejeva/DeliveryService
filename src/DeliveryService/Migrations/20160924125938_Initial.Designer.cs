@@ -8,7 +8,7 @@ using DeliveryService.Data;
 namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20160922082249_Initial")]
+    [Migration("20160924125938_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -16,6 +16,22 @@ namespace DeliveryService.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("DeliveryService.Entities.DriverRegistrationRequest", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("DriverEmail");
+
+                    b.Property<int>("TeamID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("TeamID");
+
+                    b.ToTable("DriverRegistrationRequests");
+                });
 
             modelBuilder.Entity("DeliveryService.Models.ApplicationUser", b =>
                 {
@@ -307,6 +323,14 @@ namespace DeliveryService.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("DeliveryService.Entities.DriverRegistrationRequest", b =>
+                {
+                    b.HasOne("DeliveryService.Models.Entities.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("DeliveryService.Models.Entities.Client", b =>
                 {
                     b.HasOne("DeliveryService.Models.Entities.Shipper")
@@ -347,7 +371,7 @@ namespace DeliveryService.Migrations
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Driver", b =>
                 {
-                    b.HasOne("DeliveryService.Models.Entities.Team")
+                    b.HasOne("DeliveryService.Models.Entities.Team", "Team")
                         .WithMany("Drivers")
                         .HasForeignKey("TeamID");
 

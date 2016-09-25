@@ -16,5 +16,9 @@ namespace DeliveryService.Models.Entities
         public string Description { get; set; }
 
         public virtual ICollection<Driver> Drivers { get; set; }
+
+        public Team() {
+            Drivers = new List<Driver>();
+        }
     }
 }
