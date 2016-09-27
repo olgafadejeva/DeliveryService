@@ -13,19 +13,20 @@ using DeliveryService.Models;
 using DeliveryService.Services;
 using System.Security.Claims;
 using DeliveryService.Entities;
+using DeliveryService.Models.ShipperViewModels;
 
 namespace DeliveryService.Controllers
 {
 
     [RequireHttps]
-  //  [Authorize(Roles = "Shipper")]
+    [Authorize(Roles = "Shipper")]
     public class TeamsController : Controller
     {
         private ApplicationDbContext _context;
         private readonly HttpContextAccessor _contextAcessor;
         private string currentUserId;
         private Shipper shipper;
-        private readonly IEmailSender _emailSender;
+        private IEmailSender _emailSender;
 
         public TeamsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IEmailSender emailSender)
         {
@@ -36,16 +37,31 @@ namespace DeliveryService.Controllers
             {
                 shipper = context.Shippers.Include(b => b.User)
                    .Include(b => b.Clients)
+                   .Include(b => b.Team)
+                   .Include(b => b.Team.Drivers)
                    .SingleOrDefault(m => m.User.Id == currentUserId);
             }
             _emailSender = emailSender;
         }
 
         // GET: Teams
-        public async  Task<IActionResult> Index()
+        public  IActionResult Index()
         {
-            // return View(shipper.Team);
-            return View( _context.Teams);
+            
+            Team team = shipper.Team;
+           /* if (team != null)
+            {
+                teamViewModel.Description = team.Description;
+                teamViewModel.CompanyName = team.CompanyName;
+                IList<string> driverNames = new List<string>();
+                foreach (Driver driver in team.Drivers)
+                {
+                    driverNames.Add(driver.User.UserName);
+                }
+                teamViewModel.Drivers = driverNames;
+            }*/
+           
+            return View(team);
         }
 
         // GET: Teams/Details/5
@@ -72,8 +88,6 @@ namespace DeliveryService.Controllers
         }
 
         // POST: Teams/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,CompanyName,Description")] Team team)
@@ -81,6 +95,7 @@ namespace DeliveryService.Controllers
             if (ModelState.IsValid)
             {
                 _context.Add(team);
+                shipper.Team = team;
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
@@ -90,7 +105,7 @@ namespace DeliveryService.Controllers
         public async Task<IActionResult> AddDriver(int? id)
         {
 
-            if (id == null)
+            if (id == null || shipper.Team.ID != id)
             {
                 return NotFound();
             }
@@ -103,14 +118,11 @@ namespace DeliveryService.Controllers
             return View(new DriverDetails());
         }
 
-        // POST: Teams/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddDriver(int id, [Bind("ID,CompanyName,Description")] Team team, DriverDetails driver)
         {
-            if (id != team.ID)
+            if (id != team.ID || shipper.Team.ID != id)
             {
                 return NotFound();
             }
@@ -118,7 +130,7 @@ namespace DeliveryService.Controllers
             {
 
                 //send email to driver to register with the url that will have link to registration
-                var callbackUrl = Url.Action("RegisterDriver", "Account", new { teamId=team.ID, email=driver.Email, firstName = driver.FirstName }, protocol: HttpContext.Request.Scheme);
+                var callbackUrl = Url.Action("RegisterDriver", "Account", new { teamId=team.ID, email=driver.Email, firstName = driver.FirstName }, "https");
                 await _emailSender.SendEmailAsync(driver.Email, "You were invited to register",
                        $"You were invited as a driver,  please register: <a href='{callbackUrl}'>link</a>");
                 DriverRegistrationRequest request = new DriverRegistrationRequest();
@@ -130,6 +142,30 @@ namespace DeliveryService.Controllers
             }
             return View(team);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteDriver(int? id, int? driverId)
+        {
+            if (id == null || shipper.Team.ID != id)
+            {
+                return NotFound();
+            }
+
+            var team = await _context.Teams.SingleOrDefaultAsync(m => m.ID == id);
+            var drivers = team.Drivers;
+            foreach (Driver driver in drivers) {
+                if (driver.ID == driverId) {
+                    team.Drivers.Remove(driver);
+                    await _context.SaveChangesAsync();
+                    break;
+                }
+            }
+            
+            return View(team);
+        }
+
+
 
         // GET: Teams/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -217,6 +253,19 @@ namespace DeliveryService.Controllers
         private bool TeamExists(int id)
         {
             return _context.Teams.Any(e => e.ID == id);
+        }
+
+        public void setShipper(Shipper shipper) {
+            this.shipper = shipper;
+        }
+
+        public ApplicationDbContext getDbContext() {
+            return _context;
+        }
+
+        public IEmailSender getEmailSender()
+        {
+            return _emailSender;
         }
     }
 }

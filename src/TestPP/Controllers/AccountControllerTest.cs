@@ -8,6 +8,7 @@ using DeliveryServiceTests.Helpers;
 using DeliveryService.Models.AccountViewModels;
 using System.Linq;
 using DeliveryService.Models.Entities;
+using DeliveryService.Entities;
 
 namespace DeliveryServiceTests.Controllers
 {
@@ -162,6 +163,26 @@ namespace DeliveryServiceTests.Controllers
         }
 
         [Fact]
+        public void testGetRegisterDriver()
+        {
+            var controller = ControllerSupplier.getAccountController();
+            string email = "email@email.com";
+            string firstName = "Alex";
+            var result = controller.RegisterDriver( 1, email, firstName, "url");
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.Equal(viewResult.ViewData["ReturnUrl"], "url");
+            Assert.Equal(viewResult.Model.GetType(), typeof(RegisterViewModel));
+            Assert.Equal(viewResult.ViewName, "Register");
+
+            var model = (RegisterViewModel) viewResult.Model;
+            Assert.True(model.DriverRegistration);
+            Assert.Equal(model.DriverTeamId, "1");
+            Assert.Equal(model.FirstName, firstName);
+            Assert.Equal(model.Email, email);
+            Assert.False(model.Shipper);
+        }
+
+        [Fact]
         public async Task testPostRegisterInvalidModel() {
             RegisterViewModel model = new RegisterViewModel();
             var controller = ControllerSupplier.getAccountController();
@@ -293,6 +314,42 @@ namespace DeliveryServiceTests.Controllers
             var dbContext = controller.getApplicationContext();
             Assert.Equal(dbContext.Drivers.ToList<Driver>().Count, 1);
             Assert.Equal(dbContext.Shippers.ToList<Shipper>().Count, 0);
+        }
+
+        [Fact]
+        public async Task testGetConfirmEmailForExistingUserDriverTeamRegistration()
+        {   
+            var controller = ControllerSupplier.getAccountController();
+
+            var dbContext = controller.getApplicationContext();
+            await populateDatabaseWithUser(controller);
+
+            Team team = new Team();
+            dbContext.Teams.Add(team);
+            await dbContext.SaveChangesAsync();
+
+            DriverRegistrationRequest request = new DriverRegistrationRequest();
+            request.DriverEmail = Constants.DEFAULT_EMAIL;
+           // request.Team = team;
+            request.TeamID = team.ID;
+            dbContext.DriverRegistrationRequests.Add(request);
+            await dbContext.SaveChangesAsync();
+            
+            var userManager = controller.getUserManager();
+            var user = await userManager.FindByIdAsync(Constants.USER_ID);
+            await userManager.AddToRoleAsync(user, AppRole.DRIVER);
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var result = await controller.ConfirmEmail(Constants.USER_ID, code, team.ID.ToString());
+            Assert.NotNull(result);
+            var viewName = ((ViewResult)result).ViewName;
+            Assert.Equal(viewName, "ConfirmEmail");
+            Assert.Equal(dbContext.Drivers.ToList<Driver>().Count, 1);
+            var driver = dbContext.Drivers.First<Driver>();
+            Assert.Equal(driver.TeamID, team.ID);
+            Assert.Equal(dbContext.Shippers.ToList<Shipper>().Count, 0);
+            Assert.Equal(dbContext.DriverRegistrationRequests.ToList<DriverRegistrationRequest>().Count, 0);
+            Assert.Equal(team.Drivers.Count, 1);
         }
 
         [Fact]

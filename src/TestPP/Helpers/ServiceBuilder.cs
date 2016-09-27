@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using DeliveryService.Data.Initializer;
 using DeliveryService.Services.Config;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Routing;
 
 namespace DeliveryServiceTests.Helpers
 {
@@ -46,10 +48,14 @@ namespace DeliveryServiceTests.Helpers
                 {
                     HttpContext = context,
                 });
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<HttpContext>(context);
 
             services.AddLogging();
             services.AddMvc();
+
+            services.AddRouting();
+
             var serviceProvider = services.BuildServiceProvider();
             DatabaseInitializer.Initialize(serviceProvider);
 

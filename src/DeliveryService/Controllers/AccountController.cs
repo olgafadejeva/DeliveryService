@@ -129,7 +129,8 @@ namespace DeliveryService.Controllers
         }
 
         [HttpGet]
-        public IActionResult RegisterDriver(int teamId, string emailAddress, string firstName) {
+        public IActionResult RegisterDriver(int teamId, string emailAddress, string firstName, string returnUrl = null) {
+            ViewData["ReturnUrl"] = returnUrl;
             RegisterViewModel model = new RegisterViewModel();
             model.Email = emailAddress;
             model.FirstName = firstName;

@@ -5,6 +5,7 @@ using DeliveryService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -79,8 +80,52 @@ namespace DeliveryServiceTests.Helpers
             return controller;
         }
 
+        public async static Task<TeamsController> getTeamsController()
+        {
+            IServiceProvider _serviceProvider = ServiceBuilder.getServiceProvider();
+            var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
 
-        private static void ConfigureRouteData(AccountController controller)
+            var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
+            var userManagerResult = await userManager.CreateAsync(
+                new ApplicationUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL },
+                Constants.DEFAULT_PASSWORD);
+            await signInManager.PasswordSignInAsync(Constants.DEFAULT_EMAIL, Constants.DEFAULT_PASSWORD, false, lockoutOnFailure: false);
+            var controller = new TeamsController(context, httpContextAccessor, createMockEmailSender().Object);
+
+          var contextAccessor =   _serviceProvider.GetRequiredService<IActionContextAccessor>();
+            var actionContext = new ActionContext();
+            actionContext.HttpContext = httpContextAccessor.HttpContext;
+            var routeData = new RouteData();
+            routeData.Values.Add("default", "{controller=Home}/{action=Index}/{id?}");
+            
+            actionContext.RouteData = routeData;
+            actionContext.ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor();
+            contextAccessor.ActionContext = actionContext;
+            var helperFactory = _serviceProvider.GetRequiredService<IUrlHelperFactory>();
+            var urlHelper = helperFactory.GetUrlHelper(contextAccessor.ActionContext);
+
+         /*   var actionContext = new ActionContext();
+            actionContext.HttpContext = httpContextAccessor.HttpContext;
+            var routeData = new RouteData();
+            routeData.Values.Add("default", "{controller=Home}/{action=Index}/{id?}");
+            actionContext.RouteData = routeData;
+            actionContext.ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor();*/
+            controller.ControllerContext = new ControllerContext(actionContext);
+
+
+
+            controller.Url = urlHelper;
+            
+           // ConfigureRouteData(controller);
+            return controller;
+        }
+
+
+
+
+        private static void ConfigureRouteData(Controller controller)
         {
             var routeData = new RouteData();
             routeData.Values.Add("default", "{controller=Home}/{action=Index}/{id?}");

@@ -11,5 +11,6 @@ namespace DeliveryServiceTests.Helpers
         public const String USER_ID = "6789";
         public const String DEFAULT_EMAIL = "test@test.com";
         public const String DEFAULT_PASSWORD = "Password123";
+        public const String DEFAULT_NAME = "John";
     }
 }
