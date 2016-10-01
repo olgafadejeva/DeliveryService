@@ -66,6 +66,23 @@ namespace DeliveryService.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GoToDashboard()
+        {
+            var user = await GetCurrentUserAsync();
+            var userRole = _userManager.GetRolesAsync(user).Result;
+
+            if (userRole.Contains(AppRole.DRIVER))
+            {
+                return RedirectToAction(nameof(DriverDashboardController.Index), "DriverDashboard");
+            }
+            else if (userRole.Contains(AppRole.SHIPPER))
+            {
+                return RedirectToAction(nameof(ShipperDashboardController.Index), "ShipperDashboard");
+            }
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
         //
         // POST: /Manage/RemoveLogin
         [HttpPost]

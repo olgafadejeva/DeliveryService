@@ -81,14 +81,39 @@ namespace DeliveryService.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("DeliveryService.Models.Entities.Address", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("City");
+
+                    b.Property<int>("ClientId");
+
+                    b.Property<string>("LineOne");
+
+                    b.Property<string>("LineTwo");
+
+                    b.Property<string>("PostCode");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ClientId")
+                        .IsUnique();
+
+                    b.ToTable("Addresses");
+                });
+
             modelBuilder.Entity("DeliveryService.Models.Entities.Client", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Email");
+                    b.Property<string>("Email")
+                        .IsRequired();
 
-                    b.Property<string>("FirstName");
+                    b.Property<string>("FirstName")
+                        .IsRequired();
 
                     b.Property<string>("LastName");
 
@@ -327,6 +352,14 @@ namespace DeliveryService.Migrations
                     b.HasOne("DeliveryService.Models.Entities.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Entities.Address", b =>
+                {
+                    b.HasOne("DeliveryService.Models.Entities.Client", "Client")
+                        .WithOne("Address")
+                        .HasForeignKey("DeliveryService.Models.Entities.Address", "ClientId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

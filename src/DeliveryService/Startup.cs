@@ -94,6 +94,7 @@ namespace DeliveryService
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                
             }
 
             app.UseStaticFiles();
@@ -108,6 +109,8 @@ namespace DeliveryService
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseStatusCodePagesWithRedirects("Account/AccessDenied");
 
             DatabaseInitializer.Initialize(app.ApplicationServices);
         }

@@ -14,53 +14,23 @@ using DeliveryService.Services;
 using System.Security.Claims;
 using DeliveryService.Entities;
 using DeliveryService.Models.ShipperViewModels;
+using DeliveryService.Controllers.ShipperControllers;
 
-namespace DeliveryService.Controllers
+namespace DeliveryService.ShipperControllers
 {
-
-    [RequireHttps]
-    [Authorize(Roles = "Shipper")]
-    public class TeamsController : Controller
+    public class TeamsController : ShipperController
     {
-        private ApplicationDbContext _context;
-        private readonly HttpContextAccessor _contextAcessor;
-        private string currentUserId;
-        private Shipper shipper;
         private IEmailSender _emailSender;
 
-        public TeamsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IEmailSender emailSender)
+        public TeamsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IEmailSender emailSender) : base(context, contextAccessor)
         {
-            _context = context;
-            _contextAcessor = (HttpContextAccessor)contextAccessor;
-            currentUserId = _contextAcessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (currentUserId != null)
-            {
-                shipper = context.Shippers.Include(b => b.User)
-                   .Include(b => b.Clients)
-                   .Include(b => b.Team)
-                   .Include(b => b.Team.Drivers)
-                   .SingleOrDefault(m => m.User.Id == currentUserId);
-            }
             _emailSender = emailSender;
         }
 
         // GET: Teams
         public  IActionResult Index()
-        {
-            
+        { 
             Team team = shipper.Team;
-           /* if (team != null)
-            {
-                teamViewModel.Description = team.Description;
-                teamViewModel.CompanyName = team.CompanyName;
-                IList<string> driverNames = new List<string>();
-                foreach (Driver driver in team.Drivers)
-                {
-                    driverNames.Add(driver.User.UserName);
-                }
-                teamViewModel.Drivers = driverNames;
-            }*/
-           
             return View(team);
         }
 
@@ -253,14 +223,6 @@ namespace DeliveryService.Controllers
         private bool TeamExists(int id)
         {
             return _context.Teams.Any(e => e.ID == id);
-        }
-
-        public void setShipper(Shipper shipper) {
-            this.shipper = shipper;
-        }
-
-        public ApplicationDbContext getDbContext() {
-            return _context;
         }
 
         public IEmailSender getEmailSender()

@@ -341,10 +341,26 @@ namespace DeliveryService.Controllers
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> AccessDenied() {
+            var user = await GetCurrentUserAsync();
+            var userRole = _userManager.GetRolesAsync(user).Result;
+            if (userRole.Contains(AppRole.DRIVER))
+            {
+                ViewData["Dashboard"] = "DriverDashboard";
+            }
+            else if (userRole.Contains(AppRole.SHIPPER)) {
+                ViewData["Dashboard"] = "ShipperDashboard";
+            }
+            return View();
+        }
+
         public SignInManager<ApplicationUser> getSignInManager()
         {
             return _signInManager;
         }
+
+
 
         #region Helpers
 

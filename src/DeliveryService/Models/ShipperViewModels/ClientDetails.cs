@@ -4,13 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DeliveryService.Models.Entities
+namespace DeliveryService.Models.ShipperViewModels
 {
-    public class Client
+    public class ClientDetails
     {
-        [Key]
-        public int ID { get; set; }
 
+        public int ID { get; set; }
         [Required]
         [Display(Name = "First name")]
         public string FirstName { get; set; }
@@ -22,10 +21,19 @@ namespace DeliveryService.Models.Entities
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        public Address Address { get; set; }
+        [Required]
+        [Display(Name = "Address Line 1")]
+        public string AddressLineOne { get; set; }
 
-        public Client() {
-           Address = new Address();
-        }
+        [Display(Name = "AddressLine 2")]
+        public string AddressLineTwo { get; set; }
+
+        [Required]
+        [Display(Name = "Town/City")]
+        public string City { get; set; }
+
+        [Required]
+        [Display(Name = "Postcode")]
+        public string PostCode { get; set; }
     }
 }

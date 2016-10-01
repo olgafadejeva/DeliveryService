@@ -8,14 +8,11 @@ namespace DeliveryService.Models.Entities
 {
     public class Delivery
     {
-        
         public int ID { get; set; }
 
         public int ClientID { get; set; } //foreign key to client 
 
-        public string Location { get; set; }
-
-        public string Destination { get; set; }
+        public Address PickUpAddress { get; set; }
 
         public DeliveryStatus DeliveryStatus { get; set; }
 

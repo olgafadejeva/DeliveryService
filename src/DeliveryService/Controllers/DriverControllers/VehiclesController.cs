@@ -8,29 +8,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System;
+using DeliveryService.Controllers.DriverControllers;
 
-namespace DeliveryService.Controllers
+namespace DeliveryService.DriverControllers
 {
-    [RequireHttps]
-    [Authorize(Roles = "Driver")]
-    public class VehiclesController : Controller
+    public class VehiclesController : DriverController
     {
-        private ApplicationDbContext _context;
-        private readonly HttpContextAccessor _contextAcessor;
-        private string currentUserId;
-        private Driver driver;
-
-        public VehiclesController(ApplicationDbContext context, IHttpContextAccessor contextAccessor)
+        public VehiclesController(ApplicationDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor)
         {
-            _context = context;
-            _contextAcessor = (HttpContextAccessor)contextAccessor;
-            currentUserId = _contextAcessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (currentUserId != null)
-            {
-                driver = context.Drivers.Include(b => b.User)
-                   .Include(b => b.Vehicles)
-                   .SingleOrDefault(m => m.User.Id == currentUserId);
-            }
         }
 
         // GET: Vehicles
@@ -73,10 +58,7 @@ namespace DeliveryService.Controllers
         {
             return View();
         }
-
-        // POST: Vehicles/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,RegistrationNumber")] Vehicle vehicle)
@@ -107,9 +89,6 @@ namespace DeliveryService.Controllers
             return View(vehicle);
         }
 
-        // POST: Vehicles/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,RegistrationNumber")] Vehicle vehicle)
@@ -175,16 +154,6 @@ namespace DeliveryService.Controllers
         private bool VehicleExists(int id)
         {
             return _context.Vehicles.Any(e => e.ID == id);
-        }
-
-        // for testing
-        public void setDriver(Driver driver) {
-            this.driver = driver;
-        }
-
-        public ApplicationDbContext getDbContext()
-        {
-            return _context;
         }
     }
 }

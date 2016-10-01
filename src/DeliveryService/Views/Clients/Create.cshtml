@@ -1,17 +1,68 @@
 @model DeliveryService.Models.Entities.Client
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create a client";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Create</h2>
+<h2>View</h2>
 
 <form asp-action="Create">
     <div class="form-horizontal">
-        <h4>Client</h4>
+        <h4>ClientDetails</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Email" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="FirstName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="LastName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger" />
+            </div>
+        </div>
+
+        <p>Client's address</p> 
+        <div class="form-group">
+            <label asp-for="Address.LineOne" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Address.LineOne" class="form-control" />
+                <span asp-validation-for="Address.LineOne" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Address.LineTwo" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Address.LineTwo" class="form-control" />
+                <span asp-validation-for="Address.LineTwo" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Address.City" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Address.City" class="form-control" />
+                <span asp-validation-for="Address.City" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Address.PostCode" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Address.PostCode" class="form-control" />
+                <span asp-validation-for="Address.PostCode" class="text-danger" />
+            </div>
+        </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />

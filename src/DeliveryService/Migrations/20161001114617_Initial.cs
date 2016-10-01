@@ -286,8 +286,8 @@ namespace DeliveryService.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Email = table.Column<string>(nullable: true),
-                    FirstName = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(nullable: false),
                     LastName = table.Column<string>(nullable: true),
                     ShipperID = table.Column<int>(nullable: true)
                 },
@@ -300,6 +300,29 @@ namespace DeliveryService.Migrations
                         principalTable: "Shippers",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Addresses",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    City = table.Column<string>(nullable: true),
+                    ClientId = table.Column<int>(nullable: false),
+                    LineOne = table.Column<string>(nullable: true),
+                    LineTwo = table.Column<string>(nullable: true),
+                    PostCode = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Addresses", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Addresses_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -358,6 +381,12 @@ namespace DeliveryService.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Addresses_ClientId",
+                table: "Addresses",
+                column: "ClientId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -455,6 +484,9 @@ namespace DeliveryService.Migrations
         {
             migrationBuilder.DropTable(
                 name: "DriverRegistrationRequests");
+
+            migrationBuilder.DropTable(
+                name: "Addresses");
 
             migrationBuilder.DropTable(
                 name: "Deliveries");

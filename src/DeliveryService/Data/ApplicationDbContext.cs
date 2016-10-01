@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using DeliveryService.Models;
 using DeliveryService.Models.Entities;
 using DeliveryService.Entities;
+using DeliveryService.Models.ShipperViewModels;
 
 namespace DeliveryService.Data
 {
@@ -38,6 +39,7 @@ namespace DeliveryService.Data
         public DbSet<DeliveryStatus> DeliveryStatus { get; set; }
         public DbSet<Shipper> Shippers { get; set; }
         public DbSet<DriverRegistrationRequest> DriverRegistrationRequests { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
     }
 }

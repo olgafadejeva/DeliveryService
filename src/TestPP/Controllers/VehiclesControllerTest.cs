@@ -13,7 +13,7 @@ namespace DeliveryServiceTests.Controllers
 
         [Fact]
         public async Task testGetIndexPageAndAddVehicle() {
-            var controller =  ControllerSupplier.getVehiclesController().Result;
+            var controller =  await ControllerSupplier.getVehiclesController();
 
             //set Driver to controller
             var context = controller.getDbContext();
@@ -42,7 +42,7 @@ namespace DeliveryServiceTests.Controllers
 
         [Fact]
         public async Task testEditVehicle() {
-            var controller = ControllerSupplier.getVehiclesController().Result;
+            var controller = await ControllerSupplier.getVehiclesController();
 
             //set Driver to controller
             var context = controller.getDbContext();
@@ -74,7 +74,8 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testDeleteVehicle()
         {
-            var controller = ControllerSupplier.getVehiclesController().Result;
+            var controller = await ControllerSupplier.getVehiclesController();
+          
 
             //set Driver to controller
             var context = controller.getDbContext();
@@ -90,9 +91,6 @@ namespace DeliveryServiceTests.Controllers
 
             await controller.DeleteConfirmed(vehicle.ID);
             Assert.Equal(driverEntity.Vehicles.Count, 0);
-
         }
-
-
     }
 }

@@ -10,34 +10,22 @@ using DeliveryService.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using DeliveryService.Controllers.ShipperControllers;
+using DeliveryService.Models.ShipperViewModels;
 
-namespace DeliveryService.Controllers
+namespace DeliveryService.ShipperControllers
 {
-
-    [Authorize(Roles = "Shipper")]
-    public class ClientsController : Controller
+    public class ClientsController : ShipperController
     {
-        private readonly ApplicationDbContext _context;
-        private readonly HttpContextAccessor _contextAcessor;
-        private string currentUserId;
-        private Shipper shipper;
 
-        public ClientsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor)
+        public ClientsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor)
         {
-            _context = context;
-            _contextAcessor = (HttpContextAccessor)contextAccessor;
-            currentUserId = _contextAcessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (currentUserId != null)
-            {
-                shipper = context.Shippers.Include(b => b.User)
-                   .Include(b => b.Clients)
-                   .SingleOrDefault(m => m.User.Id == currentUserId);
-            }
         }
-        
+
         public async Task<IActionResult> Index()
         {
-            if (shipper == null) {
+            if (shipper == null)
+            {
                 var user = _context.ApplicationUsers.SingleOrDefault(m => m.Id == currentUserId);
                 var shipperEntity = new Shipper();
                 shipperEntity.User = user;
@@ -56,7 +44,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
+            var client = await getClient(id);
             if (client == null || !shipper.Clients.Contains(client))
             {
                 return NotFound();
@@ -71,12 +59,9 @@ namespace DeliveryService.Controllers
             return View();
         }
 
-        // POST: Clients/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID")] Client client)
+        public async Task<IActionResult> Create([Bind("ID,Email,FirstName,LastName,Address")]Client client)
         {
             if (ModelState.IsValid)
             {
@@ -95,8 +80,8 @@ namespace DeliveryService.Controllers
             {
                 return NotFound();
             }
+            Client client = await getClient(id);
 
-            var client = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
             if (client == null || !shipper.Clients.Contains(client))
             {
                 return NotFound();
@@ -105,11 +90,9 @@ namespace DeliveryService.Controllers
         }
 
         // POST: Clients/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID")] Client client)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Email,FirstName,LastName,Address")] Client client)
         {
             if (id != client.ID)
             {
@@ -120,11 +103,15 @@ namespace DeliveryService.Controllers
             {
                 try
                 {
-
                     var clientEntity = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
                     clientEntity.Email = client.Email;
                     clientEntity.FirstName = client.FirstName;
                     clientEntity.LastName = client.LastName;
+                    clientEntity.Address.LineOne = client.Address.LineOne;
+                    clientEntity.Address.LineTwo = client.Address.LineTwo;
+                    clientEntity.Address.City = client.Address.City;
+                    clientEntity.Address.PostCode = client.Address.PostCode;
+
                     _context.Update(clientEntity);
                     await _context.SaveChangesAsync();
                 }
@@ -152,7 +139,7 @@ namespace DeliveryService.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Clients.SingleOrDefaultAsync(m => m.ID == id);
+            var client = await getClient(id);
             if (client == null)
             {
                 return NotFound();
@@ -177,15 +164,11 @@ namespace DeliveryService.Controllers
             return _context.Clients.Any(e => e.ID == id);
         }
 
-        // for testing
-        public void setShipper(Shipper shipper)
+        private async Task<Client> getClient(int? id)
         {
-            this.shipper = shipper;
+            return await _context.Clients.Include(m => m.Address)
+                .SingleOrDefaultAsync(m => m.ID == id);
         }
 
-        public ApplicationDbContext getDbContext()
-        {
-            return _context;
-        }
     }
 }

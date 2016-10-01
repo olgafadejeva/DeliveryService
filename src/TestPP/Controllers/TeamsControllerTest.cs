@@ -1,6 +1,7 @@
 ﻿using DeliveryService.Controllers;
 using DeliveryService.Models;
 using DeliveryService.Models.Entities;
+using DeliveryService.ShipperControllers;
 using DeliveryServiceTests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System;
