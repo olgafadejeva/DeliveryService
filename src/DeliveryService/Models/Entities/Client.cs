@@ -22,10 +22,10 @@ namespace DeliveryService.Models.Entities
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        public Address Address { get; set; }
+        public ClientAddress Address { get; set; }
 
         public Client() {
-           Address = new Address();
+           Address = new ClientAddress();
         }
     }
 }

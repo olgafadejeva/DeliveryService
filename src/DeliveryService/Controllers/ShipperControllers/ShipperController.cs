@@ -33,6 +33,7 @@ namespace DeliveryService.Controllers.ShipperControllers
                    .Include(b => b.Deliveries)
                    .Include(b => b.Team)
                    .Include(b => b.User)
+                   .Include(b => b.DefaultPickUpAddress)
                    .SingleOrDefault(m => m.User.Id == currentUserId);
             }
         }

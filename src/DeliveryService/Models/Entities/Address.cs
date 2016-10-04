@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.Entities
 {
-    public class Address
+    public abstract class Address
     {
         [Key]
         public int ID { get; set; }
-
-        public int ClientId { get; set; }
 
         [Display(Name = "Address Line 1")]
         [Required]
@@ -28,7 +26,5 @@ namespace DeliveryService.Models.Entities
         [Display(Name = "Postcode")]
         [Required]
         public string PostCode { get; set; }
-
-        public Client Client { get; set; }
     }
 }

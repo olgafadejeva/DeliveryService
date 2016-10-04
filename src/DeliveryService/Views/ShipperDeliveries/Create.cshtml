@@ -1,0 +1,90 @@
+@model DeliveryService.Models.ShipperViewModels.DeliveryDetails
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Create</h2>
+
+<form asp-action="Create">
+    <div class="form-horizontal">
+        <h4>Delivery</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="ClientID" class="col-md-2 control-label">Cient</label>
+            <div class="col-md-10">
+                <select asp-for="ClientID" class ="form-control" asp-items="ViewBag.ClientID"></select>
+            </div>
+        </div>
+        @if (ViewBag.Shipper.DefaultPickUpAddress != null)
+        {
+        <div class="form-group">
+            <label asp-for="useDefaultDeliveryAddress" class="col-md-2 control-label">Use default delivery address</label>
+            <div class="col-md-10">
+                <input id="checkbox" type="checkbox" asp-for="useDefaultDeliveryAddress" class="form-control"  />
+                <span asp-validation-for="useDefaultDeliveryAddress" class="text-danger"></span>
+            </div>
+        </div>} 
+
+
+        <button id="AddAddress" type="button" class="btn btn-primary" display:none>Add Address</button>
+        <div id="addAddressSection" style="display:none">
+        <div class="form-group">
+            <label asp-for="PickUpAddress.City" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PickUpAddress.City" class="form-control" />
+                <span asp-validation-for="PickUpAddress.City" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PickUpAddress.LineOne" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PickUpAddress.LineOne" class="form-control" />
+                <span asp-validation-for="PickUpAddress.LineOne" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PickUpAddress.LineTwo" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PickUpAddress.LineTwo" class="form-control" />
+                <span asp-validation-for="PickUpAddress.LineTwo" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="PickUpAddress.PostCode" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PickUpAddress.PostCode" class="form-control" />
+                <span asp-validation-for="PickUpAddress.PostCode" class="text-danger" />
+            </div>
+        </div>
+            </div>
+        
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create Delivery" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+    $(document).ready(function () {
+        $("#AddAddress").click(function () {
+            $("#addAddressSection").toggle();
+        });
+        if (document.getElementById('checkbox').checked) {
+            document.getElementById("AddAddress").style.display = "none";
+        } 
+    });
+    $('#checkbox').click(function () {
+        $("#AddAddress").toggle();
+    });
+</script>
+}

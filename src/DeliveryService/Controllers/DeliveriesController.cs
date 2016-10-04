@@ -1,33 +1,29 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DeliveryService.Data;
 using DeliveryService.Models.Entities;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace DeliveryService.Controllers
 {
     public class DeliveriesController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly HttpContextAccessor _contextAcessor;
-        private string currentUserId;
-        private Driver driver;
 
-        public DeliveriesController(ApplicationDbContext context, IHttpContextAccessor contextAccessor)
+        public DeliveriesController(ApplicationDbContext context)
         {
-            _context = context;
-            _contextAcessor = (HttpContextAccessor) contextAccessor;
-            currentUserId = _contextAcessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            driver = (Driver) from d in _context.Drivers where d.User.Id == currentUserId select d;
+            _context = context;    
         }
 
         // GET: Deliveries
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Deliveries.ToListAsync());
+            var applicationDbContext = _context.Deliveries.Include(d => d.Client);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Deliveries/Details/5
@@ -50,6 +46,7 @@ namespace DeliveryService.Controllers
         // GET: Deliveries/Create
         public IActionResult Create()
         {
+            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "Email");
             return View();
         }
 
@@ -58,7 +55,7 @@ namespace DeliveryService.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID")] Delivery delivery)
+        public async Task<IActionResult> Create([Bind("ID,ClientID")] Delivery delivery)
         {
             if (ModelState.IsValid)
             {
@@ -66,6 +63,7 @@ namespace DeliveryService.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "Email", delivery.ClientID);
             return View(delivery);
         }
 
@@ -82,6 +80,7 @@ namespace DeliveryService.Controllers
             {
                 return NotFound();
             }
+            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "Email", delivery.ClientID);
             return View(delivery);
         }
 
@@ -90,7 +89,7 @@ namespace DeliveryService.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID")] Delivery delivery)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,ClientID")] Delivery delivery)
         {
             if (id != delivery.ID)
             {
@@ -117,6 +116,7 @@ namespace DeliveryService.Controllers
                 }
                 return RedirectToAction("Index");
             }
+            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "Email", delivery.ClientID);
             return View(delivery);
         }
 

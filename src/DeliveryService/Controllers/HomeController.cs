@@ -15,28 +15,8 @@ namespace DeliveryService.Controllers
     [RequireHttps]
     public class HomeController : Controller
     {
-        private bool noUserLoggedIn;
-        private string loggedInUsersRole;
-        public HomeController(IHttpContextAccessor contextAccessor, UserManager<ApplicationUser> userManager, ApplicationDbContext context) {
-            var currentUserId = contextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (currentUserId == null)
-            {
-                noUserLoggedIn = true;
-            }
-            else {
-                var user = context.ApplicationUsers.SingleOrDefault<ApplicationUser>(b => b.Id == currentUserId);
-                var userRole = userManager.GetRolesAsync(user).Result;
-
-                if (userRole.Contains(AppRole.DRIVER))
-                {
-                    loggedInUsersRole = AppRole.DRIVER;//return RedirectToAction(nameof(DriverDashboardController.Index), "DriverDashboard");
-                }
-                else if (userRole.Contains(AppRole.SHIPPER))
-                {
-                    loggedInUsersRole = AppRole.SHIPPER;
-                    //return RedirectToAction(nameof(ShipperDashboardController.Index), "ShipperDashboard");
-                }
-            }
+        public HomeController() {
+          
         }
         public IActionResult Index()
         {

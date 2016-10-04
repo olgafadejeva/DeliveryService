@@ -1,14 +1,14 @@
 @model IEnumerable<DeliveryService.Models.Entities.Client>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Clients";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>My Clients</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-default" asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -46,3 +46,6 @@
 }
     </tbody>
 </table>
+
+
+@Html.ActionLink("Back to Dashboard", "Index", "ShipperDashboard")

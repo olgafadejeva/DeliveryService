@@ -1,15 +1,17 @@
 @model DeliveryService.Models.Entities.Team
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Team";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h1>My Team</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Create new team</a>
 </p>
+@if (Model != null)
+{
 <table class="table">
     <thead>
         <tr>
@@ -37,7 +39,8 @@
                 @Html.DisplayFor(modelItem => Model.Description)
             </td>
             <td>
-                @foreach (var driver in Model.Drivers) {
+                @foreach (var driver in Model.Drivers)
+                {
                     @driver.ID
                 }
 
@@ -51,7 +54,10 @@
 
             </td>
         </tr>
-}
+        }
         
     </tbody>
 </table>
+}
+
+@Html.ActionLink("Back to Dashboard", "Index", "ShipperDashboard")

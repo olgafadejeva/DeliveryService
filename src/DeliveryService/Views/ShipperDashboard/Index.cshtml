@@ -1,11 +1,50 @@
-﻿
+﻿@using DeliveryService.Models.Entities
+@model Shipper
+
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2>Index</h2>
-<p>shipper's dashboard</p>
+<h1>Shipper's dashboard</h1>
 
-@Html.ActionLink("see Team", "Index", "Teams")
 
-@Html.ActionLink("See clients", "Index", "Clients")
+<p class="btn btn-default">@Html.ActionLink("See Team", "Index", "Teams")</p>
+<p class="btn btn-default">@Html.ActionLink("See clients", "Index", "Clients")</p>
+<p class="btn btn-default">@Html.ActionLink("See Deliveries", "Index", "ShipperDeliveries")</p>
+<br />
+@if (Model.DefaultPickUpAddress == null)
+{
+
+    @Html.ActionLink("Add default pick up address", "AddDefaultPickUpAddress", "ShipperDashboard")
+}
+else
+{
+    <h2>Default delivery pick up address</h2>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.DefaultPickUpAddress.LineOne)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DefaultPickUpAddress.LineOne)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DefaultPickUpAddress.LineTwo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DefaultPickUpAddress.LineTwo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DefaultPickUpAddress.City)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DefaultPickUpAddress.City)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.DefaultPickUpAddress.PostCode)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DefaultPickUpAddress.PostCode)
+        </dd>
+    </dl>
+
+}

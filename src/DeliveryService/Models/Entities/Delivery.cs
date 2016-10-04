@@ -12,9 +12,9 @@ namespace DeliveryService.Models.Entities
 
         public int ClientID { get; set; } //foreign key to client 
 
-        public Address PickUpAddress { get; set; }
+        public PickUpAddress PickUpAddress { get; set; }
 
-        public DeliveryStatus DeliveryStatus { get; set; }
+        public virtual DeliveryStatus DeliveryStatus { get; set; }
 
         public virtual Client Client { get; set; }
     }

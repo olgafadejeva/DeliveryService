@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.Entities
 {
-    public class ClientAddress : Address
+    public class ShippersDefaultPickUpAddress : Address
     {
-
-
-        public Client Client { get; set; }
-        public int ClientId { get; set; }
+        public int ShipperId { get; set; }
+        public virtual Shipper Shipper { get; set; }
     }
 }

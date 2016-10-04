@@ -15,11 +15,11 @@ namespace DeliveryService.Models.Entities
 
         [Key]
         public int ID { get; set; }
-        
 
         public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
         public virtual ApplicationUser User { get; set; }
         public virtual Team Team { get; set; }
+        public virtual ShippersDefaultPickUpAddress DefaultPickUpAddress { get; set; }
     }
 }

@@ -12,10 +12,13 @@ namespace DeliveryService.Models.Entities
         [Key]
         public int ID { get; set; }
 
+        public int DeliveryID { get; set; }
+
         public int? AssignedToId { get; set; }
         public int? PickedUpById { get; set; }
 
         public virtual Driver AssignedTo { get; set; }
         public virtual Driver PickedUpBy { get; set; }
+        public virtual Delivery Delivery { get; set; }
     }
 }
