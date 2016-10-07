@@ -136,6 +136,8 @@ namespace DeliveryService.Migrations
 
                     b.Property<int>("ClientID");
 
+                    b.Property<int>("DeliveryStatusID");
+
                     b.Property<int?>("DriverID");
 
                     b.Property<int?>("PickUpAddressID");
@@ -145,6 +147,8 @@ namespace DeliveryService.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("ClientID");
+
+                    b.HasIndex("DeliveryStatusID");
 
                     b.HasIndex("DriverID");
 
@@ -162,16 +166,13 @@ namespace DeliveryService.Migrations
 
                     b.Property<int?>("AssignedToId");
 
-                    b.Property<int>("DeliveryID");
-
                     b.Property<int?>("PickedUpById");
+
+                    b.Property<int>("Status");
 
                     b.HasKey("ID");
 
                     b.HasIndex("AssignedToId");
-
-                    b.HasIndex("DeliveryID")
-                        .IsUnique();
 
                     b.HasIndex("PickedUpById");
 
@@ -412,6 +413,11 @@ namespace DeliveryService.Migrations
                         .HasForeignKey("ClientID")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("DeliveryService.Models.Entities.DeliveryStatus", "DeliveryStatus")
+                        .WithMany()
+                        .HasForeignKey("DeliveryStatusID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("DeliveryService.Models.Entities.Driver")
                         .WithMany("Deliveries")
                         .HasForeignKey("DriverID");
@@ -430,11 +436,6 @@ namespace DeliveryService.Migrations
                     b.HasOne("DeliveryService.Models.Entities.Driver", "AssignedTo")
                         .WithMany()
                         .HasForeignKey("AssignedToId");
-
-                    b.HasOne("DeliveryService.Models.Entities.Delivery", "Delivery")
-                        .WithOne("DeliveryStatus")
-                        .HasForeignKey("DeliveryService.Models.Entities.DeliveryStatus", "DeliveryID")
-                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("DeliveryService.Models.Entities.Driver", "PickedUpBy")
                         .WithMany()

@@ -1,10 +1,13 @@
-
+@using DeliveryService.Models.Entities
+@model Driver
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Driver's Dashboard</h2>
 
-<p>lol</p>
+
+<p class="btn btn-default">@Html.ActionLink("See Deliveries", "Index", "DriverDeliveries")</p>
+<p class="btn btn-default">@Html.ActionLink("Search for availale deliveries", "Index", "DeliverySearch")</p>

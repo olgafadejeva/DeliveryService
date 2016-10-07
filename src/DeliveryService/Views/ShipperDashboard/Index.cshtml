@@ -45,6 +45,9 @@ else
         <dd>
             @Html.DisplayFor(model => model.DefaultPickUpAddress.PostCode)
         </dd>
+        <dd>
+            @Html.ActionLink("Edit", "EditDefaultPickUpAddress", "ShipperDashboard", new {id=Model.DefaultPickUpAddress.ID} )
+        </dd>
     </dl>
 
 }

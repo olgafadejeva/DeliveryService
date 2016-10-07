@@ -30,11 +30,20 @@ namespace DeliveryService.Controllers.ShipperControllers
             {
                 shipper = context.Shippers.Include(b => b.User)
                    .Include(b => b.Clients)
+                        .ThenInclude(c=>c.Address)
                    .Include(b => b.Deliveries)
+                        .ThenInclude(delivery => delivery.Client)
+                   .Include(b => b.Deliveries)
+                        .ThenInclude(delivery => delivery.DeliveryStatus)
+                   .Include(b => b.Deliveries)
+                        .ThenInclude(delivery => delivery.PickUpAddress)
                    .Include(b => b.Team)
+                        .ThenInclude(t => t.Drivers)
+                            .ThenInclude(d => d.User)
                    .Include(b => b.User)
                    .Include(b => b.DefaultPickUpAddress)
                    .SingleOrDefault(m => m.User.Id == currentUserId);
+                
             }
         }
 

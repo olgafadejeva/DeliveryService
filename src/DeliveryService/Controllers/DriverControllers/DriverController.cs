@@ -28,8 +28,15 @@ namespace DeliveryService.Controllers.DriverControllers
             currentUserId = _contextAcessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (currentUserId != null)
             {
-                driver = context.Drivers.Include(b => b.User)
+                driver = context.Drivers
+                   .Include(b => b.User)
                    .Include(b => b.Vehicles)
+                   .Include(c => c.Deliveries)
+                        .ThenInclude(d => d.DeliveryStatus)
+                    .Include(c=> c.Deliveries)
+                        .ThenInclude(d=>d.Client)
+                    .Include(c=> c.Deliveries)
+                        .ThenInclude(d=>d.PickUpAddress)
                    .SingleOrDefault(m => m.User.Id == currentUserId);
             }
         }

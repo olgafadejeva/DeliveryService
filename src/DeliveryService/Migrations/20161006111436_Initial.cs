@@ -288,41 +288,28 @@ namespace DeliveryService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Deliveries",
+                name: "DeliveryStatus",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ClientID = table.Column<int>(nullable: false),
-                    DriverID = table.Column<int>(nullable: true),
-                    PickUpAddressID = table.Column<int>(nullable: true),
-                    ShipperID = table.Column<int>(nullable: true)
+                    AssignedToId = table.Column<int>(nullable: true),
+                    PickedUpById = table.Column<int>(nullable: true),
+                    Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Deliveries", x => x.ID);
+                    table.PrimaryKey("PK_DeliveryStatus", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Deliveries_Clients_ClientID",
-                        column: x => x.ClientID,
-                        principalTable: "Clients",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Deliveries_Drivers_DriverID",
-                        column: x => x.DriverID,
+                        name: "FK_DeliveryStatus_Drivers_AssignedToId",
+                        column: x => x.AssignedToId,
                         principalTable: "Drivers",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Deliveries_Addresses_PickUpAddressID",
-                        column: x => x.PickUpAddressID,
-                        principalTable: "Addresses",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Deliveries_Shippers_ShipperID",
-                        column: x => x.ShipperID,
-                        principalTable: "Shippers",
+                        name: "FK_DeliveryStatus_Drivers_PickedUpById",
+                        column: x => x.PickedUpById,
+                        principalTable: "Drivers",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -348,34 +335,48 @@ namespace DeliveryService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DeliveryStatus",
+                name: "Deliveries",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    AssignedToId = table.Column<int>(nullable: true),
-                    DeliveryID = table.Column<int>(nullable: false),
-                    PickedUpById = table.Column<int>(nullable: true)
+                    ClientID = table.Column<int>(nullable: false),
+                    DeliveryStatusID = table.Column<int>(nullable: false),
+                    DriverID = table.Column<int>(nullable: true),
+                    PickUpAddressID = table.Column<int>(nullable: true),
+                    ShipperID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DeliveryStatus", x => x.ID);
+                    table.PrimaryKey("PK_Deliveries", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_DeliveryStatus_Drivers_AssignedToId",
-                        column: x => x.AssignedToId,
+                        name: "FK_Deliveries_Clients_ClientID",
+                        column: x => x.ClientID,
+                        principalTable: "Clients",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Deliveries_DeliveryStatus_DeliveryStatusID",
+                        column: x => x.DeliveryStatusID,
+                        principalTable: "DeliveryStatus",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Deliveries_Drivers_DriverID",
+                        column: x => x.DriverID,
                         principalTable: "Drivers",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DeliveryStatus_Deliveries_DeliveryID",
-                        column: x => x.DeliveryID,
-                        principalTable: "Deliveries",
+                        name: "FK_Deliveries_Addresses_PickUpAddressID",
+                        column: x => x.PickUpAddressID,
+                        principalTable: "Addresses",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DeliveryStatus_Drivers_PickedUpById",
-                        column: x => x.PickedUpById,
-                        principalTable: "Drivers",
+                        name: "FK_Deliveries_Shippers_ShipperID",
+                        column: x => x.ShipperID,
+                        principalTable: "Shippers",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -419,6 +420,11 @@ namespace DeliveryService.Migrations
                 column: "ClientID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Deliveries_DeliveryStatusID",
+                table: "Deliveries",
+                column: "DeliveryStatusID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Deliveries_DriverID",
                 table: "Deliveries",
                 column: "DriverID");
@@ -437,12 +443,6 @@ namespace DeliveryService.Migrations
                 name: "IX_DeliveryStatus_AssignedToId",
                 table: "DeliveryStatus",
                 column: "AssignedToId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DeliveryStatus_DeliveryID",
-                table: "DeliveryStatus",
-                column: "DeliveryID",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeliveryStatus_PickedUpById",
@@ -512,7 +512,7 @@ namespace DeliveryService.Migrations
                 name: "DriverRegistrationRequests");
 
             migrationBuilder.DropTable(
-                name: "DeliveryStatus");
+                name: "Deliveries");
 
             migrationBuilder.DropTable(
                 name: "Vehicles");
@@ -533,7 +533,10 @@ namespace DeliveryService.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Deliveries");
+                name: "DeliveryStatus");
+
+            migrationBuilder.DropTable(
+                name: "Addresses");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -542,13 +545,10 @@ namespace DeliveryService.Migrations
                 name: "Drivers");
 
             migrationBuilder.DropTable(
-                name: "Addresses");
+                name: "Clients");
 
             migrationBuilder.DropTable(
                 name: "Teams");
-
-            migrationBuilder.DropTable(
-                name: "Clients");
 
             migrationBuilder.DropTable(
                 name: "Shippers");

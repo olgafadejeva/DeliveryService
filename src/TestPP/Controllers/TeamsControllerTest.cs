@@ -20,14 +20,14 @@ namespace DeliveryServiceTests.Controllers
             var controller = ControllerSupplier.getTeamsController().Result;
 
             //set Shipper to controller
-            Shipper shipperEntity = await createShipperEntity(controller);
+            Shipper shipperEntity = await ShipperDetailsHelper.createShipperEntity(controller);
             controller.setShipper(shipperEntity);
             var dbContext = controller.getDbContext();
 
             var result = (ViewResult)controller.Index();
             Assert.Null(result.Model);
 
-            Team team = getTeam();
+            Team team = ShipperDetailsHelper.getTeam();
             var createResult = await controller.Create(team);
             result = (ViewResult)controller.Index();
             Assert.NotNull(result.Model);
@@ -40,9 +40,9 @@ namespace DeliveryServiceTests.Controllers
             var controller = ControllerSupplier.getTeamsController().Result;
 
             //set Shipper to controller
-            Shipper shipperEntity = await createShipperEntity(controller);
+            Shipper shipperEntity = await ShipperDetailsHelper.createShipperEntity(controller);
             controller.setShipper(shipperEntity);
-            Team team = getTeam();
+            Team team = ShipperDetailsHelper.getTeam();
             await controller.Create(team);
 
             DriverDetails driverDetails = new DriverDetails();
@@ -61,10 +61,10 @@ namespace DeliveryServiceTests.Controllers
             var controller = ControllerSupplier.getTeamsController().Result;
 
             //set Shipper to controller
-            Shipper shipperEntity = await createShipperEntity(controller);
+            Shipper shipperEntity = await ShipperDetailsHelper.createShipperEntity(controller);
             controller.setShipper(shipperEntity);
             var dbContext = controller.getDbContext();
-            Team team = getTeam();
+            Team team = ShipperDetailsHelper.getTeam();
             await controller.Create(team);
 
             Driver driver = new Driver();
@@ -80,24 +80,6 @@ namespace DeliveryServiceTests.Controllers
             Assert.Equal(team.Drivers.Count(), 0);
             Assert.Null(driver.Team);
             Assert.Null(driver.TeamID);
-        }
-
-        private static async Task<Shipper> createShipperEntity(TeamsController controller)
-        {
-            var context = controller.getDbContext();
-            var shipperEntity = new Shipper();
-            var user = context.ApplicationUsers.First<ApplicationUser>();
-            shipperEntity.User = user;
-            context.Shippers.Add(shipperEntity);
-            await context.SaveChangesAsync();
-            return shipperEntity;
-        }
-
-        private Team getTeam() {
-            Team team = new Team();
-            team.CompanyName = "ABC";
-            team.Description = "The best company";
-            return team;
         }
     }
 }

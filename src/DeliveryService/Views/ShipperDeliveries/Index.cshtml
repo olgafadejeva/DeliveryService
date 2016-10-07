@@ -18,6 +18,9 @@
             <th>
                 Client
             </th>
+            <th>
+                Status summary
+            </th>
             
         </tr>
     </thead>
@@ -30,6 +33,18 @@
 
                 @Html.DisplayFor(model => @item.Client.FirstName)
                 @Html.ActionLink("See client details", "Details", "Clients", new { id = item.ClientID })
+            </td>
+            <td>
+                @Html.DisplayFor(model => @item.DeliveryStatus.Status)
+                @if (@item.DeliveryStatus.AssignedToId == null)
+                {
+
+                    @Html.ActionLink("Assign delivery", "Assign", "ShipperDeliveries", new { id = item.ID })
+                }
+                else { 
+                    @Html.DisplayFor(model=> @item.DeliveryStatus.AssignedTo.User.UserName)
+                }
+
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

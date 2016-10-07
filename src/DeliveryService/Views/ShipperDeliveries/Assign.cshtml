@@ -1,0 +1,34 @@
+﻿@model DeliveryService.Models.Entities.DeliveryStatus
+
+@{
+    ViewData["Title"] = "Assign delivery";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Assign delivery</h1>
+
+<form asp-action="Assign" method="post">
+    <div class="form-horizontal">
+        <h4>Delivery</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="AssignedToId" class="col-md-2 control-label">Cient</label>
+            <div class="col-md-10">
+                <select asp-for="AssignedToId" class="form-control" asp-items="ViewBag.AssignedToId"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Assign delivery" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

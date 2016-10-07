@@ -17,6 +17,7 @@ using DeliveryService.Data;
 using DeliveryService.Entities;
 using Microsoft.EntityFrameworkCore;
 using DeliveryService.Controllers.ShipperControllers;
+using DeliveryService.Controllers.DriverControllers;
 
 namespace DeliveryService.Controllers
 {

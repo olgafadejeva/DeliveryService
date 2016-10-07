@@ -12,7 +12,7 @@ namespace DeliveryService.Models.Entities
         public Driver() {
             Vehicles = new List<Vehicle>();
             Deliveries = new List<Delivery>();
-            Team = new Team();
+           // Team = new Team();
         }
 
         [Key]
