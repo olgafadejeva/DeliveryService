@@ -56,8 +56,9 @@ namespace DeliveryService
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddErrorDescriber<CustomIdentityErrorDescriber>();
-           
 
+            services.AddDistributedMemoryCache();
+            services.AddSession();
             services.AddMvc();
 
             // Add application services.
@@ -76,6 +77,7 @@ namespace DeliveryService
 
             services.Configure<AppProperties>(Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<DeliveryStatusUpdateService>();
 
         }
 
@@ -102,7 +104,7 @@ namespace DeliveryService
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
-
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

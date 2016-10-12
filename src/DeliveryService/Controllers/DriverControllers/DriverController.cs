@@ -35,6 +35,8 @@ namespace DeliveryService.Controllers.DriverControllers
                         .ThenInclude(d => d.DeliveryStatus)
                     .Include(c=> c.Deliveries)
                         .ThenInclude(d=>d.Client)
+                    .Include(c => c.Deliveries)
+                        .ThenInclude(d => d.Client.Address)
                     .Include(c=> c.Deliveries)
                         .ThenInclude(d=>d.PickUpAddress)
                    .SingleOrDefault(m => m.User.Id == currentUserId);

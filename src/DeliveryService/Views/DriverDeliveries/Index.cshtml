@@ -1,4 +1,6 @@
-﻿@model IEnumerable<DeliveryService.Models.Entities.Delivery>
+﻿@using DeliveryService.Models.Entities;
+@model IEnumerable<DeliveryService.Models.Entities.Delivery>
+
 
 @{
     ViewData["Title"] = "My deliveries";
@@ -9,11 +11,21 @@
 
 @if (Model.Count() != 0)
 {
+    
+    <p class="text-danger">
+        @TempData["StatusUpdate"]
+    </p>
     <table class="table">
         <thead>
             <tr>
                 <th>
-                    Client
+                    Client details
+                </th>
+                <th>
+                    Pick up address
+                </th>
+                <th>
+                    Client's address
                 </th>
                 <th>
                     Status summary
@@ -27,17 +39,57 @@
             {
                 <tr>
                     <td>
-
                         @Html.DisplayFor(model => @item.Client.FirstName)
-                        @Html.ActionLink("See client details", "Details", "Clients", new { id = item.ClientID })
+                        @Html.DisplayFor(model => @item.Client.LastName) 
                     </td>
                     <td>
-                        @Html.DisplayFor(model => @item.DeliveryStatus.Status)
+                        @Html.DisplayFor(model => @item.PickUpAddress.LineOne) <br />
+                        @Html.DisplayFor(model => @item.PickUpAddress.City)<br />
+                        @Html.DisplayFor(model => @item.PickUpAddress.PostCode)<br />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => @item.Client.Address.LineOne) <br />
+                        @Html.DisplayFor(model => @item.Client.Address.City)<br />
+                        @Html.DisplayFor(model => @item.Client.Address.PostCode)<br />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => StatusExtension.DisplayName(@item.DeliveryStatus.Status))
 
                     </td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@item.ID">Details</a> 
-                    </td>
+
+
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                Options
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                
+                                <li>
+                                    @using (Html.BeginForm("UpdateStatus", "DriverDeliveries", new { id = @item.ID, status = Status.PickedUpByDriver }, FormMethod.Post))
+                                    {
+                                        <input type="submit" class="btn btn-danger" value="Mark as picked up" />
+
+                                    }
+                                </li>
+                                <li>
+                                    @using (Html.BeginForm("UpdateStatus", "DriverDeliveries", new { id = @item.ID, status = Status.InTransit }, FormMethod.Post))
+                                    {
+                                        <input type="submit" class="btn" value="Mark as in transit" />
+
+                                    }
+                                    </li>
+                                <li>
+                                    @using (Html.BeginForm("UpdateStatus", "DriverDeliveries", new { id = @item.ID, status = Status.Delivered }, FormMethod.Post))
+                                    {
+                                        <input type="submit" class="btn btn-danger" value="Mark as delivered" />
+
+                                    }
+                                    </li>
+</ul>
+</div>
+</td>
                 </tr>
             }
         </tbody>

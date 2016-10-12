@@ -25,8 +25,45 @@ namespace DeliveryService.Models.Entities
     {
         New,
         AcceptedByDriver,
-        PickUpByDriver,
+        PickedUpByDriver,
         InTransit,
         Delivered
+    }
+
+    public static class StatusExtension
+    {
+        public static Status NextAvailableStatus(this Status status)
+        {
+            switch (status)
+            {
+                case Status.New:
+                    return Status.PickedUpByDriver;
+                case Status.AcceptedByDriver:
+                    return Status.PickedUpByDriver;
+                case Status.PickedUpByDriver:
+                    return Status.InTransit;
+                case Status.InTransit:
+                    return Status.Delivered;
+                default:
+                    return Status.New;
+            }
+        }
+
+        public static string DisplayName(this Status status)
+        {
+            switch (status)
+            {
+                case Status.New:
+                    return "New";
+                case Status.AcceptedByDriver:
+                    return "Accepted";
+                case Status.PickedUpByDriver:
+                    return "Picked up";
+                case Status.InTransit:
+                    return "Delivered";
+                default:
+                    return "New";
+            }
+        }
     }
 }

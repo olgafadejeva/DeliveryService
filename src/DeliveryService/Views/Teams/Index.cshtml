@@ -6,11 +6,13 @@
 }
 
 <h1>My Team</h1>
-
+@if (Model == null)
+{
 <p>
     <a asp-action="Create">Create new team</a>
 </p>
-@if (Model != null)
+}
+else 
 {
 <table class="table">
     <thead>
@@ -41,7 +43,7 @@
             <td>
                 @foreach (var driver in Model.Drivers)
                 {
-                    @driver.ID
+                    @driver.User.NormalizedUserName<br/>
                 }
 
             </td>
@@ -50,7 +52,7 @@
                 <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@Model.ID">Details</a> |
                 <a asp-action="Delete" asp-route-id="@Model.ID">Delete</a>
-                <a asp-action="AddDriver" asp-route-id="@Model.ID">AddDriver</a>
+                <a asp-action="AddDriver" asp-route-id="@Model.ID">Invite driver</a>
 
             </td>
         </tr>

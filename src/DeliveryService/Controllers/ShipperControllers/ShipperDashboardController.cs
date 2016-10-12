@@ -64,7 +64,7 @@ namespace DeliveryService.Controllers.ShipperControllers
             {
                 try
                 {
-                    shipper.DefaultPickUpAddress = pickUpAddress;
+                    //shipper.DefaultPickUpAddress = pickUpAddress;
                     var addressEntity = await _context.Addresses.SingleOrDefaultAsync(m => m.ID == id);
                     addressEntity.City = pickUpAddress.City;
                     addressEntity.LineOne = pickUpAddress.LineOne;
@@ -72,7 +72,7 @@ namespace DeliveryService.Controllers.ShipperControllers
                     addressEntity.PostCode = pickUpAddress.PostCode;
                     //_context.Attach(addressEntity);
                     
-                    _context.Update(addressEntity);
+                   // _context.Update(addressEntity);
                     _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
