@@ -53,7 +53,7 @@
                         @Html.DisplayFor(model => @item.Client.Address.PostCode)<br />
                     </td>
                     <td>
-                        @Html.DisplayFor(model => StatusExtension.DisplayName(@item.DeliveryStatus.Status))
+                        @Html.DisplayFor(model => @item.DeliveryStatus.Status)
 
                     </td>
                     <td>
@@ -69,7 +69,7 @@
                                 <li>
                                     @using (Html.BeginForm("UpdateStatus", "DriverDeliveries", new { id = @item.ID, status = Status.PickedUpByDriver }, FormMethod.Post))
                                     {
-                                        <input type="submit" class="btn btn-danger" value="Mark as picked up" />
+                                        <input type="submit" class="btn" value="Mark as picked up" />
 
                                     }
                                 </li>
@@ -83,10 +83,13 @@
                                 <li>
                                     @using (Html.BeginForm("UpdateStatus", "DriverDeliveries", new { id = @item.ID, status = Status.Delivered }, FormMethod.Post))
                                     {
-                                        <input type="submit" class="btn btn-danger" value="Mark as delivered" />
+                                        <input type="submit" class="btn" value="Mark as delivered" />
 
                                     }
-                                    </li>
+                                 </li>
+                                <li>
+                                       @Html.ActionLink("See driving directions", "Navigation", "DriverDeliveries", new { id = @item.ID })
+                                </li>
 </ul>
 </div>
 </td>

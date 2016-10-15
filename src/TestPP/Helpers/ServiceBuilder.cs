@@ -61,5 +61,16 @@ namespace DeliveryServiceTests.Helpers
 
             return serviceProvider;
         }
+
+        public static IServiceProvider getServiceProviderWithInMemoryDatabase() {
+            var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
+            var services = new ServiceCollection();
+            services.AddOptions();
+            services
+                .AddDbContext<ApplicationDbContext>(b => b.UseInMemoryDatabase().UseInternalServiceProvider(efServiceProvider));
+
+            var serviceProvider = services.BuildServiceProvider();
+            return serviceProvider;
+        }
     }
 }

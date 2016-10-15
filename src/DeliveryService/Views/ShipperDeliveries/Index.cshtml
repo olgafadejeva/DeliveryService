@@ -36,7 +36,7 @@
                 @Html.ActionLink("See client details", "Details", "Clients", new { id = item.ClientID })
             </td>
             <td>
-                @Html.DisplayFor(model => StatusExtension.DisplayName(@item.DeliveryStatus.Status))
+                @Html.DisplayFor(model => @item.DeliveryStatus.Status)
                 @if (@item.DeliveryStatus.AssignedToId == null)
                 {
 

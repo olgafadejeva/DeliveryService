@@ -16,6 +16,7 @@ namespace DeliveryService.Data.Initializer
         public async static void Initialize(IServiceProvider serviceProvider)
         {
             var context = serviceProvider.GetService(typeof(ApplicationDbContext)) as ApplicationDbContext;
+           
 
             string[] roles = AppRole.getAllRoles();
 
@@ -27,7 +28,6 @@ namespace DeliveryService.Data.Initializer
 
                 if (!context.Roles.Any(r => r.Name == role && r.NormalizedName == role.ToUpper()))
                 {
-                    //await roleStore.CreateAsync(new IdentityRole(role));
                     await roleManager.
                         CreateAsync(new IdentityRole {
                             Name = role,

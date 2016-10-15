@@ -39,7 +39,7 @@ namespace DeliveryService.Data
         public DbSet<DeliveryStatus> DeliveryStatus { get; set; }
         public DbSet<Shipper> Shippers { get; set; }
         public DbSet<DriverRegistrationRequest> DriverRegistrationRequests { get; set; }
-        public DbSet<Address> Addresses { get; set; }
+        public virtual DbSet<Address> Addresses { get; set; }
 
     }
 }

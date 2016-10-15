@@ -20,7 +20,11 @@ namespace DeliveryService.Controllers
         }
         public IActionResult Index()
         {
-           // if (!)
+            return View();
+        }
+
+        public IActionResult Test()
+        {
             return View();
         }
 

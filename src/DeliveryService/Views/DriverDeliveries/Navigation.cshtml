@@ -1,0 +1,80 @@
+﻿@using DeliveryService.Models;
+@model Directions
+
+@{
+    var apiKey = Model.ApiKey;
+ }
+    <style>
+      #right-panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+        margin-top:-10px;
+        height: 100%;
+        float: right;
+        width: 40%;
+      }
+
+      #right-panel select, #right-panel input {
+        font-size: 15px;
+      }
+
+      #right-panel select {
+        width: 100%;
+      }
+
+      #right-panel i {
+        font-size: 12px;
+      }
+     
+        #map {
+          height: 600px;
+          width:60%;
+        }
+        #main-container {
+            overflow: hidden;
+            margin-top: 40px;
+        }
+      }
+    </style>
+<div id="main-container">
+    <div id="right-panel"></div>
+    <div id="map"></div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to deliveries</a>
+</div>
+
+    <script type="text/javascript">
+      function initMap() {
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+        var directionsService = new google.maps.DirectionsService;
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 7,
+          center: {lat: 41.85, lng: -87.65}
+        });
+        directionsDisplay.setMap(map);
+        directionsDisplay.setPanel(document.getElementById('right-panel'));
+        calculateAndDisplayRoute(directionsService, directionsDisplay);
+      }
+
+      function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+          var start = '@(Model.From)';
+          var end = '@(Model.To)';
+        directionsService.route({
+          origin: start,
+          destination: end,
+          travelMode: 'DRIVING'
+        }, function(response, status) {
+          if (status === 'OK') {
+            directionsDisplay.setDirections(response);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+        });
+      }
+    </script>
+    <script type ="text/javascript" async defer
+            src="https://maps.googleapis.com/maps/api/js?key= + @apiKey + &callback=initMap">
+    </script>

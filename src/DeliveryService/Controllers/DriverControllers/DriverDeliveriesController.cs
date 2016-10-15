@@ -14,9 +14,11 @@ namespace DeliveryService.Controllers.DriverControllers
     {
 
         private DeliveryStatusUpdateService statusUpdateService { get; set; }
+        private IDirectionsService directionsService { get; set; }
 
-        public DriverDeliveriesController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, DeliveryStatusUpdateService statusUpdateService) : base(context, contextAccessor) {
+        public DriverDeliveriesController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, DeliveryStatusUpdateService statusUpdateService, IDirectionsService directionsService) : base(context, contextAccessor) {
             this.statusUpdateService = statusUpdateService;
+            this.directionsService = directionsService;
         }
 
         public IActionResult Index()
@@ -50,6 +52,22 @@ namespace DeliveryService.Controllers.DriverControllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public IActionResult Navigation(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
+            Delivery delivery = _context.Deliveries.SingleOrDefault(d => d.ID == id);
+            if (delivery == null)
+            {
+                return RedirectToAction("Index");
+            }
+            var directions = directionsService.getDirectionsFromAddresses(delivery.PickUpAddress, delivery.Client.Address);
+            return View(directions);
+            
+        }
 
 
     }
