@@ -7,6 +7,7 @@ using DeliveryService.Data;
 using Microsoft.AspNetCore.Http;
 using DeliveryService.Services;
 using DeliveryService.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DeliveryService.Controllers.DriverControllers
 {
@@ -35,21 +36,34 @@ namespace DeliveryService.Controllers.DriverControllers
             {
                 return RedirectToAction("Index");
             }
-            Delivery delivery = _context.Deliveries.SingleOrDefault(d => d.ID == id);
+            Delivery delivery = _context.Deliveries
+                .Include(d => d.DeliveryStatus)
+                .Include(d => d.PickUpAddress)
+                .SingleOrDefault(d => d.ID == id);
             if (delivery == null)
             {
                 return RedirectToAction("Index");
             }
             bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, updateStatus);
-            if (!statusUpdated)
+            if (statusUpdated && status.Equals(Status.ClaimedByDriver))
             {
-                TempData["StatusUpdate"] = "Unable to update status from " + delivery.DeliveryStatus.Status + " to " + updateStatus;
+                delivery.DeliveryStatus.AssignedTo = driver;
+                driver.Deliveries.Add(delivery);
+                _context.SaveChangesAsync();
+                return RedirectToAction("Index");
             }
             else
             {
-                TempData["StatusUpdate"] = "Delivery status successfully updated!";
+                if (!statusUpdated)
+                {
+                    TempData["StatusUpdate"] = "Unable to update status from " + delivery.DeliveryStatus.Status + " to " + updateStatus;
+                }
+                else
+                {
+                    TempData["StatusUpdate"] = "Delivery status successfully updated!";
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -59,7 +73,11 @@ namespace DeliveryService.Controllers.DriverControllers
             {
                 return RedirectToAction("Index");
             }
-            Delivery delivery = _context.Deliveries.SingleOrDefault(d => d.ID == id);
+            Delivery delivery = _context.Deliveries
+                .Include(d=>d.PickUpAddress)
+                .Include(d=>d.Client)
+                .Include(d=>d.Client.Address)
+                .SingleOrDefault(d => d.ID == id);
             if (delivery == null)
             {
                 return RedirectToAction("Index");

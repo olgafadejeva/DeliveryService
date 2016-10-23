@@ -8,9 +8,10 @@ using DeliveryService.Data;
 namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161020083435_MaxLoad")]
+    partial class MaxLoad
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -139,10 +140,6 @@ namespace DeliveryService.Migrations
                     b.Property<int>("DeliveryStatusID");
 
                     b.Property<int?>("DriverID");
-
-                    b.Property<int>("ItemSize");
-
-                    b.Property<double>("ItemWeight");
 
                     b.Property<int?>("PickUpAddressID");
 

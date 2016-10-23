@@ -24,7 +24,7 @@ namespace DeliveryService.Models.Entities
     public enum Status
     {
         New,
-        AcceptedByDriver,
+        ClaimedByDriver,
         PickedUpByDriver,
         InTransit,
         Delivered
@@ -32,20 +32,20 @@ namespace DeliveryService.Models.Entities
 
     public static class StatusExtension
     {
-        public static Status NextAvailableStatus(this Status status)
+        public static List<Status> NextAvailableStatus(this Status status)
         {
             switch (status)
             {
                 case Status.New:
-                    return Status.PickedUpByDriver;
-                case Status.AcceptedByDriver:
-                    return Status.PickedUpByDriver;
+                    return new List<Status> { Status.PickedUpByDriver, Status.ClaimedByDriver };
+                case Status.ClaimedByDriver:
+                    return new List<Status> { Status.PickedUpByDriver, Status.ClaimedByDriver };
                 case Status.PickedUpByDriver:
-                    return Status.InTransit;
+                    return new List<Status> { Status.InTransit };
                 case Status.InTransit:
-                    return Status.Delivered;
+                    return new List<Status> { Status.Delivered };
                 default:
-                    return Status.New;
+                    return new List<Status> { Status.New };
             }
         }
 
@@ -55,8 +55,8 @@ namespace DeliveryService.Models.Entities
             {
                 case Status.New:
                     return "New";
-                case Status.AcceptedByDriver:
-                    return "Accepted";
+                case Status.ClaimedByDriver:
+                    return "Claimed by driver";
                 case Status.PickedUpByDriver:
                     return "Picked up";
                 case Status.InTransit:

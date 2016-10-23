@@ -22,6 +22,8 @@
             <th>
                 Status summary
             </th>
+            <th>Driver</th>
+            <th></th>
             
         </tr>
     </thead>
@@ -32,11 +34,12 @@
         <tr>
             <td>
 
-                @Html.DisplayFor(model => @item.Client.FirstName)
-                @Html.ActionLink("See client details", "Details", "Clients", new { id = item.ClientID })
+                @Html.ActionLink( item.Client.FirstName + " " + item.Client.LastName, "Details", "Clients", new  { id=item.ClientID})
             </td>
             <td>
                 @Html.DisplayFor(model => @item.DeliveryStatus.Status)
+            </td>
+            <td>
                 @if (@item.DeliveryStatus.AssignedToId == null)
                 {
 

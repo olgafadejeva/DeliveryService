@@ -10,6 +10,8 @@
 <p>
     <a class="btn btn-default" asp-action="Create">Add new client</a>
 </p>
+@if (Model.ToList().Count != 0)
+{
 <table class="table">
     <thead>
         <tr>
@@ -22,11 +24,15 @@
             <th>
                 @Html.DisplayNameFor(model => model.LastName)
             </th>
+            <th>
+                Address
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model)
+{
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Email)
@@ -38,6 +44,11 @@
                 @Html.DisplayFor(modelItem => item.LastName)
             </td>
             <td>
+                @Html.DisplayFor(model => @item.Address.LineOne) <br />
+                @Html.DisplayFor(model => @item.Address.City)<br />
+                @Html.DisplayFor(model => @item.Address.PostCode)<br />
+            </td>
+            <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
@@ -46,6 +57,7 @@
 }
     </tbody>
 </table>
+}
 
 
 @Html.ActionLink("Back to Dashboard", "Index", "ShipperDashboard")

@@ -25,8 +25,7 @@ namespace DeliveryService.Models.Entities
 
         [Display(Name = "Postcode")]
         [Required]
-        [RegularExpression(@"(GIR 0AA)|((([A-Z-[QVX]][0-9][0-9]?)|(([A-Z-[QVX]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVX]][0-9][A-HJKSTUW])|([A-Z-[QVX]][A-Z-[IJZ]][0-9][ABEHMNPRVWXY])))) [0-9][A-Z-[CIKMOV]]{2})",
-        ErrorMessage = "Must be a valid UK postcode")]
+        [RegularExpression(@"(([A-Z]{1,2}[0-9]{1,2})\ ([0-9][A-Z]{2}))|(GIR\ 0AA)$", ErrorMessage = "Must be a valid UK postcode")]
         public string PostCode { get; set; }
 
         public Address(string LineOne, string LineTwo, string City, string PostCode) {

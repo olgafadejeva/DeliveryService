@@ -67,6 +67,7 @@ namespace DeliveryService.Controllers.ShipperControllers
             {
                 details.useDefaultDeliveryAddress = true;
             }
+
             return View(details);
         }
 
@@ -76,7 +77,7 @@ namespace DeliveryService.Controllers.ShipperControllers
             var delivery = await getDelivery(id);
             var team =await  _context.Teams.Include(d => d.Drivers)
                 .SingleOrDefaultAsync(m => m.ID == shipper.Team.ID);
-            ViewData["AssignedToId"] = new SelectList(team.Drivers, "ID", "ID");
+            ViewData["AssignedToId"] = new SelectList(team.Drivers, "ID", "User.NormalizedUserName");
             ViewBag.Shipper = shipper;
             return View(delivery.DeliveryStatus);
         }
@@ -106,7 +107,7 @@ namespace DeliveryService.Controllers.ShipperControllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,ClientID,useDefaultDeliveryAddress,PickUpAddress")] DeliveryDetails deliveryDetails)
+        public async Task<IActionResult> Create([Bind("ID,ClientID,useDefaultDeliveryAddress,PickUpAddress,ItemWeight,ItemSize")] DeliveryDetails deliveryDetails)
         {
 
             var address = deliveryDetails.PickUpAddress;
@@ -117,6 +118,8 @@ namespace DeliveryService.Controllers.ShipperControllers
                 Delivery delivery = new Delivery();
                 Client client = shipper.Clients.SingleOrDefault(c => c.ID == deliveryDetails.ClientID);
                 delivery.Client = client;
+                delivery.ItemSize = deliveryDetails.ItemSize;
+                delivery.ItemWeight = deliveryDetails.ItemWeight;
 
                 if (deliveryDetails.useDefaultDeliveryAddress)
                 {

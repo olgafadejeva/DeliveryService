@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,29 +25,41 @@ namespace DeliveryServiceTests.Services
         }
 
         [Fact]
-        public async Task testDeliveryReturnedWithinThreeMiles() {
+        public async Task testDeliveryReturnedWithinFiveMiles() {
+            var mockGoogleMaps = new Mock<GoogleMapsUtil>();
+            var responseMessageOne = new HttpResponseMessage();
+            responseMessageOne.Content =new  StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"0.8 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
 
+            var responseMessageTwo = new HttpResponseMessage();
+            responseMessageTwo.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"3.6 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}"); 
+            mockGoogleMaps.SetupSequence(gm => gm.createDistanceUriAndGetResponse(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<HttpClient>()))
+                .Returns(Task.FromResult(responseMessageOne))
+                .Returns(Task.FromResult(responseMessageTwo));
             IServiceProvider _serviceProvider = ServiceBuilder.getServiceProviderWithInMemoryDatabase();
             context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-            service = new DeliverySearchService(context);
-            AppProperties props = new AppProperties();
-            props.GoogleMapsApiKey = "AIzaSyCruDMQXf92lZMvfCEO_L9E2oYjvuRfPaI";
-            service.options = props;
+            service = new DeliverySearchService(context, mockGoogleMaps.Object);
             await populateContextWithData(context);
+
             IEnumerable<Delivery> deliveries = await service.searchForDeliveriesWithinDistance(50.8662053, -0.0884891, 5, 5);
             Assert.Equal(1, deliveries.Count());
-
+            Assert.Equal(context.Clients.First(), deliveries.First().Client);
         }
 
         [Fact]
         public async Task testDeliveryReturnedWithinZeroMiles()
         {
+            var mockGoogleMaps = new Mock<GoogleMapsUtil>();
+            var responseMessageOne = new HttpResponseMessage();
+            responseMessageOne.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"0.8 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
+
+            var responseMessageTwo = new HttpResponseMessage();
+            responseMessageTwo.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"3.6 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
+            mockGoogleMaps.SetupSequence(gm => gm.createDistanceUriAndGetResponse(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<HttpClient>()))
+                .Returns(Task.FromResult(responseMessageOne))
+                .Returns(Task.FromResult(responseMessageTwo));
             IServiceProvider _serviceProvider = ServiceBuilder.getServiceProviderWithInMemoryDatabase();
             context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-            service = new DeliverySearchService(context);
-            AppProperties props = new AppProperties();
-            props.GoogleMapsApiKey = "AIzaSyCruDMQXf92lZMvfCEO_L9E2oYjvuRfPaI";
-            service.options = props;
+            service = new DeliverySearchService(context, mockGoogleMaps.Object);
             await populateContextWithData(context);
             IEnumerable<Delivery> deliveries = await service.searchForDeliveriesWithinDistance(50.8662053, -0.0884891, 0, 0);
             Assert.Empty(deliveries);
@@ -55,12 +68,18 @@ namespace DeliveryServiceTests.Services
         [Fact]
         public async Task testNoDeliveriesReturnedWhenOneConditionIsNotSatisfied()
         {
+            var mockGoogleMaps = new Mock<GoogleMapsUtil>();
+            var responseMessageOne = new HttpResponseMessage();
+            responseMessageOne.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"0.8 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
+
+            var responseMessageTwo = new HttpResponseMessage();
+            responseMessageTwo.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"3.6 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
+            mockGoogleMaps.SetupSequence(gm => gm.createDistanceUriAndGetResponse(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<HttpClient>()))
+                .Returns(Task.FromResult(responseMessageOne))
+                .Returns(Task.FromResult(responseMessageTwo));
             IServiceProvider _serviceProvider = ServiceBuilder.getServiceProviderWithInMemoryDatabase();
             context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-            service = new DeliverySearchService(context);
-            AppProperties props = new AppProperties();
-            props.GoogleMapsApiKey = "AIzaSyCruDMQXf92lZMvfCEO_L9E2oYjvuRfPaI";
-            service.options = props;
+            service = new DeliverySearchService(context, mockGoogleMaps.Object);
             await populateContextWithData(context);
             IEnumerable<Delivery> deliveries = await service.searchForDeliveriesWithinDistance(50.8372963, -0.12143259999999999, 1, 2);
             Assert.Empty(deliveries);
@@ -69,15 +88,31 @@ namespace DeliveryServiceTests.Services
         [Fact]
         public async Task testDeliveriesReturnedWhenConditionsAreMet()
         {
+            var mockGoogleMaps = new Mock<GoogleMapsUtil>();
+            var responseMessageOne = new HttpResponseMessage();
+            responseMessageOne.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"0.8 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
+
+            var responseMessageTwo = new HttpResponseMessage();
+            responseMessageTwo.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"3.6 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
+            mockGoogleMaps.SetupSequence(gm => gm.createDistanceUriAndGetResponse(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<HttpClient>()))
+                .Returns(Task.FromResult(responseMessageOne))
+                .Returns(Task.FromResult(responseMessageTwo));
             IServiceProvider _serviceProvider = ServiceBuilder.getServiceProviderWithInMemoryDatabase();
             context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
-            service = new DeliverySearchService(context);
-            AppProperties props = new AppProperties();
-            props.GoogleMapsApiKey = "AIzaSyCruDMQXf92lZMvfCEO_L9E2oYjvuRfPaI";
-            service.options = props;
+            service = new DeliverySearchService(context, mockGoogleMaps.Object);
+            
             await populateContextWithData(context);
             IEnumerable<Delivery> deliveries = await service.searchForDeliveriesWithinDistance(50.8372963, -0.12143259999999999, 1, 9);
             Assert.Equal(1, deliveries.Count());
+        }
+
+        [Fact]
+        public void jsontest() {
+            var jsonString = "{\"destination_addresses\":[\"\"],\"origin_addresses\":[\"\"],\"rows\":[{\"elements\":[{\"status\":\"NOT_FOUND\"}]}],\"status\":\"OK\"}";
+            JObject json = JObject.Parse(jsonString);
+            var distanceValue = (string)json.SelectToken("rows[0].elements[0].distance.text");
+            //var valueInDouble = Convert.ToDouble(distanceValue.Replace("mi", ""));
+
         }
 
         private async Task  populateContextWithData(ApplicationDbContext context)

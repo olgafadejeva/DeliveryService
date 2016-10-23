@@ -21,17 +21,6 @@ namespace DeliveryService.DriverControllers
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
-           
-          //  driver = _context.Driver.SingleOrDefault(d => d.User.Id == currentUserId);
-            if (driver == null)
-            {
-                var user = _context.ApplicationUsers.SingleOrDefault(m => m.Id == currentUserId);
-                var driverEntity = new Driver();
-                driverEntity.User = user;
-                _context.Drivers.Add(driverEntity);
-                await _context.SaveChangesAsync();
-                driver = driverEntity;
-            }
             return View(driver.Vehicles);
         }
 
@@ -61,7 +50,7 @@ namespace DeliveryService.DriverControllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,RegistrationNumber")] Vehicle vehicle)
+        public async Task<IActionResult> Create([Bind("ID,RegistrationNumber,Height,Length,Width,MaxLoad")] Vehicle vehicle)
         {
             if (ModelState.IsValid)
             {
@@ -91,7 +80,7 @@ namespace DeliveryService.DriverControllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,RegistrationNumber")] Vehicle vehicle)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,RegistrationNumber,Length,Width,Height,MaxLoad")] Vehicle vehicle)
         {
             if (id != vehicle.ID)
             {
@@ -104,6 +93,10 @@ namespace DeliveryService.DriverControllers
                 {
                     var vehicleEntity = await _context.Vehicles.SingleOrDefaultAsync(m => m.ID == id);
                     vehicleEntity.RegistrationNumber = vehicle.RegistrationNumber;
+                    vehicleEntity.Length = vehicle.Length;
+                    vehicleEntity.Height = vehicle.Height;
+                    vehicleEntity.Width = vehicle.Width;
+                    vehicleEntity.MaxLoad = vehicle.MaxLoad;
                     _context.Update(vehicleEntity);
                     await _context.SaveChangesAsync();
                 }

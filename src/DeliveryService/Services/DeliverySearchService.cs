@@ -1,5 +1,6 @@
 ﻿using DeliveryService.Data;
 using DeliveryService.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System;
@@ -12,12 +13,15 @@ namespace DeliveryService.Services
 {
     public class DeliverySearchService
     {
-        public AppProperties options { get; set; }
         public ApplicationDbContext context { get; set; }
+        public GoogleMapsUtil googleMaps { get; set; }
 
-        public DeliverySearchService(IOptions<AppProperties> optionsAccessor, ApplicationDbContext context) {
-            options = optionsAccessor.Value;
+        public double DEFAULT_NON_FOUND_ADDRESS_VALUE { get; }
+
+        public DeliverySearchService(ApplicationDbContext context, GoogleMapsUtil googleMapsUtil) {
             this.context = context;
+            DEFAULT_NON_FOUND_ADDRESS_VALUE = -100.00;
+            this.googleMaps = googleMapsUtil;
         }
 
         public DeliverySearchService(ApplicationDbContext context)
@@ -40,11 +44,29 @@ namespace DeliveryService.Services
             await SelectDeliveriesBasedOnDistance(PickUpWithin, pickUpAddresses, httpClient, currentLocationString, deliveriesSelectedBasedOnPickUpCriteria);
             await SelectDeliveriesBasedOnDistance(DeliveryWithin+PickUpWithin, allClientAddresses, httpClient, currentLocationString, deliveriesSelectedBasedOnDeliveryAddress);
 
-            IList<Delivery> selectedDeliveries = deliveriesSelectedBasedOnPickUpCriteria
-                .Where(d => deliveriesSelectedBasedOnDeliveryAddress.Any(i => deliveriesSelectedBasedOnPickUpCriteria.Contains(i))).ToList();
+            IList<Delivery> selectedDeliveries = deliveriesSelectedBasedOnDeliveryAddress.Intersect(deliveriesSelectedBasedOnPickUpCriteria).ToList();
             
             return selectedDeliveries;
 
+
+        }
+
+        public async Task<IList<Delivery>> findAllAvailableDeliveries()
+        {
+            List<Delivery> allDeliveries = context.Deliveries
+                                .Include(d => d.DeliveryStatus)
+                                .Include(d => d.DeliveryStatus.AssignedTo)
+                                .Include(d => d.PickUpAddress)
+                                 .Include(d => d.Client)
+                                 .Include(d => d.Client.Address).ToList();
+            List<Delivery> selectedDeliveries = new List<Delivery>();
+            foreach (Delivery delivery in allDeliveries) {
+                DeliveryStatus status = delivery.DeliveryStatus;
+                if (status != null && status.Status == Status.New && status.AssignedTo == null) {
+                    selectedDeliveries.Add(delivery);
+                }
+            }
+            return selectedDeliveries;
 
         }
 
@@ -53,44 +75,54 @@ namespace DeliveryService.Services
             foreach (Address address in addresses)
             {
                 string addressLocationString = DirectionsService.getStringFromAddress(address, true);
-                Uri uri = createUri(currentLocationString, addressLocationString);
-                HttpResponseMessage response = await httpClient.GetAsync(uri);
+                HttpResponseMessage response = await googleMaps.createDistanceUriAndGetResponse(currentLocationString, addressLocationString, httpClient);
 
                 if (response.IsSuccessStatusCode)
                 {
                     double distanceToAddress = GetDistanceFromResponse(response);
-                    if (distanceToAddress < DistanceWithin)
+                    if (distanceToAddress != DEFAULT_NON_FOUND_ADDRESS_VALUE && distanceToAddress < DistanceWithin)
                     {
                         Delivery delivery = null;
                         Type type = address.GetType();
                         if (type == typeof(PickUpAddress))
                         {
-                             delivery = context.Deliveries.Where(d => d.PickUpAddress.ID == address.ID).Single();
+                            delivery = context.Deliveries
+                                .Include(d => d.DeliveryStatus)
+                                .Where(d => d.PickUpAddress.ID == address.ID)
+                                .SingleOrDefault();
                         }
                         else {
-                             delivery = context.Deliveries.Where(d => d.Client.Address.ID == address.ID).Single();
+                             delivery = context.Deliveries
+                                 .Include(d => d.DeliveryStatus)
+                                 .Include(d => d.Client)
+                                 .Include(d => d.Client.Address)
+                                .Where(d => d.Client.Address.ID == address.ID)
+                                .FirstOrDefault();
                         }
-                        if (delivery.DeliveryStatus.Status == Status.New && delivery.DeliveryStatus.AssignedTo == null)
+                        if (delivery != null)
                         {
-                            deliveries.Add(delivery);
+                            DeliveryStatus status = delivery.DeliveryStatus;
+                            if (status != null && status.Status == Status.New && status.AssignedTo == null)
+                            {
+                                deliveries.Add(delivery);
+                            }
                         }
                     }
                 }
             }
         }
 
-        private static double GetDistanceFromResponse(HttpResponseMessage response)
+        private double GetDistanceFromResponse(HttpResponseMessage response)
         {
             var jsonString = response.Content.ReadAsStringAsync().Result;
             JObject json = JObject.Parse(jsonString);
             var distanceValue = (string)json.SelectToken("rows[0].elements[0].distance.text");
+            if (distanceValue == null) // can be NOT FOUND status
+            {
+                return DEFAULT_NON_FOUND_ADDRESS_VALUE;
+            }
             var valueInDouble = Convert.ToDouble(distanceValue.Replace("mi", ""));
             return valueInDouble;
-        }
-
-        private Uri createUri(string currentLocationString, string pickUpAddressString) {
-            string uri = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" + currentLocationString + "&destinations=" + pickUpAddressString + "&key=" + options.GoogleMapsApiKey;
-            return new Uri(uri);
         }
     }
 }

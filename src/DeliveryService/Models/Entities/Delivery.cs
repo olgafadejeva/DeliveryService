@@ -10,14 +10,46 @@ namespace DeliveryService.Models.Entities
     {
         public int ID { get; set; }
 
-        public int ClientID { get; set; } 
-        public int DeliveryStatusID { get; set; } 
-        public int? PickUpAddressID { get; set; } 
+        public int ClientID { get; set; }
+        public int DeliveryStatusID { get; set; }
+        public int? PickUpAddressID { get; set; }
 
+        [Display(Name = "Item size")]
+        public ItemSize ItemSize { get; set; }
+
+
+        [Display(Name = "Item weight in kg")]
+        public double ItemWeight { get; set; }
         public virtual PickUpAddress PickUpAddress { get; set; }
 
         public virtual DeliveryStatus DeliveryStatus { get; set; }
 
         public virtual Client Client { get; set; }
+    }
+
+    public enum ItemSize
+    {
+        Small,
+        Medium,
+        Large
+    }
+
+    public static class ItemSizeExtension
+    {
+        public static int MaxItemWeightBasedOnSize(this ItemSize size)
+        {
+            switch (size)
+            {
+                case ItemSize.Small:
+                    return 2;
+                case ItemSize.Medium:
+                    return 10;
+                case ItemSize.Large:
+                    return 20;
+                default:
+                    return 20;
+            }
+        }
+
     }
 }

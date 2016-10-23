@@ -13,8 +13,24 @@ namespace DeliveryService.Models.Entities
         [Key]
         public int ID { get; set; }
 
-        [DisplayName("Registration Number")]
+        [Display(Name = "Registration number")]
         [MinLength(5, ErrorMessage="Registration number must be longer than 5 characters")]
         public string RegistrationNumber { get; set; }
+
+
+        [Range(0, double.MaxValue, ErrorMessage = "Must be a positive number")]
+        public double Height { get; set; }
+
+
+        [Range(0, double.MaxValue, ErrorMessage = "Must be a positive number")]
+        public double Width { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Must be a positive number")]
+        public double Length { get; set; }
+
+
+        [Display(Name = "Max load in kg")]
+        [Range(0, double.MaxValue, ErrorMessage = "Must be a positive number")]
+        public double MaxLoad { get; set; }
     }
 }

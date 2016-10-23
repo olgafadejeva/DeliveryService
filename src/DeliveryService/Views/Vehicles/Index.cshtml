@@ -5,32 +5,59 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>My vehicles</h2>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.RegistrationNumber)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.RegistrationNumber)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
+@if (Model.ToList().Count != 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.RegistrationNumber)
+                </th>
+                <th>Dimensions</th>
+                <th>@Html.DisplayNameFor(model => model.MaxLoad)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RegistrationNumber)
+                    </td>
+                    <td>
+                        <p>
+                            @Html.DisplayNameFor(model => model.Length)
+                            @Html.DisplayFor(modelItem => item.Length)
+                        </p>
+
+                        <p>
+                            @Html.DisplayNameFor(model => model.Height)
+                            @Html.DisplayFor(modelItem => item.Height)
+                        </p>
+                        <p>
+                            @Html.DisplayNameFor(model => model.Width)
+                            @Html.DisplayFor(modelItem => item.Width)
+                        </p>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MaxLoad)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
-    </tbody>
-</table>
+
+
+@Html.ActionLink("Back to Dashboard", "Index", "DriverDashboard")

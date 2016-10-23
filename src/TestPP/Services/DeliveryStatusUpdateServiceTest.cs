@@ -17,48 +17,57 @@ namespace DeliveryServiceTests.Services
     {
 
         private readonly DeliveryStatusUpdateService statusUpdateService;
+        public ApplicationDbContext context { get; set; }
         public DeliveryStatusUpdateServiceTest()
         {
-            IServiceProvider _serviceProvider = ServiceBuilder.getServiceProvider();
-            var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+            IServiceProvider _serviceProvider = ServiceBuilder.getServiceProviderWithInMemoryDatabase();
+            context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
             statusUpdateService = new DeliveryStatusUpdateService(context);
         }
 
         [Fact]
-        public void testValidTransitionFromNew() {
+        public async Task testValidTransitionFromNew() {
             Delivery delivery = new Delivery();
+            context.Deliveries.Add(delivery);
             delivery.DeliveryStatus = new DeliveryStatus();
             delivery.DeliveryStatus.Status = Status.New;
+            await context.SaveChangesAsync();
             bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, Status.PickedUpByDriver);
             Assert.True(statusUpdated);
         }
 
         [Fact]
-        public void testValidTransitionFromAcceptedByDriver()
+        public async Task testValidTransitionFromAcceptedByDriver()
         {
             Delivery delivery = new Delivery();
+            context.Deliveries.Add(delivery);
             delivery.DeliveryStatus = new DeliveryStatus();
-            delivery.DeliveryStatus.Status = Status.AcceptedByDriver;
+            delivery.DeliveryStatus.Status = Status.ClaimedByDriver;
+            await context.SaveChangesAsync();
             bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, Status.PickedUpByDriver);
             Assert.True(statusUpdated);
         }
 
         [Fact]
-        public void testValidTransitionFromPickedUpByDriver()
+        public async Task testValidTransitionFromPickedUpByDriver()
         {
             Delivery delivery = new Delivery();
+            context.Deliveries.Add(delivery);
             delivery.DeliveryStatus = new DeliveryStatus();
             delivery.DeliveryStatus.Status = Status.PickedUpByDriver;
+            await context.SaveChangesAsync();
             bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, Status.InTransit);
             Assert.True(statusUpdated);
         }
 
         [Fact]
-        public void testValidTransitionFromInTransit()
+        public async Task testValidTransitionFromInTransit()
         {
             Delivery delivery = new Delivery();
+            context.Deliveries.Add(delivery);
             delivery.DeliveryStatus = new DeliveryStatus();
             delivery.DeliveryStatus.Status = Status.InTransit;
+            await context.SaveChangesAsync();
             bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, Status.Delivered);
             Assert.True(statusUpdated);
         }

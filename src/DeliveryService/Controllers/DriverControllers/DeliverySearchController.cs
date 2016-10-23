@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using DeliveryService.Services;
 using Microsoft.Extensions.Options;
+using DeliveryService.Models.Entities;
+using DeliveryService.Models;
 
 namespace DeliveryService.Controllers.DriverControllers
 {
@@ -16,9 +18,11 @@ namespace DeliveryService.Controllers.DriverControllers
     public class DeliverySearchController : DriverController
     {
         public AppProperties options { get; set; }
+        public DeliverySearchService searchService  { get; set; }
 
-        public DeliverySearchController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IOptions<AppProperties> optionsAccessor) : base(context, contextAccessor) {
+        public DeliverySearchController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IOptions<AppProperties> optionsAccessor, DeliverySearchService searchService) : base(context, contextAccessor) {
             options = optionsAccessor.Value;
+            this.searchService = searchService;
         }
         public IActionResult Index()
         {
@@ -27,9 +31,23 @@ namespace DeliveryService.Controllers.DriverControllers
 
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public async Task<IActionResult> SearchForDeliveries(double Latitude, double Longtitude, double PickUpWithin, double DeliveryWithin)
+        public async Task<IActionResult> SearchForDeliveries(DeliverySearchModel model)
         {
-            return null;
+            IList<Delivery> deliveries = await searchService.searchForDeliveriesWithinDistance(model.Latitude, model.Longtitude, model.PickUpWithin, model.DeliveryWithin);
+
+            return View("SearchResults", deliveries);
+        }
+
+        [HttpGet]
+        public IActionResult SearchResults(IList<Delivery> deliveries) {
+            return View(deliveries);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AllAvailableDeliveries() {
+            IList<Delivery> deliveries = await searchService.findAllAvailableDeliveries();
+
+            return View("SearchResults",  deliveries );
         }
     }
 }

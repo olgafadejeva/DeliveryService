@@ -1,34 +1,34 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Castle.Core.Logging;
+using DeliveryService;
+using DeliveryService.Data;
+using DeliveryService.Data.Initializer;
+using DeliveryService.Models;
+using DeliveryService.Services;
+using DeliveryService.Services.Config;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using DeliveryService.Data;
-using DeliveryService.Models;
-using DeliveryService.Services;
-using DeliveryService.Data.Initializer;
-using Microsoft.AspNetCore.Mvc;
-using DeliveryService.Services.Config;
-using Microsoft.AspNetCore.Http;
 
-namespace DeliveryService
+namespace DeliveryServiceTests
 {
-    public class Startup
+    public class TestStartup
     {
-        public Startup(IHostingEnvironment env)
+        public TestStartup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-            if (env.IsDevelopment() )
-            {
-                builder.AddUserSecrets();
-            }
-           
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -41,20 +41,21 @@ namespace DeliveryService
         {
             // Add framework services.
 
+            var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
             var env = services.BuildServiceProvider().GetRequiredService<IHostingEnvironment>();
-            services.AddDbContext<ApplicationDbContext>( options => {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            },
-                ServiceLifetime.Scoped);
+            services.AddOptions();
+            services
+                .AddDbContext<ApplicationDbContext>(b => b.UseInMemoryDatabase().UseInternalServiceProvider(efServiceProvider));
+
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-               {
-                   options.Password.RequireDigit = true;
-                   options.Password.RequiredLength = 6;
-                   options.Password.RequireLowercase = false;
-                   options.Password.RequireNonAlphanumeric = false;
-                   options.Password.RequireUppercase = false;
-               })
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddErrorDescriber<CustomIdentityErrorDescriber>();
@@ -64,8 +65,8 @@ namespace DeliveryService
             services.AddMvc();
 
             // Add application services.
-            
-          
+
+
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IDirectionsService, DirectionsService>();
@@ -75,7 +76,7 @@ namespace DeliveryService
             {
                 options.Filters.Add(new RequireHttpsAttribute());
             });
-           
+
 
             services.Configure<AppProperties>(Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -86,22 +87,11 @@ namespace DeliveryService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder app, IHostingEnvironment env, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-                app.UseBrowserLink();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                
-            }
+            
 
             app.UseStaticFiles();
 
@@ -123,3 +113,4 @@ namespace DeliveryService
 
     }
 }
+

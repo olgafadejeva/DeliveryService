@@ -41,9 +41,18 @@ else
                 @Html.DisplayFor(modelItem => Model.Description)
             </td>
             <td>
+                @if (Model.Drivers.Count == 0)
+                {
+
+                    <a asp-action="AddDriver" class="btn" asp-route-id="@Model.ID">Invite driver</a>
+
+                }
+                else
+                {
                 @foreach (var driver in Model.Drivers)
                 {
                     @driver.User.NormalizedUserName<br/>
+                }
                 }
 
             </td>
@@ -52,7 +61,7 @@ else
                 <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@Model.ID">Details</a> |
                 <a asp-action="Delete" asp-route-id="@Model.ID">Delete</a>
-                <a asp-action="AddDriver" asp-route-id="@Model.ID">Invite driver</a>
+                <a asp-action="AddDriver" class="btn" asp-route-id="@Model.ID">Invite driver</a>
 
             </td>
         </tr>

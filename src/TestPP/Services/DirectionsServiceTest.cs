@@ -1,4 +1,5 @@
-﻿using DeliveryService.Models;
+﻿using DeliveryService.Controllers;
+using DeliveryService.Models;
 using DeliveryService.Models.Entities;
 using DeliveryService.Services;
 using Microsoft.Extensions.Options;
@@ -30,7 +31,7 @@ namespace DeliveryServiceTests.Services
         public void testGetDirections()
         {
             PickUpAddress pickUpAddress = new PickUpAddress("23 London Road", "Flat 2", "Brighton", "BN2 4PN");
-            ClientAddress clientAddress = new ClientAddress("25 London Road", "Falt 2", "Brighton", "BN2 4PN");
+            ClientAddress clientAddress = new ClientAddress("25 London Road", "Flat 2", "Brighton", "BN2 4PN");
             DirectionsService service = new DirectionsService();
             service.options = new AppProperties();
             Directions result = service.getDirectionsFromAddresses(pickUpAddress, clientAddress);

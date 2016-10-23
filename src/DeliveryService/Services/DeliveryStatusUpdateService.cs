@@ -18,11 +18,12 @@ namespace DeliveryService.Services
 
         public bool UpdateDeliveryStatus(Delivery delivery, Status status) {
             Status currentDeliveryStatus = delivery.DeliveryStatus.Status;
-            if (!StatusExtension.NextAvailableStatus(currentDeliveryStatus).Equals(status) ){
+            if (!StatusExtension.NextAvailableStatus(currentDeliveryStatus).Contains(status) ){
                 return false;
             }
-            delivery.DeliveryStatus.Status = status;
-            context.Update(delivery.DeliveryStatus);
+          //  delivery.DeliveryStatus.Status = status;
+            var deliveryStatus = context.DeliveryStatus.SingleOrDefault(st => st.ID == delivery.DeliveryStatus.ID);
+            deliveryStatus.Status = status;
             context.SaveChangesAsync();
             return true;
         }
