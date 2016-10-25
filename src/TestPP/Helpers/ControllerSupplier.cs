@@ -29,15 +29,14 @@ namespace DeliveryServiceTests.Helpers
             var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
 
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            var loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
-
+            var emailSender = _serviceProvider.GetRequiredService<IEmailSender>();
             var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+            var userService = _serviceProvider.GetRequiredService<IUserService>();
 
-            var controller = new AccountController(userManager, signInManager, createMockEmailSender().Object, loggerFactory, context);
+            var controller = new AccountController(userManager, signInManager, emailSender, context, userService);
             controller.ControllerContext.HttpContext = httpContext;
             var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
             SetRouteData(_serviceProvider, httpContextAccessor, controller);
-
             return controller;
         }
 
@@ -77,7 +76,7 @@ namespace DeliveryServiceTests.Helpers
             return controller;
         }
 
-        public async static Task<TeamsController> getTeamsController()
+        public async static Task<TeamController> getTeamsController()
         {
             IServiceProvider _serviceProvider = ServiceBuilder.getServiceProvider();
             var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
@@ -89,7 +88,7 @@ namespace DeliveryServiceTests.Helpers
             await signInManager.PasswordSignInAsync(Constants.DEFAULT_EMAIL, Constants.DEFAULT_PASSWORD, false, lockoutOnFailure: false);
 
             var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
-            var controller = new TeamsController(context, httpContextAccessor, createMockEmailSender().Object);
+            var controller = new TeamController(context, httpContextAccessor, null);
             SetRouteData(_serviceProvider, httpContextAccessor, controller);
             return controller;
         }

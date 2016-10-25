@@ -19,7 +19,7 @@ namespace DeliveryService.Controllers.ShipperControllers
         protected  ApplicationDbContext _context;
         protected HttpContextAccessor _contextAcessor;
         protected string currentUserId;
-        protected Shipper shipper;
+        protected Company company;
 
         public ShipperController(ApplicationDbContext context, IHttpContextAccessor contextAccessor)
         {
@@ -28,29 +28,35 @@ namespace DeliveryService.Controllers.ShipperControllers
             currentUserId = _contextAcessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (currentUserId != null)
             {
-                shipper = context.Shippers.Include(b => b.User)
-                   .Include(b => b.Clients)
-                        .ThenInclude(c=>c.Address)
-                   .Include(b => b.Deliveries)
+                var applicationUser = context.ApplicationUsers
+                    .Include(u => u.Company)
+                    .SingleOrDefault(u => u.Id == currentUserId);
+                company = context.Companies
+                    .Include(c => c.Clients)
+                        .ThenInclude(c => c.Address)
+                    .Include(c => c.Deliveries)
                         .ThenInclude(delivery => delivery.Client)
                    .Include(b => b.Deliveries)
                         .ThenInclude(delivery => delivery.DeliveryStatus)
                    .Include(b => b.Deliveries)
                         .ThenInclude(delivery => delivery.PickUpAddress)
-                   .Include(b => b.Team)
+                   .Include(b => b.Deliveries)
+                        .ThenInclude(delivery => delivery.DeliveryStatus.AssignedTo)
+                    .Include(c => c.Team)
                         .ThenInclude(t => t.Drivers)
-                            .ThenInclude(d => d.User)
-                   .Include(b => b.User)
-                   .Include(b => b.DefaultPickUpAddress)
-                   .SingleOrDefault(m => m.User.Id == currentUserId);
-                
+                    .Include(c => c.Team.Drivers)
+                        .ThenInclude(t => t.User)
+                    .Include(c => c.Team)
+                        .ThenInclude(c => c.Employees)
+                    .Include (c => c.PickUpLocations)
+                    .SingleOrDefault(c => applicationUser.CompanyID == c.ID);
             }
         }
 
         //for testing
-        public void setShipper(Shipper shipper)
+        public void setCompany(Company company)
         {
-            this.shipper = shipper;
+            this.company = company;
         }
 
         public ApplicationDbContext getDbContext()

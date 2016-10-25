@@ -11,17 +11,16 @@ namespace DeliveryService.Models.Entities
     {
         [Key]
         public int ID { get; set; }
-        
-        public string CompanyName { get; set; }
-        public string Description { get; set; }
 
         public virtual ICollection<Driver> Drivers { get; set; }
+        public virtual ICollection<EmployeeUser> Employees { get; set; }
 
-        public Shipper Shipper { get; set; }
-        public int ShipperId { get; set; }
+        public Company Company { get; set; }
+        public int CompanyID { get; set; }
 
         public Team() {
             Drivers = new List<Driver>();
+            Employees = new List<EmployeeUser>();
         }
     }
 }

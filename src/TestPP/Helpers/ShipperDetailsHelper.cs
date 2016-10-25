@@ -24,8 +24,6 @@ namespace DeliveryServiceTests.Helpers
         public static Team getTeam()
         {
             Team team = new Team();
-            team.CompanyName = "ABC";
-            team.Description = "The best company";
             return team;
         }
 

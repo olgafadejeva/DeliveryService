@@ -5,7 +5,7 @@
 
 <h2>@ViewData["Add driver"]</h2>
 
-<form asp-controller="Teams" asp-action="AddDriver" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+<form asp-controller="Team" asp-action="AddDriver" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
     <h4>Add a new driver - we'll send him an invitation email!</h4>
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>

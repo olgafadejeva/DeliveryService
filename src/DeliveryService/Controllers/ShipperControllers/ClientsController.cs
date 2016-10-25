@@ -24,16 +24,7 @@ namespace DeliveryService.ShipperControllers
 
         public async Task<IActionResult> Index()
         {
-            if (shipper == null)
-            {
-                var user = _context.ApplicationUsers.SingleOrDefault(m => m.Id == currentUserId);
-                var shipperEntity = new Shipper();
-                shipperEntity.User = user;
-                _context.Shippers.Add(shipperEntity);
-                await _context.SaveChangesAsync();
-                shipper = shipperEntity;
-            }
-            return View(shipper.Clients);
+            return View(company.Clients);
         }
 
         // GET: Clients/Details/5
@@ -45,7 +36,7 @@ namespace DeliveryService.ShipperControllers
             }
 
             var client = await getClient(id);
-            if (client == null || !shipper.Clients.Contains(client))
+            if (client == null || !company.Clients.Contains(client))
             {
                 return NotFound();
             }
@@ -65,8 +56,7 @@ namespace DeliveryService.ShipperControllers
         {
             if (ModelState.IsValid)
             {
-                shipper.Clients.Add(client);
-                _context.Add(client);
+                company.Clients.Add(client);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
@@ -82,7 +72,7 @@ namespace DeliveryService.ShipperControllers
             }
             Client client = await getClient(id);
 
-            if (client == null || !shipper.Clients.Contains(client))
+            if (client == null || !company.Clients.Contains(client))
             {
                 return NotFound();
             }

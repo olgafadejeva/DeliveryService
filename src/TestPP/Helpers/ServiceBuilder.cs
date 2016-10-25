@@ -7,12 +7,11 @@ using DeliveryService.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features.Authentication;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using DeliveryService.Data.Initializer;
 using DeliveryService.Services.Config;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Routing;
+using DeliveryServiceTests.MockServices;
+using DeliveryService.Services;
 
 namespace DeliveryServiceTests.Helpers
 {
@@ -40,7 +39,6 @@ namespace DeliveryServiceTests.Helpers
                      .AddErrorDescriber<CustomIdentityErrorDescriber>();
 
             services.AddLogging();
-            services.AddOptions();
             var context = new DefaultHttpContext();
             context.Features.Set<IHttpAuthenticationFeature>(new HttpAuthenticationFeature() { Handler = new TestAuthHandler() });
             services.AddSingleton<IHttpContextAccessor>(
@@ -54,6 +52,8 @@ namespace DeliveryServiceTests.Helpers
             services.AddLogging();
             services.AddMvc();
 
+            services.AddTransient<IEmailSender, MockAuthMessageSender>();
+            services.AddTransient<IUserService, MockUserService>();
             services.AddRouting();
 
             var serviceProvider = services.BuildServiceProvider();

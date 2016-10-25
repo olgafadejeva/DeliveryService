@@ -22,22 +22,22 @@ namespace DeliveryServiceTests.Controllers
             var controller = await ControllerSupplier.getClientsController();
 
             //set Shipper to controller
-            Shipper shipperEntity = await createShipperEntity(controller);
-            controller.setShipper(shipperEntity);
+            Company company = await createCompany(controller);
+            controller.setCompany(company);
 
 
             var result = (ViewResult)controller.Index().Result;
             Assert.NotNull(result.Model);
-            Assert.Equal(result.Model, shipperEntity.Clients);
+            Assert.Equal(result.Model, company.Clients);
 
             Client newClient = getClient();
             var createResult = await controller.Create(newClient);
             result = (ViewResult)controller.Index().Result;
             Assert.NotNull(result.Model);
-            Assert.Equal(shipperEntity.Clients.Count, 1);
+            Assert.Equal(company.Clients.Count, 1);
 
-            Client client = shipperEntity.Clients.First<Client>();
-            Assert.Equal(result.Model, shipperEntity.Clients);
+            Client client = company.Clients.First<Client>();
+            Assert.Equal(result.Model, company.Clients);
             Assert.NotNull(client.Address);
             Assert.Equal(client.Address.City, Constants.DEFAULT_CITY);
             Assert.Equal(client.Address.LineOne, Constants.DEFAULT_ADDRESS_LINE_ONE);
@@ -51,20 +51,18 @@ namespace DeliveryServiceTests.Controllers
 
             //set Shipper to controller
             var context = controller.getDbContext();
-            var shipperEntity = new Shipper();
-            var user = context.ApplicationUsers.First<ApplicationUser>();
-            shipperEntity.User = user;
+            var company = new Company();
             Client client = getClient();
 
-            shipperEntity.Clients.Add(client);
-            context.Shippers.Add(shipperEntity);
+            company.Clients.Add(client);
+            context.Companies.Add(company);
             await context.SaveChangesAsync();
-            controller.setShipper(shipperEntity);
+            controller.setCompany(company);
 
 
             var result = (ViewResult)controller.Index().Result;
             Assert.NotNull(result.Model);
-            Assert.Equal(result.Model, shipperEntity.Clients);
+            Assert.Equal(result.Model, company.Clients);
 
             var clientModel = new Client();
             //change email and leave the rest as it was 
@@ -75,10 +73,10 @@ namespace DeliveryServiceTests.Controllers
             clientModel.Address.City = Constants.DEFAULT_CITY;
 
             await controller.Edit(client.ID, clientModel);
-            Assert.Equal(shipperEntity.Clients.ToList<Client>().First().Email, "test2@example.com");
-            Assert.Equal(shipperEntity.Clients.ToList<Client>().First().FirstName, client.FirstName);
-            Assert.Equal(shipperEntity.Clients.ToList<Client>().First().LastName, client.LastName);
-            Assert.Equal(shipperEntity.Clients.ToList<Client>().First().Address.City, client.Address.City);
+            Assert.Equal(company.Clients.ToList<Client>().First().Email, "test2@example.com");
+            Assert.Equal(company.Clients.ToList<Client>().First().FirstName, client.FirstName);
+            Assert.Equal(company.Clients.ToList<Client>().First().LastName, client.LastName);
+            Assert.Equal(company.Clients.ToList<Client>().First().Address.City, client.Address.City);
         }
         
 
@@ -89,22 +87,21 @@ namespace DeliveryServiceTests.Controllers
 
             //set Shipper to controller
             var context = controller.getDbContext();
-            var shipperEntity = new Shipper();
+            var company = new Company();
             var user = context.ApplicationUsers.First<ApplicationUser>();
-            shipperEntity.User = user;
             Client client = getClient();
             client.Address.City = Constants.DEFAULT_CITY;
 
-            shipperEntity.Clients.Add(client);
-            context.Shippers.Add(shipperEntity);
+            company.Clients.Add(client);
+            context.Companies.Add(company);
             await context.SaveChangesAsync();
 
             Assert.Equal(context.Clients.Count<Client>(), 1);
             Assert.Equal(context.Addresses.Count<Address>(), 1);
-            controller.setShipper(shipperEntity);
+            controller.setCompany(company);
 
             await controller.DeleteConfirmed(client.ID);
-            Assert.Equal(shipperEntity.Clients.Count, 0);
+            Assert.Equal(company.Clients.Count, 0);
             Assert.Equal(context.Clients.Count<Client>(), 0);
             Assert.Equal(context.Addresses.Count<Address>(), 0);
         }
@@ -120,15 +117,14 @@ namespace DeliveryServiceTests.Controllers
             return client;
         }
 
-        private static async Task<Shipper> createShipperEntity(ClientsController controller)
+        private static async Task<Company> createCompany(ClientsController controller)
         {
             var context = controller.getDbContext();
-            var shipperEntity = new Shipper();
+            var company = new Company();
             var user = context.ApplicationUsers.First<ApplicationUser>();
-            shipperEntity.User = user;
-            context.Shippers.Add(shipperEntity);
+            context.Companies.Add(company);
             await context.SaveChangesAsync();
-            return shipperEntity;
+            return company;
         }
     }
 }

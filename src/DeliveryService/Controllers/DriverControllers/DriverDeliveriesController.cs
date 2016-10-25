@@ -45,15 +45,7 @@ namespace DeliveryService.Controllers.DriverControllers
                 return RedirectToAction("Index");
             }
             bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, updateStatus);
-            if (statusUpdated && status.Equals(Status.ClaimedByDriver))
-            {
-                delivery.DeliveryStatus.AssignedTo = driver;
-                driver.Deliveries.Add(delivery);
-                _context.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
-            else
-            {
+          
                 if (!statusUpdated)
                 {
                     TempData["StatusUpdate"] = "Unable to update status from " + delivery.DeliveryStatus.Status + " to " + updateStatus;
@@ -63,7 +55,7 @@ namespace DeliveryService.Controllers.DriverControllers
                     TempData["StatusUpdate"] = "Delivery status successfully updated!";
                 }
                 return RedirectToAction("Index");
-            }
+            
         }
 
         [HttpGet]

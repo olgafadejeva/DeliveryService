@@ -27,22 +27,26 @@ namespace DeliveryService.Controllers
         private UserManager<ApplicationUser> _userManager;
         private SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly ILogger _logger;
         private ApplicationDbContext _context { get; }
+        public IUserService userService { get; set; }
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
-            ILoggerFactory loggerFactory,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            IUserService userService)
         {
            
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
-            _logger = loggerFactory.CreateLogger<AccountController>();
             _context = context;
+            this.userService = userService;
+        }
+
+        public AccountController(IUserService userService) {
+            this.userService = userService;
         }
 
         public UserManager<ApplicationUser> getUserManager() {
@@ -82,7 +86,6 @@ namespace DeliveryService.Controllers
                     
                     if (result.Succeeded)
                     {
-                        _logger.LogInformation("User {0} logged in.", model.Email);
                         if (returnUrl!=null && !returnUrl.ToLower().Contains("login")) {
                             return RedirectToLocal(returnUrl);
                         }
@@ -100,7 +103,6 @@ namespace DeliveryService.Controllers
 
                     if (result.IsLockedOut)
                     {
-                        _logger.LogWarning("User's {0} account locked out.", model.Email);
                         return View("Lockout");
                     }
                     else
@@ -120,59 +122,62 @@ namespace DeliveryService.Controllers
             return View(model);
         }
 
+        public IActionResult SignUp(string returnUrl = null) {
+            ViewData["ReturnUrl"] = returnUrl;
+            CompanyRegistrationViewModel model = new CompanyRegistrationViewModel();
+            return View("SignUp", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SignUp(CompanyRegistrationViewModel model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
+            {
+               var result = await userService.SignUpCompanyAsync(model, Url, HttpContext);
+                if (result.Succeeded)
+                {
+                    return RedirectToLocal(returnUrl);
+                }
+                AddErrors(result);
+            }
+            return View(model);
+        }
+
         //
         // GET: /Account/Register
         [HttpGet]
         public IActionResult Register(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            RegisterViewModel model = new RegisterViewModel();
+            DriverRegisterViewModel model = new DriverRegisterViewModel();
             return View("Register", model);
         }
 
         [HttpGet]
-        public IActionResult RegisterDriver(int teamId, string emailAddress, string firstName, string returnUrl = null) {
+        public IActionResult RegisterDriver(int teamId, string email, string firstName, string returnUrl = null) {
             ViewData["ReturnUrl"] = returnUrl;
-            RegisterViewModel model = new RegisterViewModel();
-            model.Email = emailAddress;
+            DriverRegisterViewModel model = new DriverRegisterViewModel();
+            model.Email = email;
             model.FirstName = firstName;
-            model.DriverRegistration = true;
             model.DriverTeamId = teamId.ToString();
-            model.Shipper = false;
             return View("Register", model);
         }
 
         //
         // POST: /Account/Register
-
-            //TODO: register after email success 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register(DriverRegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            model.DriverTeamId = (string) ViewData["TeamId"];
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email};
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await userService.CreateDriverUserAsync(model);
+               
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, model.Shipper ? AppRole.SHIPPER : AppRole.DRIVER);
-                   // var driverRegistrationRequest = (DriverRegistrationRequest)from d in _context.DriverRegistrationRequests where d.DriverEmail == model.Email select d;
-
-
-                    var driverRegistrationRequest = _context.DriverRegistrationRequests.SingleOrDefault(m => m.DriverEmail == model.Email);
-                    int? teamIdForDriver = null;
-                    if (driverRegistrationRequest != null) {
-                        teamIdForDriver = driverRegistrationRequest.TeamID;
-                    }
-
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code, teamId = teamIdForDriver }, protocol: HttpContext.Request.Scheme);
-                    await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                        $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    _logger.LogInformation("User with email {0} created a new account.", user.Email);
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);
@@ -191,13 +196,12 @@ namespace DeliveryService.Controllers
         {
             var user = GetCurrentUserAsync();
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("User with ID {0} logged out.", user.Id);
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         // GET: /Account/ConfirmEmail
         [HttpGet]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code, string teamId = null)
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
             if (userId == null || code == null)
             {
@@ -211,36 +215,9 @@ namespace DeliveryService.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
             if (result.Succeeded) {
-                var userRole = _userManager.GetRolesAsync(user).Result;
-                if (userRole.Contains(AppRole.DRIVER))
-                {
-                    if (teamId == null)
-                    {
-                        await CreateDriverEntity(user);
-                    }
-                    else {
-                        await CreateDriverEntityAllocatedToTeam(user, teamId);
-                    }
-                }
-                else if (userRole.Contains(AppRole.SHIPPER)) {
-                    await CreateShipperEntity(user);
-                } 
+                 await CreateShipperEntity(user);
             }
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
-        }
-
-        private async Task CreateDriverEntityAllocatedToTeam(ApplicationUser user, string teamId)
-        {
-            var driverEntity = new Driver();
-            driverEntity.User = user;
-            int idInt = Convert.ToInt32(teamId);
-            var team = await _context.Teams.SingleOrDefaultAsync(m => m.ID == idInt);
-            driverEntity.Team = team;
-            driverEntity.TeamID = idInt;
-            _context.Drivers.Add(driverEntity);
-            var completedDriverRequest = await _context.DriverRegistrationRequests.SingleOrDefaultAsync(m => m.DriverEmail == user.Email);
-            _context.DriverRegistrationRequests.Remove(completedDriverRequest);
-            await _context.SaveChangesAsync();
         }
 
         private async Task CreateShipperEntity(ApplicationUser user)
@@ -251,15 +228,6 @@ namespace DeliveryService.Controllers
             await _context.SaveChangesAsync();
 
         }
-
-        private async Task CreateDriverEntity(ApplicationUser user)
-        {
-            var driverEntity = new Driver();
-            driverEntity.User = user;
-            _context.Drivers.Add(driverEntity);
-            await _context.SaveChangesAsync();
-        }
-
         //
         // GET: /Account/ForgotPassword
         [HttpGet]

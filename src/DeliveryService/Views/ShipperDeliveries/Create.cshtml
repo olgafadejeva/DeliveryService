@@ -19,50 +19,15 @@
                 <select asp-for="ClientID" class ="form-control" asp-items="ViewBag.ClientID"></select>
             </div>
         </div>
-        @if (ViewBag.Shipper.DefaultPickUpAddress != null)
-        {
-        <div class="form-group">
-            <label asp-for="useDefaultDeliveryAddress" class="col-md-2 control-label">Use default delivery address</label>
-            <div class="col-md-10">
-                <input id="checkbox" type="checkbox" asp-for="useDefaultDeliveryAddress" class="form-control"  />
-                <span asp-validation-for="useDefaultDeliveryAddress" class="text-danger"></span>
-            </div>
-        </div>} 
 
-
-        <button id="AddAddress" type="button" class="btn btn-primary" display:none>Add Address</button>
-        <div id="addAddressSection" style="display:none">
         <div class="form-group">
-            <label asp-for="PickUpAddress.LineOne" class="col-md-2 control-label"></label>
+            <label asp-for="PickUpAddressID" class="col-md-2 control-label">PickUpAddress</label>
             <div class="col-md-10">
-                <input asp-for="PickUpAddress.LineOne" class="form-control" />
-                <span asp-validation-for="PickUpAddress.LineOne" class="text-danger" />
+                <select asp-for="PickUpAddressID" class="form-control" asp-items="ViewBag.PickUpAddressID"></select>
             </div>
         </div>
-        <div class="form-group">
-            <label asp-for="PickUpAddress.LineTwo" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PickUpAddress.LineTwo" class="form-control" />
-                <span asp-validation-for="PickUpAddress.LineTwo" class="text-danger" />
-            </div>
-        </div>
-            <div class="form-group">
-                <label asp-for="PickUpAddress.City" class="col-md-2 control-label"></label>
-                <div class="col-md-10">
-                    <input asp-for="PickUpAddress.City" class="form-control" />
-                    <span asp-validation-for="PickUpAddress.City" class="text-danger" />
-                </div>
-            </div>
-        <div class="form-group">
-            <label asp-for="PickUpAddress.PostCode" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PickUpAddress.PostCode" class="form-control" />
-                <span asp-validation-for="PickUpAddress.PostCode" class="text-danger" />
-            </div>
-        </div>
-            </div>
-        
 
+      
         <div class="form-group">
             <label asp-for="ItemWeight" class="col-md-2 control-label"></label>
             <div class="col-md-10">

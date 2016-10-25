@@ -9,6 +9,9 @@ using DeliveryService.Models.AccountViewModels;
 using System.Linq;
 using DeliveryService.Models.Entities;
 using DeliveryService.Entities;
+using Moq;
+using DeliveryService.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace DeliveryServiceTests.Controllers
 {
@@ -20,8 +23,6 @@ namespace DeliveryServiceTests.Controllers
         {
             _serviceProvider = ServiceBuilder.getServiceProvider();
         }
-
-        
     
         [Fact]
         public void testGetLogin() {
@@ -158,7 +159,7 @@ namespace DeliveryServiceTests.Controllers
             var result = controller.Register("return/url");
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(viewResult.ViewData["ReturnUrl"], "return/url");
-            Assert.Equal(viewResult.Model.GetType(), typeof(RegisterViewModel));
+            Assert.Equal(viewResult.Model.GetType(), typeof(DriverRegisterViewModel));
             Assert.Equal(viewResult.ViewName, "Register");
         }
 
@@ -171,20 +172,18 @@ namespace DeliveryServiceTests.Controllers
             var result = controller.RegisterDriver( 1, email, firstName, "url");
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(viewResult.ViewData["ReturnUrl"], "url");
-            Assert.Equal(viewResult.Model.GetType(), typeof(RegisterViewModel));
+            Assert.Equal(viewResult.Model.GetType(), typeof(DriverRegisterViewModel));
             Assert.Equal(viewResult.ViewName, "Register");
 
-            var model = (RegisterViewModel) viewResult.Model;
-            Assert.True(model.DriverRegistration);
+            var model = (DriverRegisterViewModel) viewResult.Model;
             Assert.Equal(model.DriverTeamId, "1");
             Assert.Equal(model.FirstName, firstName);
             Assert.Equal(model.Email, email);
-            Assert.False(model.Shipper);
         }
 
         [Fact]
         public async Task testPostRegisterInvalidModel() {
-            RegisterViewModel model = new RegisterViewModel();
+            DriverRegisterViewModel model = new DriverRegisterViewModel();
             var controller = ControllerSupplier.getAccountController();
             controller.ViewData.ModelState.AddModelError("Key", "ErrorMessage");
             var result = (ViewResult)await controller.Register(model);
@@ -193,37 +192,49 @@ namespace DeliveryServiceTests.Controllers
 
         [Fact]
         public async Task testPostRegisterUserAlreadyExists() {
-            RegisterViewModel model = new RegisterViewModel();
+            DriverRegisterViewModel model = new DriverRegisterViewModel();
             model.Email = Constants.DEFAULT_EMAIL;
             model.Password = Constants.DEFAULT_PASSWORD;
             model.FirstName = "Matt";
+
             var controller = ControllerSupplier.getAccountController();
-            await populateDatabaseWithUser(controller);
+            var mockUserService = new Mock<IUserService>();
+            IdentityError error = new IdentityError();
+            error.Code = "user exists";
+            error.Description = "user exists";
+            IdentityResult identityResult = IdentityResult.Failed(error);
+            mockUserService.Setup(m => m.CreateDriverUserAsync(model)).Returns(Task.FromResult<IdentityResult>(identityResult));
+            controller.userService = mockUserService.Object;
             var result = (ViewResult) await controller.Register(model);
             Assert.Equal(result.Model, model);
             Assert.True(controller.ViewData.ModelState.ErrorCount == 1);
             var allErrors = controller.ModelState.Values.SelectMany(v => v.Errors);
-            Assert.True(allErrors.First().ErrorMessage.Contains("address already exists"));
+            Assert.True(allErrors.First().ErrorMessage.Contains(error.Description));
         }
 
         [Fact]
-        public async Task testPostRegisterUserWithInvalidPassword()
+        public async Task testPostRegisterUserFailureInvalidPassword()
         {
-            RegisterViewModel model = new RegisterViewModel();
+            DriverRegisterViewModel model = new DriverRegisterViewModel();
             model.Email = "email@test.com";
             model.Password = "123";
             var controller = ControllerSupplier.getAccountController();
-            await populateDatabaseWithUser(controller);
+            var mockUserService = new Mock<IUserService>();
+            IdentityError error = new IdentityError();
+            error.Code = "invalid password";
+            error.Description = "invalid password";
+            IdentityResult identityResult = IdentityResult.Failed(error);
+            mockUserService.Setup(m => m.CreateDriverUserAsync(model)).Returns(Task.FromResult<IdentityResult>(identityResult));
+            controller.userService = mockUserService.Object;
             var result = (ViewResult)await controller.Register(model);
             Assert.Equal(result.Model, model);
-            Assert.True(controller.ViewData.ModelState.ErrorCount == 1);
             var allErrors = controller.ModelState.Values.SelectMany(v => v.Errors);
-            Assert.True(allErrors.First().ErrorMessage.Contains("Password"));
+            Assert.True(allErrors.First().ErrorMessage.Contains(error.Description));
         }
 
        // [Fact]
         public async Task testPostRegisterSuccess() {
-            RegisterViewModel model = new RegisterViewModel();
+            DriverRegisterViewModel model = new DriverRegisterViewModel();
             model.Email = "email@test.com";
             model.Password = "123TestPassword";
             var controller = ControllerSupplier.getAccountController();
@@ -249,7 +260,7 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testGetConfimEmailWithNullUserId() {
             var controller = ControllerSupplier.getAccountController();
-            var result = await controller.ConfirmEmail(null, Constants.CONFIRM_CODE, "aa");
+            var result = await controller.ConfirmEmail(null, Constants.CONFIRM_CODE);
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "Error");
@@ -259,7 +270,7 @@ namespace DeliveryServiceTests.Controllers
         public async Task testGetConfimEmailWithNullConfirmCode()
         {
             var controller = ControllerSupplier.getAccountController();
-            var result = await controller.ConfirmEmail(Constants.USER_ID, null, "aa");
+            var result = await controller.ConfirmEmail(Constants.USER_ID, null);
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "Error");
@@ -269,87 +280,10 @@ namespace DeliveryServiceTests.Controllers
         public async Task testGetConfirmEmailForExistingUserWithWrongCode() {
             var controller = ControllerSupplier.getAccountController();
             await populateDatabaseWithUser(controller);
-            var result = await controller.ConfirmEmail(Constants.USER_ID, "123", "aa");
+            var result = await controller.ConfirmEmail(Constants.USER_ID, "123");
             Assert.NotNull(result);
             var viewName = ((ViewResult)result).ViewName;
             Assert.Equal(viewName, "Error");
-        }
-
-        [Fact]
-        public async Task testGetConfirmEmailForExistingUserNotDriverOrShipper()
-        {
-            var controller = ControllerSupplier.getAccountController();
-            await populateDatabaseWithUser(controller);
-            var userManager = controller.getUserManager();
-            
-            var user = await userManager.FindByIdAsync(Constants.USER_ID);
-            await userManager.AddToRoleAsync(user, AppRole.ADMIN);
-            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-
-            var result = await controller.ConfirmEmail(Constants.USER_ID, code, "aa");
-            Assert.NotNull(result);
-            var viewName = ((ViewResult)result).ViewName;
-            Assert.Equal(viewName, "ConfirmEmail");
-
-            var dbContext = controller.getApplicationContext();
-            Assert.Equal(dbContext.Drivers.ToList<Driver>().Count, 0);
-            Assert.Equal(dbContext.Shippers.ToList<Shipper>().Count, 0);
-        }
-
-        [Fact]
-        public async Task testGetConfirmEmailForExistingUserDriver()
-        {
-            var controller = ControllerSupplier.getAccountController();
-            await populateDatabaseWithUser(controller);
-            var userManager = controller.getUserManager();
-
-            var user = await userManager.FindByIdAsync(Constants.USER_ID);
-            await userManager.AddToRoleAsync(user, AppRole.DRIVER);
-            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-
-            var result = await controller.ConfirmEmail(Constants.USER_ID, code);
-            Assert.NotNull(result);
-            var viewName = ((ViewResult)result).ViewName;
-            Assert.Equal(viewName, "ConfirmEmail");
-            var dbContext = controller.getApplicationContext();
-            Assert.Equal(dbContext.Drivers.ToList<Driver>().Count, 1);
-            Assert.Equal(dbContext.Shippers.ToList<Shipper>().Count, 0);
-        }
-
-        [Fact]
-        public async Task testGetConfirmEmailForExistingUserDriverTeamRegistration()
-        {   
-            var controller = ControllerSupplier.getAccountController();
-
-            var dbContext = controller.getApplicationContext();
-            await populateDatabaseWithUser(controller);
-
-            Team team = new Team();
-            dbContext.Teams.Add(team);
-            await dbContext.SaveChangesAsync();
-
-            DriverRegistrationRequest request = new DriverRegistrationRequest();
-            request.DriverEmail = Constants.DEFAULT_EMAIL;
-           // request.Team = team;
-            request.TeamID = team.ID;
-            dbContext.DriverRegistrationRequests.Add(request);
-            await dbContext.SaveChangesAsync();
-            
-            var userManager = controller.getUserManager();
-            var user = await userManager.FindByIdAsync(Constants.USER_ID);
-            await userManager.AddToRoleAsync(user, AppRole.DRIVER);
-            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-
-            var result = await controller.ConfirmEmail(Constants.USER_ID, code, team.ID.ToString());
-            Assert.NotNull(result);
-            var viewName = ((ViewResult)result).ViewName;
-            Assert.Equal(viewName, "ConfirmEmail");
-            Assert.Equal(dbContext.Drivers.ToList<Driver>().Count, 1);
-            var driver = dbContext.Drivers.First<Driver>();
-            Assert.Equal(driver.TeamID, team.ID);
-            Assert.Equal(dbContext.Shippers.ToList<Shipper>().Count, 0);
-            Assert.Equal(dbContext.DriverRegistrationRequests.ToList<DriverRegistrationRequest>().Count, 0);
-            Assert.Equal(team.Drivers.Count, 1);
         }
 
         [Fact]
@@ -416,6 +350,26 @@ namespace DeliveryServiceTests.Controllers
             var userManager = controller.getUserManager();
             var userManagerResult = await userManager.CreateAsync(
                 new ApplicationUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL },
+                Constants.DEFAULT_PASSWORD);
+
+            Assert.True(userManagerResult.Succeeded);
+        }
+
+        private async Task populateDatabaseWithDriverUser(AccountController controller)
+        {
+
+            Company company = new Company();
+            var context = controller.getApplicationContext();
+            context.Companies.Add(company);
+
+            DriverRegistrationRequest request = new DriverRegistrationRequest();
+            request.DriverEmail = Constants.DEFAULT_EMAIL;
+            context.DriverRegistrationRequests.Add(request);
+            await context.SaveChangesAsync();
+            
+            var userManager = controller.getUserManager();
+            var userManagerResult = await userManager.CreateAsync(
+                new DriverUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL, Company = company },
                 Constants.DEFAULT_PASSWORD);
 
             Assert.True(userManagerResult.Succeeded);

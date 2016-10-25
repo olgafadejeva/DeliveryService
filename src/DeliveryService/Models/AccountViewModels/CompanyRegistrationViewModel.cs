@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.AccountViewModels
 {
-    public class RegisterViewModel
+    public class CompanyRegistrationViewModel
     {
+
         [Required]
-        [Display(Name = "I am a shipper")]
-        public bool Shipper { get; set; }
+        [Display(Name = "Company name")]
+        public string CompanyName { get; set; }
 
         [Required]
         [Display(Name = "First name")]
@@ -36,12 +37,8 @@ namespace DeliveryService.Models.AccountViewModels
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        public bool DriverRegistration { get; set; }
-
-        public string DriverTeamId { get; set; }
-
-        public RegisterViewModel() {
-            DriverRegistration = false;
+        public CompanyRegistrationViewModel()
+        {
         }
     }
 }

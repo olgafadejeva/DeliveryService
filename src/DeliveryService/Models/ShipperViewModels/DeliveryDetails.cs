@@ -14,11 +14,8 @@ namespace DeliveryService.Models.ShipperViewModels
     {
         public int ClientID { get; set; } //foreign key to client 
 
-        public bool useDefaultDeliveryAddress { get; set; }
-
-        public PickUpAddress PickUpAddress { get; set; }
-
-
+        public int PickUpAddressID { get; set; }
+        
         [Display(Name = "Item size")]
         public ItemSize ItemSize { get; set; }
 

@@ -35,18 +35,7 @@ namespace DeliveryServiceTests.Services
             bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, Status.PickedUpByDriver);
             Assert.True(statusUpdated);
         }
-
-        [Fact]
-        public async Task testValidTransitionFromAcceptedByDriver()
-        {
-            Delivery delivery = new Delivery();
-            context.Deliveries.Add(delivery);
-            delivery.DeliveryStatus = new DeliveryStatus();
-            delivery.DeliveryStatus.Status = Status.ClaimedByDriver;
-            await context.SaveChangesAsync();
-            bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, Status.PickedUpByDriver);
-            Assert.True(statusUpdated);
-        }
+        
 
         [Fact]
         public async Task testValidTransitionFromPickedUpByDriver()

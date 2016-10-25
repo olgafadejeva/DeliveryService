@@ -17,6 +17,8 @@ namespace DeliveryService.Models.Entities
         [Display(Name = "Item size")]
         public ItemSize ItemSize { get; set; }
 
+        public DateTime? DeliverBy { get; set; }
+
 
         [Display(Name = "Item weight in kg")]
         public double ItemWeight { get; set; }

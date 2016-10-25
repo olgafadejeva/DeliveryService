@@ -40,6 +40,8 @@ namespace DeliveryService.Data
         public DbSet<Shipper> Shippers { get; set; }
         public DbSet<DriverRegistrationRequest> DriverRegistrationRequests { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
+        public virtual DbSet<Company> Companies { get; set; }
+        public DbSet<PickUpAddress> PickUpAddress { get; set; }
 
     }
 }
