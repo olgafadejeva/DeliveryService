@@ -10,13 +10,12 @@ namespace DeliveryServiceTests.Helpers
 {
     public class ShipperDetailsHelper
     {
-        public static async Task<Shipper> createShipperEntity(ShipperController controller)
+        public static async Task<Company> createShipperEntity(ShipperController controller)
         {
             var context = controller.getDbContext();
-            var shipperEntity = new Shipper();
+            var shipperEntity = new Company();
             var user = context.ApplicationUsers.First<ApplicationUser>();
-            shipperEntity.User = user;
-            context.Shippers.Add(shipperEntity);
+            context.Companies.Add(shipperEntity);
             await context.SaveChangesAsync();
             return shipperEntity;
         }
@@ -30,7 +29,7 @@ namespace DeliveryServiceTests.Helpers
         public static Delivery getDelivery()
         {
             Delivery delivery = new Delivery();
-            delivery.PickUpAddress = getDeliveryPickUpAddress();
+            delivery.Route.PickUpAddress = getDeliveryPickUpAddress();
             return delivery;
 
         }

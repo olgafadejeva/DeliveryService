@@ -10,6 +10,8 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+@if (Model.ToList().Count != 0)
+{
 <table class="table">
     <thead>
         <tr>
@@ -29,7 +31,8 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model)
+{
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.City)
@@ -51,3 +54,6 @@
 }
     </tbody>
 </table>
+}
+
+@Html.ActionLink("Back to Dashboard", "Index", "ShipperDashboard")

@@ -11,14 +11,14 @@ namespace DeliveryService.Models.Entities
     {
         public Driver() {
             Vehicles = new List<Vehicle>();
-            Deliveries = new List<Delivery>();
+            Routes = new List<Route>();
         }
 
         [Key]
         public int ID { get; set; }
         
         public virtual ICollection<Vehicle> Vehicles { get; set; }
-        public virtual ICollection<Delivery> Deliveries { get; set; }
+        public virtual ICollection<Route> Routes { get; set; }
         public virtual DriverUser User { get; set; }
 
     }

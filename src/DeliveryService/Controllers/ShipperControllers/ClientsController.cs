@@ -12,14 +12,18 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using DeliveryService.Controllers.ShipperControllers;
 using DeliveryService.Models.ShipperViewModels;
+using DeliveryService.Services;
 
 namespace DeliveryService.ShipperControllers
 {
     public class ClientsController : ShipperController
     {
 
-        public ClientsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor)
+        public GoogleMapsUtil googleMaps { get; set; }
+
+        public ClientsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, GoogleMapsUtil googleMapsUtil) : base(context, contextAccessor)
         {
+            this.googleMaps = googleMapsUtil;
         }
 
         public async Task<IActionResult> Index()
@@ -56,6 +60,7 @@ namespace DeliveryService.ShipperControllers
         {
             if (ModelState.IsValid)
             {
+                await googleMaps.addLocationDataToAddress(client.Address);
                 company.Clients.Add(client);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -101,6 +106,9 @@ namespace DeliveryService.ShipperControllers
                     clientEntity.Address.LineTwo = client.Address.LineTwo;
                     clientEntity.Address.City = client.Address.City;
                     clientEntity.Address.PostCode = client.Address.PostCode;
+
+
+                    await googleMaps.addLocationDataToAddress(clientEntity.Address);
 
                     _context.Update(clientEntity);
                     await _context.SaveChangesAsync();

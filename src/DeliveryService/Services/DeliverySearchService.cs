@@ -56,7 +56,6 @@ namespace DeliveryService.Services
             List<Delivery> allDeliveries = context.Deliveries
                                 .Include(d => d.DeliveryStatus)
                                 .Include(d => d.DeliveryStatus.AssignedTo)
-                                .Include(d => d.PickUpAddress)
                                  .Include(d => d.Client)
                                  .Include(d => d.Client.Address).ToList();
             List<Delivery> selectedDeliveries = new List<Delivery>();
@@ -88,7 +87,6 @@ namespace DeliveryService.Services
                         {
                             delivery = context.Deliveries
                                 .Include(d => d.DeliveryStatus)
-                                .Where(d => d.PickUpAddress.ID == address.ID)
                                 .SingleOrDefault();
                         }
                         else {

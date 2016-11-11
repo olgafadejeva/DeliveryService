@@ -28,6 +28,10 @@ namespace DeliveryService.Models.Entities
         [RegularExpression(@"(([A-Z]{1,2}[0-9]{1,2})\ ([0-9][A-Z]{2}))|(GIR\ 0AA)$", ErrorMessage = "Must be a valid UK postcode")]
         public string PostCode { get; set; }
 
+        public double Lat { get; set; }
+
+        public double Lng { get; set; }
+
         public Address(string LineOne, string LineTwo, string City, string PostCode) {
             this.LineOne = LineOne;
             this.LineTwo = LineTwo;

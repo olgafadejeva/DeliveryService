@@ -44,10 +44,7 @@ namespace DeliveryService.Controllers
             _context = context;
             this.userService = userService;
         }
-
-        public AccountController(IUserService userService) {
-            this.userService = userService;
-        }
+        
 
         public UserManager<ApplicationUser> getUserManager() {
             return _userManager;
@@ -213,21 +210,11 @@ namespace DeliveryService.Controllers
                 return View("Error");
             }
             var result = await _userManager.ConfirmEmailAsync(user, code);
-
-            if (result.Succeeded) {
-                 await CreateShipperEntity(user);
-            }
+            
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
-        private async Task CreateShipperEntity(ApplicationUser user)
-        {
-            var shipperEntity = new Shipper();
-            shipperEntity.User = user;
-            _context.Shippers.Add(shipperEntity);
-            await _context.SaveChangesAsync();
-
-        }
+       
         //
         // GET: /Account/ForgotPassword
         [HttpGet]

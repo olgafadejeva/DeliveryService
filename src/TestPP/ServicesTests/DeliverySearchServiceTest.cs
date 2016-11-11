@@ -2,7 +2,6 @@
 using DeliveryService.Models.Entities;
 using DeliveryService.Services;
 using DeliveryServiceTests.Helpers;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Newtonsoft.Json.Linq;
@@ -150,7 +149,6 @@ namespace DeliveryServiceTests.Services
             };
 
             context.Addresses.Add(address);
-            delivery.PickUpAddress = address;
             delivery.Client = client;
             context.Deliveries.Add(delivery);
             await context.SaveChangesAsync();

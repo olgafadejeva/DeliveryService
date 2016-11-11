@@ -24,7 +24,7 @@ namespace DeliveryService.Controllers.DriverControllers
 
         public IActionResult Index()
         {
-            return View(driver.Deliveries);
+            return View(driver.Routes);
         }
 
       
@@ -38,7 +38,6 @@ namespace DeliveryService.Controllers.DriverControllers
             }
             Delivery delivery = _context.Deliveries
                 .Include(d => d.DeliveryStatus)
-                .Include(d => d.PickUpAddress)
                 .SingleOrDefault(d => d.ID == id);
             if (delivery == null)
             {
@@ -66,7 +65,6 @@ namespace DeliveryService.Controllers.DriverControllers
                 return RedirectToAction("Index");
             }
             Delivery delivery = _context.Deliveries
-                .Include(d=>d.PickUpAddress)
                 .Include(d=>d.Client)
                 .Include(d=>d.Client.Address)
                 .SingleOrDefault(d => d.ID == id);
@@ -74,7 +72,7 @@ namespace DeliveryService.Controllers.DriverControllers
             {
                 return RedirectToAction("Index");
             }
-            var directions = directionsService.getDirectionsFromAddresses(delivery.PickUpAddress, delivery.Client.Address);
+            var directions = directionsService.getDirectionsFromAddresses(new PickUpAddress(), delivery.Client.Address);
             return View(directions);
             
         }

@@ -78,7 +78,7 @@ namespace DeliveryService.Controllers.ShipperControllers
             status.AssignedToId = driver.ID;
 
             var delivery = _context.Deliveries.SingleOrDefault(d => d.DeliveryStatus.ID == status.ID);
-            driver.Deliveries.Add(delivery);
+           // driver.Routes.Add(delivery);
             await _context.SaveChangesAsync();
 
             Delivery[] deliveries = await getShippersDeliveries();
@@ -110,9 +110,7 @@ namespace DeliveryService.Controllers.ShipperControllers
                 delivery.Client = client;
                 delivery.ItemSize = deliveryDetails.ItemSize;
                 delivery.ItemWeight = deliveryDetails.ItemWeight;
-
-                PickUpAddress address = company.PickUpLocations.SingleOrDefault(a => a.ID == deliveryDetails.PickUpAddressID);
-                delivery.PickUpAddress = address;
+                delivery.DeliverBy = deliveryDetails.DeliverBy;
                 
                 
                 DeliveryStatus status = new DeliveryStatus();
@@ -125,7 +123,6 @@ namespace DeliveryService.Controllers.ShipperControllers
                 return RedirectToAction("Index");
             }
             ViewData["ClientID"] = new SelectList(company.Clients, "ID", "FirstName", deliveryDetails.ClientID);
-            ViewData["PickUpAddressID"] = new SelectList(company.PickUpLocations, "ID", "LineOne");
             return View(deliveryDetails);
         }
 
@@ -142,7 +139,6 @@ namespace DeliveryService.Controllers.ShipperControllers
                 return NotFound();
             }
             ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "Email", delivery.ClientID);
-            ViewData["PickUpAddressID"] = new SelectList(company.PickUpLocations, "ID", "LineOne");
             return View(delivery);
         }
 
@@ -154,7 +150,7 @@ namespace DeliveryService.Controllers.ShipperControllers
 
         private async Task<Delivery> getDelivery(int? id)
         {
-            return await _context.Deliveries.Include(d => d.PickUpAddress)
+            return await _context.Deliveries
                 .Include(d => d.Client)
                 .Include(d => d.DeliveryStatus)
                 .SingleOrDefaultAsync(m => m.ID == id);
@@ -173,12 +169,11 @@ namespace DeliveryService.Controllers.ShipperControllers
                     var deliveryEntity = _context.Deliveries.SingleOrDefault(d => d.ID == delivery.ID);
                     Client client = company.Clients.SingleOrDefault(c => c.ID == delivery.ClientID);
                     deliveryEntity.Client = client;
-
-                    PickUpAddress address = company.PickUpLocations.SingleOrDefault(a => a.ID == delivery.PickUpAddressID);
-                    deliveryEntity.PickUpAddress = address;
+                    
 
                     deliveryEntity.ItemSize = delivery.ItemSize;
                     deliveryEntity.ItemWeight = delivery.ItemWeight;
+                    deliveryEntity.DeliverBy = delivery.DeliverBy;
                     _context.Update(deliveryEntity);
                     await _context.SaveChangesAsync();
                 }
@@ -196,7 +191,6 @@ namespace DeliveryService.Controllers.ShipperControllers
                 return RedirectToAction("Index");
             }
             ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "Email", delivery.ClientID);
-            ViewData["PickUpAddressID"] = new SelectList(company.PickUpLocations, "ID", "LineOne");
             return View(delivery);
         }
 
@@ -223,7 +217,6 @@ namespace DeliveryService.Controllers.ShipperControllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var delivery = await getDelivery(id);
-            _context.Addresses.Remove(delivery.PickUpAddress);
             _context.Deliveries.Remove(delivery);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

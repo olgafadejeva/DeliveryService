@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DeliveryService.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Inital : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -51,6 +51,28 @@ namespace DeliveryService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Clients",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CompanyID = table.Column<int>(nullable: true),
+                    Email = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(nullable: false),
+                    LastName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Clients", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Clients_Companies_CompanyID",
+                        column: x => x.CompanyID,
+                        principalTable: "Companies",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Teams",
                 columns: table => new
                 {
@@ -88,6 +110,39 @@ namespace DeliveryService.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Addresses",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    City = table.Column<string>(nullable: false),
+                    Discriminator = table.Column<string>(nullable: false),
+                    Lat = table.Column<double>(nullable: false),
+                    LineOne = table.Column<string>(nullable: false),
+                    LineTwo = table.Column<string>(nullable: true),
+                    Lng = table.Column<double>(nullable: false),
+                    PostCode = table.Column<string>(nullable: false),
+                    ClientId = table.Column<int>(nullable: true),
+                    CompanyID = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Addresses", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Addresses_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Addresses_Companies_CompanyID",
+                        column: x => x.CompanyID,
+                        principalTable: "Companies",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -185,32 +240,6 @@ namespace DeliveryService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Shippers",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    TeamID = table.Column<int>(nullable: true),
-                    UserId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Shippers", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Shippers_Teams_TeamID",
-                        column: x => x.TeamID,
-                        principalTable: "Teams",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Shippers_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -282,7 +311,6 @@ namespace DeliveryService.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AssignedToId = table.Column<int>(nullable: true),
-                    PickedUpById = table.Column<int>(nullable: true),
                     Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -294,10 +322,38 @@ namespace DeliveryService.Migrations
                         principalTable: "Drivers",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Route",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CompanyID = table.Column<int>(nullable: true),
+                    DeliverBy = table.Column<DateTime>(nullable: false),
+                    DriverID = table.Column<int>(nullable: true),
+                    PickUpAddressID = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Route", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_DeliveryStatus_Drivers_PickedUpById",
-                        column: x => x.PickedUpById,
+                        name: "FK_Route_Companies_CompanyID",
+                        column: x => x.CompanyID,
+                        principalTable: "Companies",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Route_Drivers_DriverID",
+                        column: x => x.DriverID,
                         principalTable: "Drivers",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Route_Addresses_PickUpAddressID",
+                        column: x => x.PickUpAddressID,
+                        principalTable: "Addresses",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -327,67 +383,6 @@ namespace DeliveryService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Clients",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CompanyID = table.Column<int>(nullable: true),
-                    Email = table.Column<string>(nullable: false),
-                    FirstName = table.Column<string>(nullable: false),
-                    LastName = table.Column<string>(nullable: true),
-                    ShipperID = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Clients", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Clients_Companies_CompanyID",
-                        column: x => x.CompanyID,
-                        principalTable: "Companies",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Clients_Shippers_ShipperID",
-                        column: x => x.ShipperID,
-                        principalTable: "Shippers",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Addresses",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    City = table.Column<string>(nullable: false),
-                    Discriminator = table.Column<string>(nullable: false),
-                    LineOne = table.Column<string>(nullable: false),
-                    LineTwo = table.Column<string>(nullable: true),
-                    PostCode = table.Column<string>(nullable: false),
-                    ClientId = table.Column<int>(nullable: true),
-                    CompanyID = table.Column<int>(nullable: true),
-                    Default = table.Column<bool>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Addresses", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Addresses_Clients_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "Clients",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Addresses_Companies_CompanyID",
-                        column: x => x.CompanyID,
-                        principalTable: "Companies",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Deliveries",
                 columns: table => new
                 {
@@ -397,11 +392,9 @@ namespace DeliveryService.Migrations
                     CompanyID = table.Column<int>(nullable: true),
                     DeliverBy = table.Column<DateTime>(nullable: true),
                     DeliveryStatusID = table.Column<int>(nullable: false),
-                    DriverID = table.Column<int>(nullable: true),
                     ItemSize = table.Column<int>(nullable: false),
                     ItemWeight = table.Column<double>(nullable: false),
-                    PickUpAddressID = table.Column<int>(nullable: true),
-                    ShipperID = table.Column<int>(nullable: true)
+                    RouteID = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -425,23 +418,11 @@ namespace DeliveryService.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Deliveries_Drivers_DriverID",
-                        column: x => x.DriverID,
-                        principalTable: "Drivers",
+                        name: "FK_Deliveries_Route_RouteID",
+                        column: x => x.RouteID,
+                        principalTable: "Route",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Deliveries_Addresses_PickUpAddressID",
-                        column: x => x.PickUpAddressID,
-                        principalTable: "Addresses",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Deliveries_Shippers_ShipperID",
-                        column: x => x.ShipperID,
-                        principalTable: "Shippers",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -487,11 +468,6 @@ namespace DeliveryService.Migrations
                 column: "CompanyID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Clients_ShipperID",
-                table: "Clients",
-                column: "ShipperID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Deliveries_ClientID",
                 table: "Deliveries",
                 column: "ClientID");
@@ -507,29 +483,14 @@ namespace DeliveryService.Migrations
                 column: "DeliveryStatusID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Deliveries_DriverID",
+                name: "IX_Deliveries_RouteID",
                 table: "Deliveries",
-                column: "DriverID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Deliveries_PickUpAddressID",
-                table: "Deliveries",
-                column: "PickUpAddressID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Deliveries_ShipperID",
-                table: "Deliveries",
-                column: "ShipperID");
+                column: "RouteID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeliveryStatus_AssignedToId",
                 table: "DeliveryStatus",
                 column: "AssignedToId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DeliveryStatus_PickedUpById",
-                table: "DeliveryStatus",
-                column: "PickedUpById");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Drivers_CompanyID",
@@ -547,14 +508,19 @@ namespace DeliveryService.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Shippers_TeamID",
-                table: "Shippers",
-                column: "TeamID");
+                name: "IX_Route_CompanyID",
+                table: "Route",
+                column: "CompanyID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Shippers_UserId",
-                table: "Shippers",
-                column: "UserId");
+                name: "IX_Route_DriverID",
+                table: "Route",
+                column: "DriverID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Route_PickUpAddressID",
+                table: "Route",
+                column: "PickUpAddressID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Teams_CompanyID",
@@ -628,7 +594,7 @@ namespace DeliveryService.Migrations
                 name: "DeliveryStatus");
 
             migrationBuilder.DropTable(
-                name: "Addresses");
+                name: "Route");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -637,13 +603,13 @@ namespace DeliveryService.Migrations
                 name: "Drivers");
 
             migrationBuilder.DropTable(
-                name: "Clients");
-
-            migrationBuilder.DropTable(
-                name: "Shippers");
+                name: "Addresses");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Clients");
 
             migrationBuilder.DropTable(
                 name: "Teams");

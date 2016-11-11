@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+﻿using DeliveryService.Models.Entities;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +25,24 @@ namespace DeliveryService.Services
             string uri = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" + currentLocationString + "&destinations=" + pickUpAddressString + "&key=" + options.GoogleMapsApiKey;
             HttpResponseMessage response = await httpClient.GetAsync(uri);
             return response;
+        }
+
+        public virtual async Task addLocationDataToAddress(Address address) {
+            HttpClient httpClient = new HttpClient();
+            string addressString =  DirectionsService.getStringFromAddress(address);
+            string uri = "https://maps.googleapis.com/maps/api/geocode/json?address=" + addressString + "&key=" + options.GoogleMapsApiKey;
+            HttpResponseMessage response = await httpClient.GetAsync(uri);
+
+            var jsonString = response.Content.ReadAsStringAsync().Result;
+            JObject json = JObject.Parse(jsonString);
+            var latValue = (string)json.SelectToken("results[0].geometry.location.lat");
+            var lat = Convert.ToDouble(latValue);
+
+            var lngValue = (string)json.SelectToken("results[0].geometry.location.lng");
+            var lng = Convert.ToDouble(lngValue);
+
+            address.Lat = lat;
+            address.Lng = lng;
         }
     }
 }

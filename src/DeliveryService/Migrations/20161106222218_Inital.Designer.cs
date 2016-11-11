@@ -8,9 +8,10 @@ using DeliveryService.Data;
 namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161106222218_Inital")]
+    partial class Inital
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -171,7 +172,7 @@ namespace DeliveryService.Migrations
 
                     b.Property<double>("ItemWeight");
 
-                    b.Property<int?>("RouteID");
+                    b.Property<int>("RouteID");
 
                     b.HasKey("ID");
 
@@ -245,7 +246,7 @@ namespace DeliveryService.Migrations
 
                     b.HasIndex("PickUpAddressID");
 
-                    b.ToTable("Routes");
+                    b.ToTable("Route");
                 });
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Team", b =>
@@ -485,9 +486,10 @@ namespace DeliveryService.Migrations
                         .HasForeignKey("DeliveryStatusID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("DeliveryService.Models.Entities.Route")
+                    b.HasOne("DeliveryService.Models.Entities.Route", "Route")
                         .WithMany("Deliveries")
-                        .HasForeignKey("RouteID");
+                        .HasForeignKey("RouteID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("DeliveryService.Models.Entities.DeliveryStatus", b =>
@@ -588,7 +590,7 @@ namespace DeliveryService.Migrations
 
             modelBuilder.Entity("DeliveryService.Models.Entities.ClientAddress", b =>
                 {
-                    b.HasOne("DeliveryService.Models.Entities.Client")
+                    b.HasOne("DeliveryService.Models.Entities.Client", "Client")
                         .WithOne("Address")
                         .HasForeignKey("DeliveryService.Models.Entities.ClientAddress", "ClientId")
                         .OnDelete(DeleteBehavior.Cascade);

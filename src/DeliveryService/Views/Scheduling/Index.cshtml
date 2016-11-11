@@ -1,0 +1,235 @@
+﻿@using Newtonsoft.Json
+@model DeliveryService.Models.ShipperViewModels.MapObjects
+
+<html>
+<head>
+    <style>
+        #map {
+            height: 800px;
+            width: 100%;
+        }
+
+        #legend {
+            font-family: Arial, sans-serif;
+            background: #fff;
+            padding: 10px;
+            margin: 10px;
+            border: 3px solid #000;
+        }
+
+            #legend h3 {
+                margin-top: 0;
+            }
+
+            #legend img {
+                vertical-align: middle;
+            }
+
+            #main_body {
+            overflow: hidden;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function filterDeliveriesByDeliveryDate() {
+                $.ajax({
+                    type: 'GET',
+                    url: '/scheduling/DeliverWithinDays',
+                    data: { days:document.getElementById("daysDeliverBy").value },
+
+                    dataType: "json",
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (result) {
+                        console.log(result);
+                        deliveries = result;
+                        initMap();
+                    },
+                    error: function (result) {
+                        alert('Oh no: '+ result.responseText);
+                    }
+                        });
+            }
+
+
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var labelIndex = 0;
+
+
+        var deliveries = @Html.Raw(JsonConvert.SerializeObject(Model.Deliveries));
+        var depots = @Html.Raw(JsonConvert.SerializeObject(Model.Depots));
+        console.log("deliveries " + deliveries);
+        console.log("depots: " + depots);
+        function initMap() {
+
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7,
+                center: { lat: 53.3811, lng: -1.4701 }
+            });
+
+            var markers = deliveries.map(function (delivery, i) {
+                var marker =   new google.maps.Marker({
+                    position:  { lat: parseFloat(delivery.Client.Address.Lat), lng: parseFloat(delivery.Client.Address.Lng)},
+                    id: delivery.ID.toString(),
+                    added: false,
+                    map:map
+
+                });
+
+
+                google.maps.event.addListener(marker, 'click', function() {
+                    if (marker.added) {
+                        document.getElementById("alert").style.visibility = 'visible';
+                    } else {
+                        route.ids.push(marker.id);
+                        marker.setIcon(route.icon);
+                        marker.added = true;
+
+                        currentSpan.innerHTML = route.ids.length;
+                        document.getElementById("alert").style.visibility = 'hidden';
+                    }
+                });
+                return marker;
+
+            });
+
+            var depotMarkers  = depots.map(function(marker,i) {
+                var marker =   new google.maps.Marker({
+                    position:  { lat: parseFloat(marker.Lat), lng: parseFloat(marker.Lng)},
+                    map:map,
+                    icon:"data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIiBvdmVyZmxvdz0iaW5oZXJpdCI+PHBhdGggZD0iTTguNTI0IDMwLjc5NWMtMS45NzggMC0zLjU4NSAxLjYxNy0zLjU4NSAzLjYwNCAwIDEuOTg4IDEuNjA4IDMuNjAxIDMuNTg1IDMuNjAxIDEuOTgyIDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODYtMS42MDctMy42MDMtMy41OS0zLjYwM3ptMCA1LjQ2MWMtLjk4OCAwLTEuNzkyLS44MDctMS43OTItMS44MDMgMC0uOTkyLjgwNC0xLjgwMSAxLjc5Mi0xLjgwMS45OTMgMCAxLjc5Ny44MDkgMS43OTcgMS44MDEuMDAxLjk5Ni0uODAzIDEuODAzLTEuNzk3IDEuODAzem0zMS41NDMtNS40NjFjLTEuOTgxIDAtMy41ODcgMS42MTctMy41ODcgMy42MDQgMCAxLjk4OCAxLjYwNSAzLjYwMiAzLjU4NyAzLjYwMiAxLjk4IDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODctMS42MDktMy42MDQtMy41OS0zLjYwNHptMCA1LjQ2MWMtLjk4OSAwLTEuNzk0LS44MDctMS43OTQtMS44MDMuMDAxLS45OTIuODA1LTEuODAxIDEuNzk0LTEuODAxLjk5MiAwIDEuNzk3LjgwOSAxLjc5NyAxLjgwMSAwIC45OTYtLjgwNCAxLjgwMy0xLjc5NyAxLjgwM3ptNy45NC0yMi4yNTZoLTMxLjU0NmMtLjU0NyAwLS45OTMuNDQ2LS45OTMuOTk3djkuMDQyaC0xLjk4N3YtNS41NTFjMC0uNTUyLS40NDUtLjk5Ny0uOTk0LS45OTdoLTYuNzY4Yy0xLjE4IDAtMi4yMzQuODcyLTIuNDIzIDIuMTJ2LS4wNjVsLTEuMDU2IDUuOTg3LjAwMi4wMjFjLS43MTcuMTIyLTEuMjQyLjc0NS0xLjI0MiAxLjQ3NmwuMDMzLjMyLS4wMzMtLjAwOSAxLjQ5IDYuNzM1aDEuNTUydi0uMDYxYzAtMi40MTQgMS45NzUtNC4zNjkgNC40MS00LjM2OSAyLjQzMyAwIDQuNDA5IDEuOTU1IDQuNDA5IDQuMzY5di4wNjFoMjIuNzI2di0uMDYxYzAtMi40MTQgMS45NzYtNC4zNjkgNC40MDctNC4zNjkgMi40MzUgMCA0LjQxMSAxLjk1NSA0LjQxMSA0LjM2OWwtLjAwNC4wNjFoNC41OTl2LTE5LjA3OWMwLS41NS0uNDQ0LS45OTctLjk5My0uOTk3em0tMzguMDA0IDUuMTExdjQuOTI4aC01Ljk2bC43NDUtNC4xODFjLjA2Mi0uNS40OTctLjg2OS45MzEtLjg2OWg0LjI4NHYuMTIyeiIvPjwvc3ZnPg=="
+                })
+            });
+
+
+            // Add a marker clusterer to manage the markers.
+            var markerCluster = new MarkerClusterer(map, markers,
+                { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
+
+            var markerCluster = new MarkerClusterer(map, depotMarkers);
+        }
+
+
+        var allRoutes = [];
+        var route = {
+            icon : "",
+            ids: []
+        };
+
+        var currentSpan;
+        function createRoute() {
+            route = {
+                icon: generateIcon(),
+                ids: []
+            }
+
+
+            document.getElementById("successAlert").style.display = 'hidden';
+            document.getElementById("successAlert").style.visibility = 'hidden';
+            document.getElementById("alert").style.display = 'block';
+            document.getElementById("alert").style.display = 'block';
+
+            var ul = document.getElementById("routeList");
+            var li = document.createElement("li");
+            var oImg=document.createElement("img");
+            oImg.setAttribute('src', route.icon.url);
+
+
+            li.appendChild(oImg);
+            li.classList.add("list-group-item");
+            li.appendChild(document.createTextNode("Route " + labels[labelIndex % labels.length]));
+            labelIndex++;
+            currentSpan = document.createElement('span');
+            currentSpan.innerHTML = route.ids.length;
+            currentSpan.classList.add("badge");
+
+            li.appendChild(currentSpan);
+            ul.appendChild(li);
+        }
+
+
+        function finishRoute() {
+            document.getElementById("successAlert").style.visibility = 'visible';
+            document.getElementById("successAlert").style.display = 'block';
+            document.getElementById("alert").style.display = 'none';
+            allRoutes.push(route.ids);
+          }
+
+          function generateIcon() {
+              var randomColor = Math.floor(Math.random()*16777215).toString(16);
+              var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + randomColor,
+                  new google.maps.Size(21, 34)
+                 );
+
+              var image = {
+                  url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + randomColor,
+                  size: new google.maps.Size(20, 34),
+                  origin: new google.maps.Point(0, 0),
+
+              };
+
+
+              return image;
+          }
+
+          function sendData() {
+
+              $.ajax({
+                  type: "POST",
+                  url: "/scheduling/data",
+                  dataType: "json",
+                  data: JSON.stringify(allRoutes),
+                  contentType: 'application/json; charset=utf-8',
+
+                  success: function () {
+                      alert("sent!");
+                  }
+              });
+          }
+
+    </script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCruDMQXf92lZMvfCEO_L9E2oYjvuRfPaI&callback=initMap">
+    </script>
+</head>
+<body>
+    <div id="main_body">
+        <div id="successAlert" class="alert alert-success fade in" style="visibility:hidden; display:none;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Success!</strong> A route was created
+        </div>
+
+        <div id="alert" class="alert alert-danger fade in" style="visibility:hidden">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Attention!</strong> The delivery you have selected has already been added to a different route.
+        </div>
+        <div id="row">
+            <div class="col-sm-8">
+                <div id="map"></div>
+            </div>
+            <div class="col-sm-4">
+                <button onclick="createRoute()" class="btn btn-default">New route</button>
+                <button onclick="finishRoute()" class="btn btn-default">Finish route</button>
+
+                <button onclick="sendData()" class="btn btn-default">Finish</button>
+
+
+                <ul id="routeList" class="list-group"></ul>
+
+
+                    <div class="form-group">
+                        <label for="days">Show deliveries to deliver within:</label>
+                        <input type="number" class="form-control" min="1" step="1" id="daysDeliverBy">
+                    </div>
+                    <button id="withinDays" onclick="filterDeliveriesByDeliveryDate()" class="btn btn-default">Submit</button>
+                
+            </div>
+        </div>
+
+    </div>
+
+    @Html.ActionLink("Back to Dashboard", "Index", "ShipperDashboard")
+</body>
+</html>

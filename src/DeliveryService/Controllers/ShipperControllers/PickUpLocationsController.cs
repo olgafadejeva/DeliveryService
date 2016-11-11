@@ -1,20 +1,21 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DeliveryService.Data;
 using DeliveryService.Models.Entities;
 using Microsoft.AspNetCore.Http;
+using DeliveryService.Services;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
     public class PickUpLocationsController : ShipperController
     {
-        public PickUpLocationsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor)
+
+        public GoogleMapsUtil googleMaps { get; set; }
+        public PickUpLocationsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, GoogleMapsUtil googleMapsUtil ) : base(context, contextAccessor)
         {
+            this.googleMaps = googleMapsUtil;
         }
 
         // GET: PickUpLocations
@@ -36,6 +37,7 @@ namespace DeliveryService.Controllers.ShipperControllers
         {
             if (ModelState.IsValid)
             {
+                await googleMaps.addLocationDataToAddress(pickUpAddress);
                 company.PickUpLocations.Add(pickUpAddress);
                 _context.Add(pickUpAddress);
                 await _context.SaveChangesAsync();

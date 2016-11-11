@@ -13,6 +13,7 @@ namespace DeliveryService.Models.Entities
             Clients = new List<Client>();
             Deliveries = new List<Delivery>();
             PickUpLocations = new List<PickUpAddress>();
+            Routes = new List<Route>();
             Team = new Team();
         }
 
@@ -22,6 +23,7 @@ namespace DeliveryService.Models.Entities
         public string CompanyName { get; set; }
 
         public virtual ICollection<Delivery> Deliveries { get; set; }
+        public virtual ICollection<Route> Routes { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
         public virtual ICollection<Driver> Drivers { get; set; }
         public virtual ICollection<PickUpAddress> PickUpLocations { get; set; }

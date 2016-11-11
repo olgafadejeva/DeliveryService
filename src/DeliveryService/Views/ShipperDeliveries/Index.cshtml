@@ -23,6 +23,7 @@
                 Status summary
             </th>
             <th>Driver</th>
+            <th>Deliver by</th>
             <th></th>
             
         </tr>
@@ -49,6 +50,9 @@
                     @Html.DisplayFor(model=> @item.DeliveryStatus.AssignedTo.User.UserName)
                 }
 
+            </td>
+            <td>
+                @Html.DisplayFor(model => @item.DeliverBy)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

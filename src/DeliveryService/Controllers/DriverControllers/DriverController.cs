@@ -31,14 +31,13 @@ namespace DeliveryService.Controllers.DriverControllers
                 driver = context.Drivers
                    .Include(b => b.User)
                    .Include(b => b.Vehicles)
-                   .Include(c => c.Deliveries)
-                        .ThenInclude(d => d.DeliveryStatus)
-                    .Include(c=> c.Deliveries)
-                        .ThenInclude(d=>d.Client)
-                    .Include(c => c.Deliveries)
-                        .ThenInclude(d => d.Client.Address)
-                    .Include(c=> c.Deliveries)
+                   .Include(c => c.Routes)
+                        .ThenInclude(d => d.Deliveries)
+                    .Include(c=> c.Routes)
                         .ThenInclude(d=>d.PickUpAddress)
+                    .Include(c => c.Routes)
+                        .ThenInclude(d=>d.Deliveries)
+                            .ThenInclude(d=>d.Client)
                    .SingleOrDefault(m => m.User.Id == currentUserId);
             }
         }

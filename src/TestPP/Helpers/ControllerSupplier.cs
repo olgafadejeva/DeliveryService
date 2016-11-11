@@ -71,7 +71,7 @@ namespace DeliveryServiceTests.Helpers
                 new ApplicationUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL },
                 Constants.DEFAULT_PASSWORD);
             await signInManager.PasswordSignInAsync(Constants.DEFAULT_EMAIL, Constants.DEFAULT_PASSWORD, false, lockoutOnFailure: false);
-            var controller = new ClientsController(context, httpContextAccessor);
+            var controller = new ClientsController(context, httpContextAccessor, null);
             SetRouteData(_serviceProvider, httpContextAccessor, controller);
             return controller;
         }

@@ -6,6 +6,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<head>
+
+    <link rel="stylesheet" href="~/css/pikaday.css">
+</head>
 <h2>Create</h2>
 
 <form asp-action="Create">
@@ -19,14 +23,6 @@
                 <select asp-for="ClientID" class ="form-control" asp-items="ViewBag.ClientID"></select>
             </div>
         </div>
-
-        <div class="form-group">
-            <label asp-for="PickUpAddressID" class="col-md-2 control-label">PickUpAddress</label>
-            <div class="col-md-10">
-                <select asp-for="PickUpAddressID" class="form-control" asp-items="ViewBag.PickUpAddressID"></select>
-            </div>
-        </div>
-
       
         <div class="form-group">
             <label asp-for="ItemWeight" class="col-md-2 control-label"></label>
@@ -39,6 +35,13 @@
             <label asp-for="ItemSize" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 @Html.DropDownListFor(model => model.ItemSize, new SelectList(Enum.GetValues(typeof(ItemSize))), htmlAttributes: new { @class = "form-control" })
+                <span asp-validation-for="ItemSize" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="DeliverBy" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="DeliverBy" type="text" id="datepicker" class="form-control">
                 <span asp-validation-for="ItemSize" class="text-danger" />
             </div>
         </div>
@@ -57,17 +60,19 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script src="https://raw.githubusercontent.com/dbushell/Pikaday/master/pikaday.js"></script>
 <script>
-    $(document).ready(function () {
-        $("#AddAddress").click(function () {
-            $("#addAddressSection").toggle();
-        });
-        if (document.getElementById('checkbox').checked) {
-            document.getElementById("AddAddress").style.display = "none";
-        } 
-    });
-    $('#checkbox').click(function () {
-        $("#AddAddress").toggle();
+    var picker = new Pikaday({
+        field: document.getElementById('datepicker'),
+        firstDay: 1,
+        minDate: new Date(),
+        maxDate: new Date(2020, 12, 31),
+        yearRange: [2000, 2020],
+        onClose: function () {
+            console.log(picker.toString());
+            document.getElementById("datepicker").innerHTML = picker.toString();
+        }
     });
 </script>
-}

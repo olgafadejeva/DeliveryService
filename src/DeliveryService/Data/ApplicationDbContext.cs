@@ -37,11 +37,12 @@ namespace DeliveryService.Data
         public DbSet<Client> Clients { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<DeliveryStatus> DeliveryStatus { get; set; }
-        public DbSet<Shipper> Shippers { get; set; }
         public DbSet<DriverRegistrationRequest> DriverRegistrationRequests { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
         public virtual DbSet<Company> Companies { get; set; }
         public DbSet<PickUpAddress> PickUpAddress { get; set; }
+        public DbSet<Route> Routes { get; set; }
+
 
     }
 }

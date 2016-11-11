@@ -303,7 +303,6 @@ namespace DeliveryServiceTests.Controllers
             Assert.Equal(viewName, "ConfirmEmail");
             var dbContext = controller.getApplicationContext();
             Assert.Equal(dbContext.Drivers.ToList<Driver>().Count, 0);
-            Assert.Equal(dbContext.Shippers.ToList<Shipper>().Count, 1);
         }
 
         [Fact]

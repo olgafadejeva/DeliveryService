@@ -12,6 +12,7 @@ using DeliveryService.Data.Initializer;
 using Microsoft.AspNetCore.Mvc;
 using DeliveryService.Services.Config;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Serialization;
 
 namespace DeliveryService
 {
@@ -61,7 +62,8 @@ namespace DeliveryService
 
             services.AddDistributedMemoryCache();
             services.AddSession();
-            services.AddMvc();
+            services.AddMvc()
+                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
 
             // Add application services.
             

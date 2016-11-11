@@ -12,21 +12,24 @@ namespace DeliveryService.Models.Entities
 
         public int ClientID { get; set; }
         public int DeliveryStatusID { get; set; }
-        public int? PickUpAddressID { get; set; }
+        public int? RouteID { get; set; }
 
         [Display(Name = "Item size")]
         public ItemSize ItemSize { get; set; }
 
+        [DataType(DataType.Date)]
         public DateTime? DeliverBy { get; set; }
 
 
         [Display(Name = "Item weight in kg")]
         public double ItemWeight { get; set; }
-        public virtual PickUpAddress PickUpAddress { get; set; }
 
         public virtual DeliveryStatus DeliveryStatus { get; set; }
 
         public virtual Client Client { get; set; }
+
+        public Delivery() {
+        }
     }
 
     public enum ItemSize

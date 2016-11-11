@@ -8,9 +8,10 @@ using DeliveryService.Data;
 namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161111080728_UpdateDelivery")]
+    partial class UpdateDelivery
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -485,7 +486,7 @@ namespace DeliveryService.Migrations
                         .HasForeignKey("DeliveryStatusID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("DeliveryService.Models.Entities.Route")
+                    b.HasOne("DeliveryService.Models.Entities.Route", "Route")
                         .WithMany("Deliveries")
                         .HasForeignKey("RouteID");
                 });

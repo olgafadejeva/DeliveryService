@@ -12,9 +12,9 @@ namespace DeliveryService.Models.ShipperViewModels
 {
     public class DeliveryDetails 
     {
-        public int ClientID { get; set; } //foreign key to client 
 
-        public int PickUpAddressID { get; set; }
+        public int ID { get; set; }
+        public int ClientID { get; set; } //foreign key to client 
         
         [Display(Name = "Item size")]
         public ItemSize ItemSize { get; set; }
@@ -22,6 +22,10 @@ namespace DeliveryService.Models.ShipperViewModels
 
         [Display(Name = "Item weight in kg")]
         public double ItemWeight { get; set; }
+
+        [Display(Name = "Deliver by")]
+        [DataType(DataType.Date)]
+        public DateTime DeliverBy { get; set; }
 
 
     }
