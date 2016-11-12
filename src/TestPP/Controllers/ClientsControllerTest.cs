@@ -2,12 +2,15 @@
 using DeliveryService.Models;
 using DeliveryService.Models.Entities;
 using DeliveryService.Models.ShipperViewModels;
+using DeliveryService.Services;
 using DeliveryService.ShipperControllers;
 using DeliveryServiceTests.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -21,6 +24,7 @@ namespace DeliveryServiceTests.Controllers
         {
             var controller = await ControllerSupplier.getClientsController();
 
+            controller.setGoogleMaps(getMockGoogleMaps());
             //set Shipper to controller
             Company company = await createCompany(controller);
             controller.setCompany(company);
@@ -49,6 +53,7 @@ namespace DeliveryServiceTests.Controllers
         public async Task testEditClient() {
             var controller = ControllerSupplier.getClientsController().Result;
 
+            controller.setGoogleMaps(getMockGoogleMaps());
             //set Shipper to controller
             var context = controller.getDbContext();
             var company = new Company();
@@ -125,6 +130,15 @@ namespace DeliveryServiceTests.Controllers
             context.Companies.Add(company);
             await context.SaveChangesAsync();
             return company;
+        }
+
+        private LocationService getMockGoogleMaps() {
+            var mockGoogleMaps = new Mock<LocationService>();
+            var responseMessageOne = new HttpResponseMessage();
+            responseMessageOne.Content = new StringContent("{\"results\":[{\"geometry\":{\"location\":{\"lat\":10,\"lng\":20}}}]}");
+            mockGoogleMaps.SetupSequence(gm => gm.addLocationDataToAddress(It.IsAny<Address>()))
+                .Returns(Task.FromResult(responseMessageOne));
+            return mockGoogleMaps.Object;
         }
     }
 }

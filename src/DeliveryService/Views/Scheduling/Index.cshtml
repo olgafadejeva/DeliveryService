@@ -41,7 +41,6 @@
                     dataType: "json",
                     contentType: 'application/json; charset=utf-8',
                     success: function (result) {
-                        console.log(result);
                         deliveries = result;
                         initMap();
                     },
@@ -81,7 +80,9 @@
                     if (marker.added) {
                         document.getElementById("alert").style.visibility = 'visible';
                     } else {
+                        console.log(marker.position.lat())
                         route.ids.push(marker.id);
+                        route.points.push(marker.getPosition())
                         marker.setIcon(route.icon);
                         marker.added = true;
 
@@ -113,14 +114,17 @@
         var allRoutes = [];
         var route = {
             icon : "",
-            ids: []
+            ids: [],
+            points: []
+
         };
 
         var currentSpan;
         function createRoute() {
             route = {
                 icon: generateIcon(),
-                ids: []
+                ids: [],
+                points: []
             }
 
 
@@ -152,7 +156,33 @@
             document.getElementById("successAlert").style.visibility = 'visible';
             document.getElementById("successAlert").style.display = 'block';
             document.getElementById("alert").style.display = 'none';
-            allRoutes.push(route.ids);
+
+            //calculate poly centre here? 
+            var bounds = new google.maps.LatLngBounds();
+            var i;
+            console.log(route.points);
+            var polygonCoords = route.points.map(function (point, i) {
+                console.log(point.lat())
+                console.log(point.lng())
+                return { lat:point.lat(), lng: point.lng()}
+                });
+
+            console.log("polygoncoords: " + polygonCoords);
+            for (i = 0; i < polygonCoords.length; i++) {
+                bounds.extend(polygonCoords[i]);
+            }
+
+            // The Center of the Bermuda Triangle - (25.3939245, -72.473816)
+            console.log(bounds.getCenter().lat());
+            console.log(bounds.getCenter().lng());
+
+
+
+
+            allRoutes.push({ids: route.ids, 
+                center: {lat: bounds.getCenter().lat(),
+                    lng: bounds.getCenter().lng()
+                }});
           }
 
           function generateIcon() {
@@ -173,18 +203,84 @@
           }
 
           function sendData() {
-
+              console.log("allRoutes: " +allRoutes)
+              console.log("allRoutes: json" +JSON.stringify(allRoutes))
               $.ajax({
                   type: "POST",
                   url: "/scheduling/data",
                   dataType: "json",
                   data: JSON.stringify(allRoutes),
                   contentType: 'application/json; charset=utf-8',
-
-                  success: function () {
-                      alert("sent!");
+                  success: function (result) {
+                      
+                      console.log("ROUTE CREATE result: " + result);
+                      console.log(JSON.stringify(result))
+                      createTable(result);
+                      
+                      $("#myModal").modal();
                   }
               });
+              
+          }
+
+          function createTable(data) {
+              console.log(data[0].PickUpAddress.LineOne)
+              var myTableDiv = document.getElementById("routesTable")
+              var table = document.createElement('TABLE')
+              table.classList.add("table");
+              var tableBody = document.createElement('TBODY')
+
+              table.appendChild(tableBody);
+
+              var heading = new Array();
+              heading[0] = "Route"
+              heading[1] = "Address"
+              //heading[2] = ""
+
+              //TABLE COLUMNS
+              var tr = document.createElement('TR');
+              tableBody.appendChild(tr);
+              for (i = 0; i < heading.length; i++) {
+                  var th = document.createElement('TH')
+                  th.appendChild(document.createTextNode(heading[i]));
+                  tr.appendChild(th);
+              }
+
+              //TABLE ROWS
+              for (i = 0; i < data.length; i++) {
+                  var tr = document.createElement('TR');
+                  var td = document.createElement('TD')
+                  td.appendChild(document.createTextNode("Delivery by date: " + data[i].DeliverBy));
+                  tr.appendChild(td)
+
+                  td= document.createElement('TD')
+                  p = document.createElement('p')
+                  p.appendChild(document.createTextNode(data[i].PickUpAddress.LineOne))
+                  td.appendChild(p)
+
+                  p = document.createElement('p')
+                  p.appendChild(document.createTextNode(data[i].PickUpAddress.City))
+                  td.appendChild(p)
+                  
+                  p = document.createElement('p')
+                  p.appendChild(document.createTextNode(data[i].PickUpAddress.PostCode))
+                  td.appendChild(p)
+                  tr.appendChild(td)
+
+
+              /*    tdEditButton = document.createElement('td')
+                  button = document.createElement("button")
+                  button.classList.add("btn")
+                  button.classList.add("btn-default")
+                  button.type = "button"
+                  button.appendChild(document.createTextNode("Edit"))
+                  tdEditButton.appendChild(button)
+                  tr.appendChild(tdEditButton)*/
+
+                  tableBody.appendChild(tr);
+              }  
+              myTableDiv.appendChild(table)
+
           }
 
     </script>
@@ -229,6 +325,36 @@
         </div>
 
     </div>
+
+    <button type="button" class="btn btn-info btn-lg" data-target="#myModal" style="display:none">Open Modal</button>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Routes created</h4>
+                </div>
+                <div class="modal-body">
+                    <p>The routes have been created, please review the selected depot locations for each route</p>
+                </div>
+
+                <div id="routesTable"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+        
+    </div>
+
+    <!--Routes table-->
+
+  
 
     @Html.ActionLink("Back to Dashboard", "Index", "ShipperDashboard")
 </body>

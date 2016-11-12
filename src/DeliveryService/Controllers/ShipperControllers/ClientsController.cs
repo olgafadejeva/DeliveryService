@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DeliveryService.Data;
 using DeliveryService.Models.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 using DeliveryService.Controllers.ShipperControllers;
-using DeliveryService.Models.ShipperViewModels;
 using DeliveryService.Services;
 
 namespace DeliveryService.ShipperControllers
@@ -19,9 +15,9 @@ namespace DeliveryService.ShipperControllers
     public class ClientsController : ShipperController
     {
 
-        public GoogleMapsUtil googleMaps { get; set; }
+        public LocationService googleMaps { get; set; }
 
-        public ClientsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, GoogleMapsUtil googleMapsUtil) : base(context, contextAccessor)
+        public ClientsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, LocationService googleMapsUtil) : base(context, contextAccessor)
         {
             this.googleMaps = googleMapsUtil;
         }
@@ -166,6 +162,10 @@ namespace DeliveryService.ShipperControllers
         {
             return await _context.Clients.Include(m => m.Address)
                 .SingleOrDefaultAsync(m => m.ID == id);
+        }
+
+        public void setGoogleMaps(LocationService maps) {
+            this.googleMaps = maps;
         }
 
     }

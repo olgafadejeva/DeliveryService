@@ -41,12 +41,6 @@ namespace DeliveryServiceTests.Services
             Assert.Equal("25 London Road Flat 2 Brighton BN2 4PN", result.To);
 
         }
-
-        [Fact]
-        public async  void testLandLt() {
-            var result = DateTime.Parse("Thu Nov 10 2016");
-            int a = 2;
-        }
         
     }
 }

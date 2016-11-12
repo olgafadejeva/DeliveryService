@@ -8,15 +8,16 @@ using Microsoft.AspNetCore.Http;
 using DeliveryService.Models.Entities;
 using DeliveryService.Services;
 using System.Net;
-using System.Windows;
 using DeliveryService.Models.ShipperViewModels;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
     public class SchedulingController : ShipperController
     {
-        public SchedulingController(ApplicationDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor)
+        public LocationService GoogleMaps;
+        public SchedulingController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, LocationService googleMapsUtil) : base(context, contextAccessor)
         {
+            this.GoogleMaps = googleMapsUtil;
         }
 
         public IActionResult Index()
@@ -35,28 +36,41 @@ namespace DeliveryService.Controllers.ShipperControllers
         }
 
         [HttpPost]
-        public async Task Data([FromBody] List<int[]> allRoutes)
+        public async Task<JsonResult> Data([FromBody] List<RouteDelivery> allRoutes)
         {
+            List<Route> routesCreatedInThisSession = new List<Route>();
             if (allRoutes != null)
             {
                 for (int i = 0; i < allRoutes.Count(); i++) {
-                    var deliveriesInARoute = company.Deliveries.Where(d => allRoutes[i].Contains(d.ID)).ToList();
+                    RouteDelivery routeDelivery = allRoutes.ElementAt(i);
+                    var deliveriesInARoute = company.Deliveries.Where(d => routeDelivery.ids.Contains(d.ID)).ToList();
                     Route route = new Route();
                     route.Deliveries = deliveriesInARoute;
                     route.DeliverBy = DateFilter.getEarliestDeliverByDate(deliveriesInARoute);
                     _context.Routes.Add(route);
                     company.Routes.Add(route);
-                    
+                    var depot = await GoogleMaps.FindClosestDepotLocationForRoute(company.PickUpLocations, routeDelivery.center);
+                    route.PickUpAddress = depot;
+                    route.PickUpAddressID = depot.ID;
+                    routesCreatedInThisSession.Add(route);
                 }
                 await _context.SaveChangesAsync();
             }
             Response.StatusCode = (int)HttpStatusCode.OK;
-
+            return Json(routesCreatedInThisSession);
         }
-
-        public void test() {
-
-        }
+       
     }
+
+    public class RouteDelivery {
+        public int[] ids { get; set; }
+        public Center center { get; set; }
+    }
+
+    public class Center {
+        public float lat { get; set; }
+        public float lng { get; set; }
+    }
+
 }
     

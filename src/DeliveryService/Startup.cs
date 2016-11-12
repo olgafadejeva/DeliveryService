@@ -64,14 +64,13 @@ namespace DeliveryService
             services.AddSession();
             services.AddMvc()
                  .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
-
-            // Add application services.
             
-          
+            
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IDirectionsService, DirectionsService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IGoogleMapsUtil, GoogleMapsUtil>();
 
 
             services.Configure<MvcOptions>(options =>
@@ -84,7 +83,7 @@ namespace DeliveryService
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<DeliveryStatusUpdateService>();
             services.AddSingleton<DeliverySearchService>();
-            services.AddSingleton<GoogleMapsUtil>();
+            services.AddSingleton<LocationService>();
 
         }
 

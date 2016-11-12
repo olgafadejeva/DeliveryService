@@ -14,11 +14,11 @@ namespace DeliveryService.Services
     public class DeliverySearchService
     {
         public ApplicationDbContext context { get; set; }
-        public GoogleMapsUtil googleMaps { get; set; }
+        public LocationService googleMaps { get; set; }
 
         public double DEFAULT_NON_FOUND_ADDRESS_VALUE { get; }
 
-        public DeliverySearchService(ApplicationDbContext context, GoogleMapsUtil googleMapsUtil) {
+        public DeliverySearchService(ApplicationDbContext context, LocationService googleMapsUtil) {
             this.context = context;
             DEFAULT_NON_FOUND_ADDRESS_VALUE = -100.00;
             this.googleMaps = googleMapsUtil;

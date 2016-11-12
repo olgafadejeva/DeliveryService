@@ -25,7 +25,7 @@ namespace DeliveryServiceTests.Services
 
         [Fact]
         public async Task testDeliveryReturnedWithinFiveMiles() {
-            var mockGoogleMaps = new Mock<GoogleMapsUtil>();
+            var mockGoogleMaps = new Mock<LocationService>();
             var responseMessageOne = new HttpResponseMessage();
             responseMessageOne.Content =new  StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"0.8 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
 
@@ -47,7 +47,7 @@ namespace DeliveryServiceTests.Services
         [Fact]
         public async Task testDeliveryReturnedWithinZeroMiles()
         {
-            var mockGoogleMaps = new Mock<GoogleMapsUtil>();
+            var mockGoogleMaps = new Mock<LocationService>();
             var responseMessageOne = new HttpResponseMessage();
             responseMessageOne.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"0.8 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
 
@@ -67,7 +67,7 @@ namespace DeliveryServiceTests.Services
         [Fact]
         public async Task testNoDeliveriesReturnedWhenOneConditionIsNotSatisfied()
         {
-            var mockGoogleMaps = new Mock<GoogleMapsUtil>();
+            var mockGoogleMaps = new Mock<LocationService>();
             var responseMessageOne = new HttpResponseMessage();
             responseMessageOne.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"0.8 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
 
@@ -87,7 +87,7 @@ namespace DeliveryServiceTests.Services
         [Fact]
         public async Task testDeliveriesReturnedWhenConditionsAreMet()
         {
-            var mockGoogleMaps = new Mock<GoogleMapsUtil>();
+            var mockGoogleMaps = new Mock<LocationService>();
             var responseMessageOne = new HttpResponseMessage();
             responseMessageOne.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"0.8 mi\",\"value\":1326},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
 

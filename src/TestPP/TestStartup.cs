@@ -82,7 +82,7 @@ namespace DeliveryServiceTests
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<DeliveryStatusUpdateService>();
             services.AddSingleton<DeliverySearchService>();
-            services.AddSingleton<GoogleMapsUtil>();
+            services.AddSingleton<LocationService>();
 
         }
 

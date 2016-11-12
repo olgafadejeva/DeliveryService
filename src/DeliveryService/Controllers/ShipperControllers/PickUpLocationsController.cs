@@ -12,8 +12,8 @@ namespace DeliveryService.Controllers.ShipperControllers
     public class PickUpLocationsController : ShipperController
     {
 
-        public GoogleMapsUtil googleMaps { get; set; }
-        public PickUpLocationsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, GoogleMapsUtil googleMapsUtil ) : base(context, contextAccessor)
+        public LocationService googleMaps { get; set; }
+        public PickUpLocationsController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, LocationService googleMapsUtil ) : base(context, contextAccessor)
         {
             this.googleMaps = googleMapsUtil;
         }

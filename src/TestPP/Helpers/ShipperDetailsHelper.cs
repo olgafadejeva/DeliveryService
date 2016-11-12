@@ -29,7 +29,6 @@ namespace DeliveryServiceTests.Helpers
         public static Delivery getDelivery()
         {
             Delivery delivery = new Delivery();
-            delivery.Route.PickUpAddress = getDeliveryPickUpAddress();
             return delivery;
 
         }

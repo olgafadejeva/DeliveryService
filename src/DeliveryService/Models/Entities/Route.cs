@@ -11,6 +11,7 @@ namespace DeliveryService.Models.Entities
         public int ID { get; set; }
 
         [Display(Name="Deliver by")]
+        [DataType(DataType.Date)]
         public DateTime DeliverBy { get; set; }
 
         public int? PickUpAddressID { get; set; }
