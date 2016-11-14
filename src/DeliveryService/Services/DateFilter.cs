@@ -20,6 +20,14 @@ namespace DeliveryService.Services
                .Min(r => r.DeliverBy);
             return earliestDate.Value;
         }
+
+        public static List<Route> getRoutesWithinDays(List<Route> routes, int days)
+        {
+            DateTime startDate = DateTime.Now;
+            DateTime endDate = DateTime.Now.AddDays(days);
+            var list = routes.Where(d => d.DeliverBy <= endDate && d.DeliverBy >= startDate).ToList<Route>();
+            return list;
+        }
     }
 
 

@@ -14,6 +14,7 @@ namespace DeliveryService.Models.Entities
         public int DeliveryStatusID { get; set; }
         public int? RouteID { get; set; }
 
+        public bool AddedToRoute { get; set; }
         [Display(Name = "Item size")]
         public ItemSize ItemSize { get; set; }
 

@@ -5,10 +5,13 @@
 <head>
     <style>
         #map {
-            height: 800px;
+            height: 1000px;
             width: 100%;
         }
 
+        .container {
+            width: 100%;
+        }
         #legend {
             font-family: Arial, sans-serif;
             background: #fff;
@@ -41,7 +44,8 @@
                     dataType: "json",
                     contentType: 'application/json; charset=utf-8',
                     success: function (result) {
-                        deliveries = result;
+                        deliveries = result.Deliveries;
+                        routes = result.ExistingRoutes;
                         initMap();
                     },
                     error: function (result) {
@@ -57,14 +61,18 @@
 
         var deliveries = @Html.Raw(JsonConvert.SerializeObject(Model.Deliveries));
         var depots = @Html.Raw(JsonConvert.SerializeObject(Model.Depots));
+        var routes = @Html.Raw(JsonConvert.SerializeObject(Model.ExistingRoutes));
         console.log("deliveries " + deliveries);
-        console.log("depots: " + depots);
+        console.log(routes)
+
+        var googleMap;
         function initMap() {
 
             var map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 7,
                 center: { lat: 53.3811, lng: -1.4701 }
             });
+            googleMap = map;
 
             var markers = deliveries.map(function (delivery, i) {
                 var marker =   new google.maps.Marker({
@@ -157,7 +165,7 @@
             document.getElementById("successAlert").style.display = 'block';
             document.getElementById("alert").style.display = 'none';
 
-            //calculate poly centre here? 
+            //calculate poly centre here?
             var bounds = new google.maps.LatLngBounds();
             var i;
             console.log(route.points);
@@ -167,19 +175,13 @@
                 return { lat:point.lat(), lng: point.lng()}
                 });
 
-            console.log("polygoncoords: " + polygonCoords);
             for (i = 0; i < polygonCoords.length; i++) {
                 bounds.extend(polygonCoords[i]);
             }
 
-            // The Center of the Bermuda Triangle - (25.3939245, -72.473816)
-            console.log(bounds.getCenter().lat());
-            console.log(bounds.getCenter().lng());
 
 
-
-
-            allRoutes.push({ids: route.ids, 
+            allRoutes.push({ids: route.ids,
                 center: {lat: bounds.getCenter().lat(),
                     lng: bounds.getCenter().lng()
                 }});
@@ -197,8 +199,6 @@
                   origin: new google.maps.Point(0, 0),
 
               };
-
-
               return image;
           }
 
@@ -212,15 +212,15 @@
                   data: JSON.stringify(allRoutes),
                   contentType: 'application/json; charset=utf-8',
                   success: function (result) {
-                      
+
                       console.log("ROUTE CREATE result: " + result);
                       console.log(JSON.stringify(result))
                       createTable(result);
-                      
+
                       $("#myModal").modal();
                   }
               });
-              
+
           }
 
           function createTable(data) {
@@ -261,7 +261,7 @@
                   p = document.createElement('p')
                   p.appendChild(document.createTextNode(data[i].PickUpAddress.City))
                   td.appendChild(p)
-                  
+
                   p = document.createElement('p')
                   p.appendChild(document.createTextNode(data[i].PickUpAddress.PostCode))
                   td.appendChild(p)
@@ -278,10 +278,69 @@
                   tr.appendChild(tdEditButton)*/
 
                   tableBody.appendChild(tr);
-              }  
+              }
               myTableDiv.appendChild(table)
 
           }
+
+          function displayRoutes() {
+              var checked = document.getElementById("includeRoutes").checked;
+              if (checked) {
+                  addRoutes()
+              } else {
+                  hideRoutes()
+              }
+          }
+
+          function hideRoutes(){
+              document.getElementById("existingRoutes").style.display="none";
+              console.log(markersForDeliveriesInRoutes.length)
+              for (var i = 0; i < markersForDeliveriesInRoutes.length; i++) {
+                  markersForDeliveriesInRoutes[i].setMap(null);
+              }
+              markersForDeliveriesInRoutes = []
+              document.getElementById("existingRouteList").innerHTML = "";
+          }
+
+          var markersForDeliveriesInRoutes = []
+
+          function addRoutes() {
+
+              document.getElementById("existingRoutes").style.display="block";
+              markersForDeliveriesInRoutes = [];
+              console.log(routes)
+              routes.forEach(getDeliveries)
+              function getDeliveries(route) {
+                  var icon = generateIcon()
+                  var ul = document.getElementById("existingRouteList");
+                  var li = document.createElement("li");
+                  var oImg=document.createElement("img");
+                  oImg.setAttribute('src', icon.url);
+                  li.appendChild(oImg);
+                  li.classList.add("list-group-item");
+                  li.appendChild(document.createTextNode("Route " + labels[labelIndex % labels.length]));
+                  labelIndex++;
+                  var  span = document.createElement('span');
+                  span.innerHTML = route.Deliveries.length;
+                  span.classList.add("badge");
+
+                  li.appendChild(span);
+                  ul.appendChild(li);
+
+
+                  route.Deliveries.forEach(function (delivery) {
+                      var marker =   new google.maps.Marker({
+                          position:  { lat: parseFloat(delivery.Client.Address.Lat), lng: parseFloat(delivery.Client.Address.Lng)},
+                          id: delivery.ID.toString(),
+                          added: true,
+                          map : googleMap
+                      });
+                      marker.setIcon(icon)
+                      markersForDeliveriesInRoutes.push(marker)
+                  })
+              }
+          }
+
 
     </script>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
@@ -302,10 +361,13 @@
             <strong>Attention!</strong> The delivery you have selected has already been added to a different route.
         </div>
         <div id="row">
-            <div class="col-sm-8">
+            <div class="col-sm-10">
                 <div id="map"></div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-2">
+                <div class="checkbox">
+                    <label><input id="includeRoutes" type="checkbox" onchange="displayRoutes()">Show deliveries already in routes</label>
+                </div>
                 <button onclick="createRoute()" class="btn btn-default">New route</button>
                 <button onclick="finishRoute()" class="btn btn-default">Finish route</button>
 
@@ -313,6 +375,10 @@
 
 
                 <ul id="routeList" class="list-group"></ul>
+                <div id="existingRoutes">
+                    <p>Existing routes</p>
+                    <ul id="existingRouteList" class="list-group"></ul>
+                </div>
 
 
                     <div class="form-group">

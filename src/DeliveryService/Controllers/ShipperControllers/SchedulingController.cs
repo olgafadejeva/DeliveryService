@@ -24,15 +24,16 @@ namespace DeliveryService.Controllers.ShipperControllers
         {
             var deliveries = DateFilter.getDeliveriesWithinDays(company.Deliveries.ToList(), 2);
             var depots = company.PickUpLocations.ToList();
-            MapObjects objects = new MapObjects(deliveries, depots);
+            MapObjects objects = new MapObjects(deliveries, depots, company.Routes.ToList());
             return View(objects);
         }
         
         public JsonResult DeliverWithinDays(string days) {
             var deliveries = DateFilter.getDeliveriesWithinDays(company.Deliveries.ToList(), Convert.ToInt32(days));
-
+            var routes = DateFilter.getRoutesWithinDays(company.Routes.ToList(), Convert.ToInt32(days));
             Response.StatusCode = (int)HttpStatusCode.OK;
-            return Json(deliveries);
+            MapObjects result = new MapObjects(deliveries, routes);
+            return Json(result);
         }
 
         [HttpPost]
@@ -44,15 +45,18 @@ namespace DeliveryService.Controllers.ShipperControllers
                 for (int i = 0; i < allRoutes.Count(); i++) {
                     RouteDelivery routeDelivery = allRoutes.ElementAt(i);
                     var deliveriesInARoute = company.Deliveries.Where(d => routeDelivery.ids.Contains(d.ID)).ToList();
-                    Route route = new Route();
-                    route.Deliveries = deliveriesInARoute;
-                    route.DeliverBy = DateFilter.getEarliestDeliverByDate(deliveriesInARoute);
-                    _context.Routes.Add(route);
-                    company.Routes.Add(route);
-                    var depot = await GoogleMaps.FindClosestDepotLocationForRoute(company.PickUpLocations, routeDelivery.center);
-                    route.PickUpAddress = depot;
-                    route.PickUpAddressID = depot.ID;
-                    routesCreatedInThisSession.Add(route);
+                    if (deliveriesInARoute.Count() != 0)
+                    {
+                        Route route = new Route();
+                        route.Deliveries = deliveriesInARoute;
+                        route.DeliverBy = DateFilter.getEarliestDeliverByDate(deliveriesInARoute);
+                        _context.Routes.Add(route);
+                        company.Routes.Add(route);
+                        var depot = await GoogleMaps.FindClosestDepotLocationForRoute(company.PickUpLocations, routeDelivery.center);
+                        route.PickUpAddress = depot;
+                        route.PickUpAddressID = depot.ID;
+                        routesCreatedInThisSession.Add(route);
+                    }
                 }
                 await _context.SaveChangesAsync();
             }

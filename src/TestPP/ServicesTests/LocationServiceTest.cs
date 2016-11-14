@@ -43,5 +43,24 @@ namespace DeliveryServiceTests.ServicesTests
             var result = service.FindClosestDepotLocationForRoute(addressList, center);
             Assert.Equal(depot1, result.Result);
         }
+
+        [Fact]
+        public async Task testAddLocationDataToAddress() {
+            var responseMessageOne = new HttpResponseMessage();
+            responseMessageOne.Content = new StringContent("{\"results\":[{\"geometry\":{\"location\":{\"lat\":50.5,\"lng\":-10.5}}}],\"status\":\"OK\"}");
+
+            List <HttpResponseMessage> responses = new List<HttpResponseMessage>();
+            responses.Add(responseMessageOne);
+            TestGoogleMapsUtil googleMaps = new TestGoogleMapsUtil(responses);
+
+
+            LocationService service = new LocationService(googleMaps);
+            Address address = new ClientAddress();
+            await service.addLocationDataToAddress(address);
+            Assert.Equal(50.5, address.Lat);
+            Assert.Equal(-10.5, address.Lng);
+        }
+
+
     }
 }
