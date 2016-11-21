@@ -8,8 +8,8 @@ using DeliveryService.Data;
 namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20161106222218_Inital")]
-    partial class Inital
+    [Migration("20161119115400_UpdateRoute")]
+    partial class UpdateRoute
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -160,6 +160,8 @@ namespace DeliveryService.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("AddedToRoute");
+
                     b.Property<int>("ClientID");
 
                     b.Property<int?>("CompanyID");
@@ -172,7 +174,7 @@ namespace DeliveryService.Migrations
 
                     b.Property<double>("ItemWeight");
 
-                    b.Property<int>("RouteID");
+                    b.Property<int?>("RouteID");
 
                     b.HasKey("ID");
 
@@ -208,6 +210,8 @@ namespace DeliveryService.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("AddressID");
+
                     b.Property<int?>("CompanyID");
 
                     b.Property<int?>("TeamID");
@@ -215,6 +219,8 @@ namespace DeliveryService.Migrations
                     b.Property<string>("UserId");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("AddressID");
 
                     b.HasIndex("CompanyID");
 
@@ -230,23 +236,29 @@ namespace DeliveryService.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("AssignedToID");
+
                     b.Property<int?>("CompanyID");
 
                     b.Property<DateTime>("DeliverBy");
 
-                    b.Property<int?>("DriverID");
+                    b.Property<double?>("OverallDistance");
+
+                    b.Property<double?>("OverallTimeRequired");
 
                     b.Property<int?>("PickUpAddressID");
 
+                    b.Property<int?>("VehicleID");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("AssignedToID");
 
                     b.HasIndex("CompanyID");
 
-                    b.HasIndex("DriverID");
-
                     b.HasIndex("PickUpAddressID");
 
-                    b.ToTable("Route");
+                    b.ToTable("Routes");
                 });
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Team", b =>
@@ -434,6 +446,16 @@ namespace DeliveryService.Migrations
                     b.HasDiscriminator().HasValue("ClientAddress");
                 });
 
+            modelBuilder.Entity("DeliveryService.Models.Entities.DriverAddress", b =>
+                {
+                    b.HasBaseType("DeliveryService.Models.Entities.Address");
+
+
+                    b.ToTable("DriverAddress");
+
+                    b.HasDiscriminator().HasValue("DriverAddress");
+                });
+
             modelBuilder.Entity("DeliveryService.Models.Entities.PickUpAddress", b =>
                 {
                     b.HasBaseType("DeliveryService.Models.Entities.Address");
@@ -486,10 +508,9 @@ namespace DeliveryService.Migrations
                         .HasForeignKey("DeliveryStatusID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("DeliveryService.Models.Entities.Route", "Route")
+                    b.HasOne("DeliveryService.Models.Entities.Route")
                         .WithMany("Deliveries")
-                        .HasForeignKey("RouteID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RouteID");
                 });
 
             modelBuilder.Entity("DeliveryService.Models.Entities.DeliveryStatus", b =>
@@ -501,6 +522,10 @@ namespace DeliveryService.Migrations
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Driver", b =>
                 {
+                    b.HasOne("DeliveryService.Models.Entities.DriverAddress", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressID");
+
                     b.HasOne("DeliveryService.Models.Entities.Company")
                         .WithMany("Drivers")
                         .HasForeignKey("CompanyID");
@@ -516,13 +541,13 @@ namespace DeliveryService.Migrations
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Route", b =>
                 {
+                    b.HasOne("DeliveryService.Models.Entities.Driver", "AssignedTo")
+                        .WithMany("Routes")
+                        .HasForeignKey("AssignedToID");
+
                     b.HasOne("DeliveryService.Models.Entities.Company")
                         .WithMany("Routes")
                         .HasForeignKey("CompanyID");
-
-                    b.HasOne("DeliveryService.Models.Entities.Driver")
-                        .WithMany("Routes")
-                        .HasForeignKey("DriverID");
 
                     b.HasOne("DeliveryService.Models.Entities.PickUpAddress", "PickUpAddress")
                         .WithMany()
@@ -590,7 +615,7 @@ namespace DeliveryService.Migrations
 
             modelBuilder.Entity("DeliveryService.Models.Entities.ClientAddress", b =>
                 {
-                    b.HasOne("DeliveryService.Models.Entities.Client", "Client")
+                    b.HasOne("DeliveryService.Models.Entities.Client")
                         .WithOne("Address")
                         .HasForeignKey("DeliveryService.Models.Entities.ClientAddress", "ClientId")
                         .OnDelete(DeleteBehavior.Cascade);

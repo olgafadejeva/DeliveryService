@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DeliveryService.Controllers.ShipperControllers;
+using DeliveryService.Models;
 
 namespace DeliveryService.Services
 {
@@ -62,6 +63,51 @@ namespace DeliveryService.Services
             var minDistanceIndex = distances.ToList().IndexOf(distances.Min());
 
             return pickUpLocations.ElementAt(minDistanceIndex);
+        }
+
+        public virtual async Task<double>  getDistanceBetweenTwoAddresses(Address addressOne, Address addressTwo)
+        {
+            string addressOneString = DirectionsService.getStringFromAddress(addressOne);
+            string addressTwoString = DirectionsService.getStringFromAddress(addressTwo);
+
+            string uri = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" + addressOneString + "&destinations=" + addressTwoString;
+            HttpResponseMessage response = await googleMaps.performGoogleMapsRequestAsync(uri);
+
+            var jsonString = response.Content.ReadAsStringAsync().Result;
+            JObject json = JObject.Parse(jsonString);
+            var distanceValue = (string)json.SelectToken("rows[0].elements[0].distance.text");
+            if (distanceValue == null) // can be NOT FOUND status
+            {
+                return 1000;
+            }
+            var valueInDouble = Convert.ToDouble(distanceValue.Replace("mi", ""));
+            return valueInDouble;
+        }
+
+        public virtual async Task<RouteDetails> getRouteDurationAndOverallDistance(PickUpAddress depot, List<Delivery> deliveries) {
+
+            string waypointsUriString = "";
+            foreach (Delivery delivery in deliveries) {
+                waypointsUriString += DirectionsService.getStringFromAddressInLatLngFormat(delivery.Client.Address);
+                waypointsUriString += "|";
+            }
+            waypointsUriString = waypointsUriString.TrimEnd('|');
+            string depotUriString = DirectionsService.getStringFromAddressInLatLngFormat(depot);
+            string uri = "https://maps.googleapis.com/maps/api/directions/json?origin=" + depotUriString + "&destination=" + depotUriString +"&waypoints=optimize:true|" + waypointsUriString;
+            HttpResponseMessage response = await googleMaps.performGoogleMapsRequestAsync(uri);
+            var jsonString = response.Content.ReadAsStringAsync().Result;
+
+            JObject json = JObject.Parse(jsonString);
+
+            var distanceObjects = json["routes"].Children()["legs"].Children()["distance"];
+            var distanceValues = distanceObjects.Select(ds => ds["value"]).Values<double>();
+            var overallDistanceInKm = Math.Round(distanceValues.Sum() / 1000, 2);
+
+            var durationObjects = json["routes"].Children()["legs"].Children()["duration"];
+            var durationValues = durationObjects.Select(ds => ds["value"]).Values<double>();
+            var overallDurationInHours = Math.Round(durationValues.Sum() / 3600, 2);
+
+            return new RouteDetails(overallDistanceInKm, overallDurationInHours);
         }
     }
 }

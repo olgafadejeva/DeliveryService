@@ -84,6 +84,8 @@ namespace DeliveryService
             services.AddSingleton<DeliveryStatusUpdateService>();
             services.AddSingleton<DeliverySearchService>();
             services.AddSingleton<LocationService>();
+            services.AddSingleton<RouteCreationService>();
+            services.AddSingleton<DriverAssignmentService>();
 
         }
 

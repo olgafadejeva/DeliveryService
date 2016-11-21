@@ -8,8 +8,8 @@ using DeliveryService.Data;
 namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20161111080728_UpdateDelivery")]
-    partial class UpdateDelivery
+    [Migration("20161118123636_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -160,6 +160,8 @@ namespace DeliveryService.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("AddedToRoute");
+
                     b.Property<int>("ClientID");
 
                     b.Property<int?>("CompanyID");
@@ -208,6 +210,8 @@ namespace DeliveryService.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("AddressID");
+
                     b.Property<int?>("CompanyID");
 
                     b.Property<int?>("TeamID");
@@ -215,6 +219,8 @@ namespace DeliveryService.Migrations
                     b.Property<string>("UserId");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("AddressID");
 
                     b.HasIndex("CompanyID");
 
@@ -235,6 +241,10 @@ namespace DeliveryService.Migrations
                     b.Property<DateTime>("DeliverBy");
 
                     b.Property<int?>("DriverID");
+
+                    b.Property<double?>("OverallDistance");
+
+                    b.Property<double?>("OverallTimeRequired");
 
                     b.Property<int?>("PickUpAddressID");
 
@@ -434,6 +444,16 @@ namespace DeliveryService.Migrations
                     b.HasDiscriminator().HasValue("ClientAddress");
                 });
 
+            modelBuilder.Entity("DeliveryService.Models.Entities.DriverAddress", b =>
+                {
+                    b.HasBaseType("DeliveryService.Models.Entities.Address");
+
+
+                    b.ToTable("DriverAddress");
+
+                    b.HasDiscriminator().HasValue("DriverAddress");
+                });
+
             modelBuilder.Entity("DeliveryService.Models.Entities.PickUpAddress", b =>
                 {
                     b.HasBaseType("DeliveryService.Models.Entities.Address");
@@ -486,7 +506,7 @@ namespace DeliveryService.Migrations
                         .HasForeignKey("DeliveryStatusID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("DeliveryService.Models.Entities.Route", "Route")
+                    b.HasOne("DeliveryService.Models.Entities.Route")
                         .WithMany("Deliveries")
                         .HasForeignKey("RouteID");
                 });
@@ -500,6 +520,10 @@ namespace DeliveryService.Migrations
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Driver", b =>
                 {
+                    b.HasOne("DeliveryService.Models.Entities.DriverAddress", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressID");
+
                     b.HasOne("DeliveryService.Models.Entities.Company")
                         .WithMany("Drivers")
                         .HasForeignKey("CompanyID");

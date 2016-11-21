@@ -16,7 +16,9 @@ namespace DeliveryService.Models.Entities
 
         [Key]
         public int ID { get; set; }
-        
+
+        public DriverAddress Address { get; set; }
+
         public virtual ICollection<Vehicle> Vehicles { get; set; }
         public virtual ICollection<Route> Routes { get; set; }
         public virtual DriverUser User { get; set; }

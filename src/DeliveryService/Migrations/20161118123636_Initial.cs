@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace DeliveryService.Migrations
 {
-    public partial class Inital : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -212,6 +212,7 @@ namespace DeliveryService.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AddressID = table.Column<int>(nullable: true),
                     CompanyID = table.Column<int>(nullable: true),
                     TeamID = table.Column<int>(nullable: true),
                     UserId = table.Column<string>(nullable: true)
@@ -219,6 +220,12 @@ namespace DeliveryService.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Drivers", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Drivers_Addresses_AddressID",
+                        column: x => x.AddressID,
+                        principalTable: "Addresses",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Drivers_Companies_CompanyID",
                         column: x => x.CompanyID,
@@ -325,7 +332,7 @@ namespace DeliveryService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Route",
+                name: "Routes",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
@@ -333,25 +340,27 @@ namespace DeliveryService.Migrations
                     CompanyID = table.Column<int>(nullable: true),
                     DeliverBy = table.Column<DateTime>(nullable: false),
                     DriverID = table.Column<int>(nullable: true),
+                    OverallDistance = table.Column<double>(nullable: true),
+                    OverallTimeRequired = table.Column<double>(nullable: true),
                     PickUpAddressID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Route", x => x.ID);
+                    table.PrimaryKey("PK_Routes", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Route_Companies_CompanyID",
+                        name: "FK_Routes_Companies_CompanyID",
                         column: x => x.CompanyID,
                         principalTable: "Companies",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Route_Drivers_DriverID",
+                        name: "FK_Routes_Drivers_DriverID",
                         column: x => x.DriverID,
                         principalTable: "Drivers",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Route_Addresses_PickUpAddressID",
+                        name: "FK_Routes_Addresses_PickUpAddressID",
                         column: x => x.PickUpAddressID,
                         principalTable: "Addresses",
                         principalColumn: "ID",
@@ -388,13 +397,14 @@ namespace DeliveryService.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AddedToRoute = table.Column<bool>(nullable: false),
                     ClientID = table.Column<int>(nullable: false),
                     CompanyID = table.Column<int>(nullable: true),
                     DeliverBy = table.Column<DateTime>(nullable: true),
                     DeliveryStatusID = table.Column<int>(nullable: false),
                     ItemSize = table.Column<int>(nullable: false),
                     ItemWeight = table.Column<double>(nullable: false),
-                    RouteID = table.Column<int>(nullable: false)
+                    RouteID = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -418,11 +428,11 @@ namespace DeliveryService.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Deliveries_Route_RouteID",
+                        name: "FK_Deliveries_Routes_RouteID",
                         column: x => x.RouteID,
-                        principalTable: "Route",
+                        principalTable: "Routes",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -493,6 +503,11 @@ namespace DeliveryService.Migrations
                 column: "AssignedToId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Drivers_AddressID",
+                table: "Drivers",
+                column: "AddressID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Drivers_CompanyID",
                 table: "Drivers",
                 column: "CompanyID");
@@ -508,18 +523,18 @@ namespace DeliveryService.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Route_CompanyID",
-                table: "Route",
+                name: "IX_Routes_CompanyID",
+                table: "Routes",
                 column: "CompanyID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Route_DriverID",
-                table: "Route",
+                name: "IX_Routes_DriverID",
+                table: "Routes",
                 column: "DriverID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Route_PickUpAddressID",
-                table: "Route",
+                name: "IX_Routes_PickUpAddressID",
+                table: "Routes",
                 column: "PickUpAddressID");
 
             migrationBuilder.CreateIndex(
@@ -594,7 +609,7 @@ namespace DeliveryService.Migrations
                 name: "DeliveryStatus");
 
             migrationBuilder.DropTable(
-                name: "Route");
+                name: "Routes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

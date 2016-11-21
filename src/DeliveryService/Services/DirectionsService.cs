@@ -48,5 +48,10 @@ namespace DeliveryService.Services
            return  getStringFromAddress(address, false);
         }
 
+        public static string getStringFromAddressInLatLngFormat(Address address)
+        {
+            return address.Lat + "," + address.Lng; ;
+        }
+
     }
 }

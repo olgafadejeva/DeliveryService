@@ -15,6 +15,7 @@ namespace DeliveryService.Models.Entities
             PickUpLocations = new List<PickUpAddress>();
             Routes = new List<Route>();
             Team = new Team();
+            Drivers = new List<Driver>();
         }
 
         [Key]

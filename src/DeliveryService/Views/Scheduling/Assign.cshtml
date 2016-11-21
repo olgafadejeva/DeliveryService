@@ -1,0 +1,65 @@
+﻿@model IEnumerable<DeliveryService.Models.Entities.Route>
+
+@{
+    ViewData["Title"] = "Driver Assignment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Driver Assignment</h2>
+
+<p>
+    <form asp-action="AutomaticAssign">
+        <input type="submit" value="Automatically assign drivers to routes" class="btn btn-default"/>
+     </form>
+</p>
+@if (Model.ToList().Count != 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Deliver by date
+                </th>
+                <th>
+                    Number of stops
+                </th>
+                <th>
+                    Route Duration
+                </th>
+                <th>
+                    Overall route distance
+                </th>
+                <th>
+                   Depot address
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DeliverBy)
+                    </td>
+                    <td>
+                        @item.Deliveries.Count()
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OverallTimeRequired)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OverallDistance)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => @item.PickUpAddress.LineOne) <br />
+                        @Html.DisplayFor(model => @item.PickUpAddress.City)<br />
+                        @Html.DisplayFor(model => @item.PickUpAddress.PostCode)<br />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@Html.ActionLink("Back to Route Map", "Index", "Scheduling")

@@ -32,5 +32,14 @@ namespace DeliveryService.Models.Entities
         [Display(Name = "Max load in kg")]
         [Range(0, double.MaxValue, ErrorMessage = "Must be a positive number")]
         public double MaxLoad { get; set; }
+
+        public Vehicle() { }
+
+        public Vehicle(double Load, double Height, double Width, double Length) {
+            this.MaxLoad = Load;
+            this.Height = Height;
+            this.Width = Width;
+            this.Length = Length;
+        }
     }
 }

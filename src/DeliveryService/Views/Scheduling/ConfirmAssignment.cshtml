@@ -1,0 +1,71 @@
+﻿@model DeliveryService.Models.RouteAssignment
+@{
+    ViewData["Title"] = "Driver Assignment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Driver Assignment Results</h2>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Original delivery date
+                </th>
+                <th>
+                    New delivery date
+                </th>
+                <th>
+                    Driver
+                </th>
+                <th>
+                    Route Duration
+                </th>
+                <th>
+                    Overall route distance
+                </th>
+                <th>
+                    Depot address
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{int i = 0;}
+            @foreach (var item in Model.Routes)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DeliverBy)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.TempRouteData.ElementAt(i).ModifiedDeliverByDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.TempRouteData.ElementAt(i).Driver.User.NormalizedUserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OverallTimeRequired)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OverallDistance)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => @item.PickUpAddress.LineOne) <br />
+                        @Html.DisplayFor(model => @item.PickUpAddress.City)<br />
+                        @Html.DisplayFor(model => @item.PickUpAddress.PostCode)<br />
+                    </td>
+                </tr>
+                i++;
+            }
+        </tbody>
+    </table>
+
+<p>
+    <form asp-action="ConfirmAssignment">
+        <input type="hidden" asp-for="TempRouteData" />
+        <input type="submit" value="Confirm assignment" class="btn btn-default" />
+    </form>
+</p>
+
+@Html.ActionLink("Back to Route Map", "Index", "Scheduling")

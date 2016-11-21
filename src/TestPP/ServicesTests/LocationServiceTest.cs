@@ -9,6 +9,7 @@ using DeliveryServiceTests.MockAndTestUtil;
 using System.Net.Http;
 using DeliveryService.Models.Entities;
 using DeliveryService.Controllers.ShipperControllers;
+using DeliveryService.Models;
 
 namespace DeliveryServiceTests.ServicesTests
 {
@@ -61,6 +62,22 @@ namespace DeliveryServiceTests.ServicesTests
             Assert.Equal(-10.5, address.Lng);
         }
 
+        [Fact]
+        public async Task testGetRouteDurationAndOverallDistance() {
+            var responseMessageOne = new HttpResponseMessage();
+            string jsonResult = "{\"geocoded_waypoints\":[],\"routes\":[{\"legs\":[{\"distance\":{\"text\":\"141 mi\",\"value\":200},\"duration\":{\"text\":\"1 h. 54 min.\",\"value\":3600}},{\"distance\":{\"text\":\"70 m\",\"value\":200},\"duration\":{\"text\":\"1 min.\",\"value\":3600}}]}]}";
+            responseMessageOne.Content = new StringContent(jsonResult);
 
+            List<HttpResponseMessage> responses = new List<HttpResponseMessage>();
+            responses.Add(responseMessageOne);
+            TestGoogleMapsUtil googleMaps = new TestGoogleMapsUtil(responses);
+
+            LocationService service = new LocationService(googleMaps);
+            List<Delivery> deliveries = new List<Delivery>();
+            PickUpAddress depot = new PickUpAddress();
+            RouteDetails result = await service.getRouteDurationAndOverallDistance(depot, deliveries);
+            Assert.Equal(0.4, result.OverallDistance);
+            Assert.Equal(2, result.OverallTimeRequired);
+        }
     }
 }

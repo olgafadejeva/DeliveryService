@@ -40,20 +40,20 @@ namespace DeliveryService.Models.Entities
         Large
     }
 
-    public static class ItemSizeExtension
+    public static class ItemSizeDimensionsExtension
     {
-        public static int MaxItemWeightBasedOnSize(this ItemSize size)
+        public static DeliveryItemDimensions getItemDimensionsBasedOnSize(this ItemSize size)
         {
             switch (size)
             {
                 case ItemSize.Small:
-                    return 2;
+                    return new DeliveryItemDimensions(20, 35, 45);
                 case ItemSize.Medium:
-                    return 10;
+                    return new DeliveryItemDimensions(45, 45, 60);
                 case ItemSize.Large:
-                    return 20;
+                    return new DeliveryItemDimensions(60, 60, 80);
                 default:
-                    return 20;
+                    return new DeliveryItemDimensions(60, 60, 80);
             }
         }
 
