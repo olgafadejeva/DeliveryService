@@ -52,7 +52,7 @@ namespace DeliveryServiceTests.ServicesTests
             LocationService locationService = new LocationService(googleMaps);
             DriverAssignmentService assignmentService = new DriverAssignmentService(locationService);
 
-            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>());
+            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>(), new DateTime(2015,12,12));
             Assert.Equal(result.Driver, driverTwo);
         }
 
@@ -94,7 +94,7 @@ namespace DeliveryServiceTests.ServicesTests
             LocationService locationService = new LocationService(googleMaps);
             DriverAssignmentService assignmentService = new DriverAssignmentService(locationService);
 
-            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>());
+            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>(), new DateTime(2015, 12, 12));
             Assert.Equal(result.Driver, driverTwo);
         }
 
@@ -132,7 +132,7 @@ namespace DeliveryServiceTests.ServicesTests
 
             LocationService locationService = new LocationService(googleMaps);
             DriverAssignmentService assignmentService = new DriverAssignmentService(locationService);
-            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>());
+            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>(), new DateTime(2015, 12, 12));
             Assert.Equal(result.Driver, driverTwo);
             Assert.Equal(result.Vehicle, vehicleTwo);
         }
@@ -171,7 +171,7 @@ namespace DeliveryServiceTests.ServicesTests
             LocationService locationService = new LocationService(googleMaps);
             DriverAssignmentService assignmentService = new DriverAssignmentService(locationService);
 
-            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>());
+            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>(), new DateTime(2015, 12, 12));
             Assert.Equal(result.Driver, driverOne);
         }
 
@@ -213,7 +213,7 @@ namespace DeliveryServiceTests.ServicesTests
             LocationService locationService = new LocationService(googleMaps);
             DriverAssignmentService assignmentService = new DriverAssignmentService(locationService);
 
-            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>());
+            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>(), new DateTime(2015, 12, 12));
             Assert.Equal(result.Driver, driverOne);
             Assert.Equal(result.DeliverByDate, new DateTime(2015, 12, 12));
         }
@@ -247,7 +247,7 @@ namespace DeliveryServiceTests.ServicesTests
             LocationService locationService = new LocationService(googleMaps);
             DriverAssignmentService assignmentService = new DriverAssignmentService(locationService);
 
-            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver> { driverOne }, new List<Driver>());
+            DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver> { driverOne }, new List<Driver>(), new DateTime(2015, 12, 12));
             Assert.Equal(null, result.Driver);
         }
 

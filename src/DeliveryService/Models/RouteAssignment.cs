@@ -11,9 +11,8 @@ namespace DeliveryService.Models
         public List<Route> Routes { get; set; }
         public List<TempRoute> TempRouteData { get; set; }
 
-        public RouteAssignment(List<Route> routes, List<TempRoute> tempRoutes) {
-            this.Routes = routes;
-            this.TempRouteData = tempRoutes;
-        }
+
+
+        public RouteAssignment() { }
     }
 }

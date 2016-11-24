@@ -1,0 +1,72 @@
+@model IEnumerable<DeliveryService.Models.DriverViewModels.DriverRouteView>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliverBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliveryDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OverallDistance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OverallTimeRequired)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Vehicle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PickUpAddress)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliverBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OverallDistance)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OverallTimeRequired)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Vehicle.RegistrationNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(model => @item.PickUpAddress.LineOne) <br />
+                @Html.DisplayFor(model => @item.PickUpAddress.City)<br />
+                @Html.DisplayFor(model => @item.PickUpAddress.PostCode)<br />
+            </td>
+            <td>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                        Options
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a asp-action="RouteDeliveries" asp-route-id="@item.ID">See delivery details</a></li>
+                        <li><a asp-action="MapRoute" asp-route-id="@item.ID">View on the map</a></li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

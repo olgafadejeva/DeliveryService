@@ -138,7 +138,7 @@ namespace DeliveryService.Controllers.ShipperControllers
             {
                 return NotFound();
             }
-            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "Email", delivery.ClientID);
+            ViewData["ClientID"] = new SelectList(company.Clients, "ID", "Email", delivery.ClientID);
             return View(delivery);
         }
 
@@ -156,7 +156,6 @@ namespace DeliveryService.Controllers.ShipperControllers
                 .SingleOrDefaultAsync(m => m.ID == id);
         }
         
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Delivery delivery)

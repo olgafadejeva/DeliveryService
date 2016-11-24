@@ -51,5 +51,21 @@ namespace DeliveryService.Services
             }
             return routesCreatedInThisSession;
         }
+
+        public async Task updateRouteDetails(Route route)
+        {
+            List<Route> routesCreatedInThisSession = new List<Route>();
+            var deliveriesInARoute = route.Deliveries;
+                if (deliveriesInARoute.Count() != 0)
+                {
+                    RouteDetails details = await LocationService.getRouteDurationAndOverallDistance(route.PickUpAddress, deliveriesInARoute.ToList());
+                    route.OverallDistance = details.OverallDistance;
+                    //adding a time that a driver might need for stopping at the client's location, 10 min per stop
+                    double timeForStops = Math.Round((double)10 * deliveriesInARoute.Count() / 60, 2);
+                    route.OverallTimeRequired = details.OverallTimeRequired + timeForStops;
+                }
+            }
+        }
+
+
     }
-}

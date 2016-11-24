@@ -35,7 +35,7 @@ namespace DeliveryService.Services
         public async Task<IdentityResult> CreateDriverUserAsync(DriverRegisterViewModel model)
         {
             Company company = _context.Companies.SingleOrDefault(c => c.Team.ID == Convert.ToInt32(model.DriverTeamId));
-            var user = new DriverUser { UserName = model.Email, Email = model.Email, Company = company };
+            var user = new DriverUser { UserName = model.Email, Email = model.Email, CompanyID = company.ID };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -55,7 +55,7 @@ namespace DeliveryService.Services
             company.CompanyName = model.CompanyName;
             _context.Companies.Add(company);
             await _context.SaveChangesAsync();
-            var user = new EmployeeUser { UserName = model.Email, Email = model.Email, Company = company, PrimaryContact = true };
+            var user = new EmployeeUser { UserName = model.Email, Email = model.Email, CompanyID = company.ID, PrimaryContact = true };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -74,8 +74,8 @@ namespace DeliveryService.Services
         public async Task<IdentityResult> CreateEmployeeUserAsync(EmployeeCreateView model, Company company)
         {
             string DEFAULT_NEW_EMPLOYEE_PASSWORD = company.CompanyName.ToUpper() + "123"; ;
-            ApplicationUser employee = new ApplicationUser { Email = model.Email, Company = company, UserName = model.Email };
-            var user = new EmployeeUser { UserName = model.Email, Email = model.Email, Company = company, PrimaryContact = false };
+            ApplicationUser employee = new ApplicationUser { Email = model.Email, CompanyID = company.ID, UserName = model.Email };
+            var user = new EmployeeUser { UserName = model.Email, Email = model.Email, CompanyID = company.ID, PrimaryContact = false };
             var result = await _userManager.CreateAsync(user, DEFAULT_NEW_EMPLOYEE_PASSWORD);
             if (result.Succeeded)
             {
@@ -107,7 +107,8 @@ namespace DeliveryService.Services
                 Include(c => c.Team)
                 .ThenInclude(t => t.Drivers)
                 .SingleOrDefault(c => c.ID == user.CompanyID);
-            var team = user.Company.Team;
+            Company userCompany = _context.Companies.Where(c => c.ID == user.CompanyID).First();
+            var team = userCompany.Team;
             team.Drivers.Add(driverEntity);
             var completedDriverRequest = await _context.DriverRegistrationRequests.SingleOrDefaultAsync(m => m.DriverEmail == user.Email);
             _context.DriverRegistrationRequests.Remove(completedDriverRequest);

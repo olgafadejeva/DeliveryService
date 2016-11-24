@@ -38,6 +38,10 @@ namespace DeliveryService.Controllers.DriverControllers
                     .Include(c => c.Routes)
                         .ThenInclude(d=>d.Deliveries)
                             .ThenInclude(d=>d.Client)
+                                .ThenInclude( c=> c.Address)
+                    .Include(c => c.Routes)
+                        .ThenInclude(d => d.Deliveries)
+                            .ThenInclude(d => d.DeliveryStatus)
                    .SingleOrDefault(m => m.User.Id == currentUserId);
             }
         }

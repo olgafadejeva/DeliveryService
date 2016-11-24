@@ -47,6 +47,24 @@ namespace DeliveryService.Models.Entities
             }
         }
 
+        public static Status statusFromString(this string statusSting) {
+            switch (statusSting)
+            {
+                case "Delivered":
+                    return  Status.Delivered;
+                case "New":
+                    return Status.New;
+                case "PickedUpByDriver":
+                    return Status.PickedUpByDriver;
+                case "InTransit":
+                    return Status.InTransit;
+                case "FailedDelivery":
+                    return Status.FailedDelivery;
+                default:
+                    return Status.New;
+            }
+        }
+
         public static string DisplayName(this Status status)
         {
             switch (status)

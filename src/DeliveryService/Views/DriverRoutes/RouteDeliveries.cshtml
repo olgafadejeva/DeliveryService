@@ -1,0 +1,130 @@
+﻿@using DeliveryService.Models.Entities;
+@model IEnumerable<DeliveryService.Models.DriverViewModels.DriverDeliveryViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<head>
+    <script type="text/javascript">
+        function updateStatus(idNumber, statusUpdate) {
+            console.log(idNumber);
+            console.log(statusUpdate);
+            var statusUpdateObject = { id: idNumber, status: statusUpdate }
+            var jsonString = JSON.stringify(statusUpdateObject)
+            console.log(jsonString)
+            $.ajax({
+                type: "POST",
+                url: "/DriverDeliveries/UpdateStatus",
+                dataType: "json",
+                data: jsonString,
+                contentType: 'application/json; charset=utf-8',
+                success: function (result, textStatus, xhr) {
+                    console.log(result)
+                    console.log(xhr.status)
+
+                    document.getElementById("successDialogue").style.display = "block";
+                    document.getElementById(idNumber+"+status").innerHTML = result;
+
+                },
+                error: function(result, textStatus, xhr) {
+                    document.getElementById("errorDialogue").style.display = "block";
+                }
+            });
+
+        }
+    </script>
+</head>
+<h2>Route deliveries</h2>
+<div id="successDialogue" class="alert alert-success fade in" style="display:none">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>Success!</strong> Delivery status updated
+</div>
+<div id="errorDialogue" class="alert alert-danger fade in" style="display:none">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>Error!</strong> Delivery status cannot be updated
+</div>
+@if (Model.Count() != 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Recipient
+                </th>
+                <th>
+                    Delivery address
+                </th>
+                <th>
+                    Delivery status
+                </th>
+                <th>Deliver by</th>
+
+                <th>Item details</th>
+                <th></th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => @item.ClientName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => @item.ClientAddress.LineOne) <br />
+                        @Html.DisplayFor(model => @item.ClientAddress.City)<br />
+                        @Html.DisplayFor(model => @item.ClientAddress.PostCode)<br />
+
+                    </td>
+                    <td id="@item.ID+status">
+                        @Html.DisplayFor(model => @item.DeliveryStatusString)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => @item.DeliverBy)
+                    </td>
+                    <td>
+                        <p>
+                            @Html.LabelFor(model => @item.ItemSizeString)
+                            @Html.DisplayFor(model => @item.ItemSizeString)
+                        </p>
+
+                        <p>
+                            @Html.LabelFor(model => @item.ItemWeight)
+                            @Html.DisplayFor(model => @item.ItemWeight)
+                        </p>
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                Options
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu list-group">
+
+                                <li>
+                                    <button class="list-group-item" onclick="updateStatus(@item.ID, 'PickedUpByDriver' )">Mark as picked up</button>
+                                </li>
+                                <li>
+                                    <button class="list-group-item" onclick="updateStatus(@item.ID, 'InTransit' )">Mark as in transit</button>
+                                </li>
+                                <li>
+                                    <button class="list-group-item" onclick="updateStatus(@item.ID, 'Delivered' )">Mark as delivered</button>
+                                </li>
+                                <li>
+                                    @Html.ActionLink("Check driving instructions", "Navigation", "DriverDeliveries", new { id = @item.ID }, new { @class = "list-group-item" })
+
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@Html.ActionLink("Back to Routes", "Index", "Routes")
+

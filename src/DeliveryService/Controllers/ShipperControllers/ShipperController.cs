@@ -29,7 +29,6 @@ namespace DeliveryService.Controllers.ShipperControllers
             if (currentUserId != null)
             {
                 var applicationUser = context.ApplicationUsers
-                    .Include(u => u.Company)
                     .SingleOrDefault(u => u.Id == currentUserId);
                 company = context.Companies
                     .Include(c => c.Clients)

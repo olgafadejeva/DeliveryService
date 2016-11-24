@@ -1,0 +1,85 @@
+@model IEnumerable<DeliveryService.Models.ShipperViewModels.RouteViewModel>
+
+@{
+    ViewData["Title"] = "Routes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Routes</h2>
+
+@if (Model.ToList().Count != 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Deliver by date
+                </th>
+                <th>
+                    Delivery date
+                </th>
+                <th>
+                    Number of stops
+                </th>
+                <th>
+                    Route Duration
+                </th>
+                <th>
+                    Overall route distance
+                </th>
+                <th>
+                    Depot address
+                </th>
+                <th>
+                    Driver Assigned
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DeliverBy)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DeliveryDate)
+                    </td>
+                    <td>
+                        @item.Deliveries.Count()
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OverallTimeRequired)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OverallDistance)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => @item.PickUpAddress.LineOne) <br />
+                        @Html.DisplayFor(model => @item.PickUpAddress.City)<br />
+                        @Html.DisplayFor(model => @item.PickUpAddress.PostCode)<br />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => @item.Driver.User.NormalizedUserName) <br /> 
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                Options
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a asp-action="Delete" asp-route-id="@item.ID">Delete</a></li>
+                                <li><a asp-action="Reassign" asp-route-id="@item.ID">Reassign</a></li>
+                                <li><a asp-action="RouteDeliveries" asp-route-id="@item.ID">See delivery details</a></li>
+                                <li><a asp-action="MapRoute" asp-route-id="@item.ID">View on the map</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

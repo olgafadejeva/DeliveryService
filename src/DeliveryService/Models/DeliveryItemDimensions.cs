@@ -16,5 +16,9 @@ namespace DeliveryService.Models
             this.Width = width;
             this.Length = length;
         }
+
+        public override string ToString() {
+            return Height + "x" + Width + "x" + Length;
+        }
     }
 }

@@ -10,6 +10,7 @@ using DeliveryService.Services;
 using System.Net;
 using DeliveryService.Models.ShipperViewModels;
 using DeliveryService.Models;
+using Newtonsoft.Json;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
@@ -30,8 +31,9 @@ namespace DeliveryService.Controllers.ShipperControllers
             MapObjects objects = new MapObjects(deliveries, depots, company.Routes.ToList());
             return View(objects);
         }
-        
-        public JsonResult DeliverWithinDays(string days) {
+
+        public JsonResult DeliverWithinDays(string days)
+        {
             var deliveries = DateFilter.getDeliveriesWithinDays(company.Deliveries.ToList(), Convert.ToInt32(days));
             var routes = DateFilter.getRoutesWithinDays(company.Routes.ToList(), Convert.ToInt32(days));
             Response.StatusCode = (int)HttpStatusCode.OK;
@@ -46,7 +48,8 @@ namespace DeliveryService.Controllers.ShipperControllers
             if (allRoutes != null)
             {
                 routesCreatedInThisSession = await RouteCreationService.createRoutes(allRoutes, company);
-                foreach (Route r in routesCreatedInThisSession) {
+                foreach (Route r in routesCreatedInThisSession)
+                {
                     company.Routes.Add(r);
                 }
                 await _context.SaveChangesAsync();
@@ -58,58 +61,65 @@ namespace DeliveryService.Controllers.ShipperControllers
         }
 
         [HttpGet]
-        public IActionResult Assign() {
-
-            var routesToAssign = company.Routes.Where(r => r.AssignedTo == null);
+        public IActionResult Assign()
+        {
+            var routesToAssign = company.Routes.Where(r => r.DriverID == null);
             return View(routesToAssign);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AutomaticAssign() {
-            var routesToAssign = company.Routes.Where(r => r.AssignedTo == null).ToList();
-            RouteAssignment assignemnt =  DriverAssignmentService.assignMultipleRoutes(routesToAssign, company.Team.Drivers.ToList());
-           /* var tempRouteData = new List<TempRoute>();
-            List<Driver> alreadyAssignedDrivers = new List<Driver>();
-            foreach (Route route in routesToAssign) {
-                DriverAssignmentResult assignmentResult = DriverAssignmentService.getBestDriverForRoute(route, company.Team.Drivers.ToList(), alreadyAssignedDrivers);
-                TempRoute parameters = new TempRoute();
-                parameters.DriversVehicle = assignmentResult.Vehicle;
-                parameters.ModifiedDeliverByDate = assignmentResult.DeliverByDate;
-                parameters.Driver = assignmentResult.Driver;
-                parameters.RouteId = route.ID;
-                alreadyAssignedDrivers.Add(assignmentResult.Driver);
-                tempRouteData.Add(parameters);
-            }
-            RouteAssignment assignemnt = new RouteAssignment(routesToAssign, tempRouteData);*/
-            return View("ConfirmAssignment", assignemnt);
-        }
+        public async Task<IActionResult> AutomaticAssign()
+        {
+            var routesToAssign = company.Routes.Where(r => r.DriverID == null).ToList();
+            RouteAssignment assignemnt = DriverAssignmentService.assignMultipleRoutes(routesToAssign, company.Team.Drivers.ToList());
 
-        [HttpPost]
-        public async Task<IActionResult> ConfirmAssignment(List<TempRoute> tempRouteData) {
-
-            foreach (TempRoute tempRoute in tempRouteData) {
+            TempData["Assignment"] = JsonConvert.SerializeObject(assignemnt);
+            var TempRouteData = assignemnt.TempRouteData;
+            foreach (TempRoute tempRoute in TempRouteData)
+            {
                 Route route = company.Routes.Where(r => r.ID == tempRoute.RouteId).First();
-                route.AssignedTo = tempRoute.Driver;
-                route.DeliverBy = tempRoute.ModifiedDeliverByDate;
-                route.VehicleID = tempRoute.DriversVehicle.ID;
+                if (tempRoute.Driver != null)
+                {
+                    Driver driverEntity = _context.Drivers.Where(d => d.ID == tempRoute.Driver.ID).FirstOrDefault();
+                    route.DriverID = driverEntity.ID;
+                }
+                // route.AssignedTo = tempRoute.Driver;
+                route.DeliveryDate = tempRoute.ModifiedDeliverByDate.AddDays(-1);
+                if (tempRoute.DriversVehicle != null)
+                {
+                    route.VehicleID = tempRoute.DriversVehicle.ID;
+                }
                 _context.Routes.Update(route);
             }
             await _context.SaveChangesAsync();
-            return View("RoutesSummary", company.Routes);
+            
+            return RedirectToAction("AssignmentResult");
         }
 
-       
+        [HttpGet]
+        public IActionResult AssignmentResult()
+        {
+            var assignment = JsonConvert.DeserializeObject<RouteAssignment>((string)TempData["Assignment"]);
+
+            TempData["Assignment"] = JsonConvert.SerializeObject(assignment);
+            return View(assignment);
+        }
+        
     }
 
-    public class RouteDelivery {
-        public int[] ids { get; set; }
-        public Center center { get; set; }
+
+        public class RouteDelivery
+        {
+            public int[] ids { get; set; }
+            public Center center { get; set; }
+        }
+
+        public class Center
+        {
+            public float lat { get; set; }
+            public float lng { get; set; }
+        }
+
     }
 
-    public class Center {
-        public float lat { get; set; }
-        public float lng { get; set; }
-    }
-
-}
     

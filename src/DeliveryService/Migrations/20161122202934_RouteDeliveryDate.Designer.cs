@@ -8,9 +8,10 @@ using DeliveryService.Data;
 namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161122202934_RouteDeliveryDate")]
+    partial class RouteDeliveryDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -233,13 +234,13 @@ namespace DeliveryService.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("AssignedToID");
+
                     b.Property<int?>("CompanyID");
 
                     b.Property<DateTime>("DeliverBy");
 
                     b.Property<DateTime?>("DeliveryDate");
-
-                    b.Property<int?>("DriverID");
 
                     b.Property<double?>("OverallDistance");
 
@@ -251,9 +252,9 @@ namespace DeliveryService.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("CompanyID");
+                    b.HasIndex("AssignedToID");
 
-                    b.HasIndex("DriverID");
+                    b.HasIndex("CompanyID");
 
                     b.HasIndex("PickUpAddressID");
 
@@ -532,13 +533,13 @@ namespace DeliveryService.Migrations
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Route", b =>
                 {
+                    b.HasOne("DeliveryService.Models.Entities.Driver", "AssignedTo")
+                        .WithMany("Routes")
+                        .HasForeignKey("AssignedToID");
+
                     b.HasOne("DeliveryService.Models.Entities.Company")
                         .WithMany("Routes")
                         .HasForeignKey("CompanyID");
-
-                    b.HasOne("DeliveryService.Models.Entities.Driver")
-                        .WithMany("Routes")
-                        .HasForeignKey("DriverID");
 
                     b.HasOne("DeliveryService.Models.Entities.PickUpAddress", "PickUpAddress")
                         .WithMany()

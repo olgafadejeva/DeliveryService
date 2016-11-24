@@ -21,12 +21,13 @@ namespace DeliveryService.Services
             List<Driver> alreadyAssignedDriversForADay = new List<Driver>();
             List<Driver> driversAlreadyAssignedARouteThisSession = new List<Driver>();
             Route prevRoute = null;
-            foreach (Route route in routes)
+            List<Route> sortedRoutes = routes.OrderByDescending(r => r.DeliverBy).ToList();
+            foreach (Route route in sortedRoutes)
             {
                 if (prevRoute != null && !prevRoute.DeliverBy.Equals(route.DeliverBy)) {
                     alreadyAssignedDriversForADay.Clear();
                 }
-                DriverAssignmentResult assignmentResult = getBestDriverForRoute(route, drivers, alreadyAssignedDriversForADay, driversAlreadyAssignedARouteThisSession);
+                DriverAssignmentResult assignmentResult = getBestDriverForRoute(route, drivers, alreadyAssignedDriversForADay, driversAlreadyAssignedARouteThisSession, route.DeliverBy);
                 TempRoute parameters = new TempRoute();
                 parameters.DriversVehicle = assignmentResult.Vehicle;
                 parameters.ModifiedDeliverByDate = assignmentResult.DeliverByDate;
@@ -37,7 +38,9 @@ namespace DeliveryService.Services
                 prevRoute = route;
                 driversAlreadyAssignedARouteThisSession.Add(assignmentResult.Driver);
             }
-            RouteAssignment assignemnt = new RouteAssignment(routes, tempRouteData);
+            RouteAssignment assignemnt = new RouteAssignment();
+            assignemnt.Routes = routes;
+            assignemnt.TempRouteData = tempRouteData;
             return assignemnt;
         }
 
@@ -61,7 +64,7 @@ namespace DeliveryService.Services
             return allDrivers;
         }
 
-        public DriverAssignmentResult getBestDriverForRoute(Route route, List<Driver> drivers, List<Driver> unavailableDrivers, List<Driver> driversAlreadyAssignedRoutesInThisSession) {
+        public DriverAssignmentResult getBestDriverForRoute(Route route, List<Driver> drivers, List<Driver> unavailableDrivers, List<Driver> driversAlreadyAssignedRoutesInThisSession, DateTime DeliverBy) {
             DriverAssignmentResult[] assignmentCosts = new DriverAssignmentResult[drivers.Count()];
             List<Driver> copyOfUnavailableDrivers = unavailableDrivers.ToList();
 
@@ -70,11 +73,14 @@ namespace DeliveryService.Services
             foreach (Driver driver in sortedDriverList) {
                 if (!unavailableDrivers.Contains(driver))
                 {
-                    DriverAssignmentResult result = getCostForDriverBeingAssignedToRoute(driver, route);
+                    DriverAssignmentResult result = getCostForDriverBeingAssignedToRoute(driver, route, DeliverBy);
                     assignmentCosts[drivers.IndexOf(driver)] = result;
                 }
                 else {
-                    assignmentCosts[drivers.IndexOf(driver)] = new DriverAssignmentResult();
+                    DriverAssignmentResult result = new DriverAssignmentResult();
+                    result.DeliverByDate = DeliverBy;
+                    result.RouteID = route.ID;
+                    assignmentCosts[drivers.IndexOf(driver)] = result;
                 }
 
             }
@@ -97,10 +103,13 @@ namespace DeliveryService.Services
                 if (numberOfTries < 3)
                 {
                     numberOfTries++;
-                    route.DeliverBy = route.DeliverBy.AddDays(-1);
-                    return getBestDriverForRoute(route, drivers, unavailableDrivers, driversAlreadyAssignedRoutesInThisSession);
+                    DateTime deliverBy = route.DeliverBy.AddDays(-1);
+                    return getBestDriverForRoute(route, drivers, unavailableDrivers, driversAlreadyAssignedRoutesInThisSession, deliverBy);
                 } else {
-                    return new DriverAssignmentResult();
+                    DriverAssignmentResult result = new DriverAssignmentResult();
+                    result.DeliverByDate = route.DeliverBy;
+                    result.RouteID = route.ID;
+                    return result;
                 }
             }
 
@@ -121,13 +130,13 @@ namespace DeliveryService.Services
             }
         }
 
-        private DriverAssignmentResult getCostForDriverBeingAssignedToRoute(Driver driver, Route route)
+        private DriverAssignmentResult getCostForDriverBeingAssignedToRoute(Driver driver, Route route, DateTime DeliverBy)
         {
             double profit = 0;
             DriverAssignmentResult result = new DriverAssignmentResult(route.ID, route.DeliverBy, driver);
 
             //if there is already a delivery on a day before deliveryby day 
-            if (driver.Routes.Where(r => r.DeliverBy.Equals(route.DeliverBy.AddDays(-1))).ToList().Count() != 0) {
+            if (driver.Routes.Where(r => r.DeliverBy.Equals(DeliverBy.AddDays(-1))).ToList().Count() != 0) {
                // return 0; //ifdriver is not available on a day, no need to check other 
                 result.AssignmentProfit = 0;
                 return result;

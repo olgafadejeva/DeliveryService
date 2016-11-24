@@ -12,6 +12,5 @@ namespace DeliveryService.Models
     public class ApplicationUser : IdentityUser
     {
         public int CompanyID { get; set; }
-        public virtual Company Company { get; set; }
     }
 }

@@ -6,15 +6,14 @@
 
 <h2>Driver Assignment Results</h2>
 
-
     <table class="table">
         <thead>
             <tr>
                 <th>
-                    Original delivery date
+                    Deliver by date
                 </th>
                 <th>
-                    New delivery date
+                    Delivery date
                 </th>
                 <th>
                     Driver
@@ -39,7 +38,7 @@
                         @Html.DisplayFor(modelItem => item.DeliverBy)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => Model.TempRouteData.ElementAt(i).ModifiedDeliverByDate)
+                        @Html.DisplayFor(modelItem => Model.Routes.ElementAt(i).DeliveryDate)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => Model.TempRouteData.ElementAt(i).Driver.User.NormalizedUserName)
@@ -61,11 +60,7 @@
         </tbody>
     </table>
 
-<p>
-    <form asp-action="ConfirmAssignment">
-        <input type="hidden" asp-for="TempRouteData" />
-        <input type="submit" value="Confirm assignment" class="btn btn-default" />
-    </form>
-</p>
+@Html.ActionLink("See all routes", "Index", "Routes")
 
 @Html.ActionLink("Back to Route Map", "Index", "Scheduling")
+

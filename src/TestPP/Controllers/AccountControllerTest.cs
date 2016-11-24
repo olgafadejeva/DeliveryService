@@ -368,7 +368,7 @@ namespace DeliveryServiceTests.Controllers
             
             var userManager = controller.getUserManager();
             var userManagerResult = await userManager.CreateAsync(
-                new DriverUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL, Company = company },
+                new DriverUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL, CompanyID = company.ID },
                 Constants.DEFAULT_PASSWORD);
 
             Assert.True(userManagerResult.Succeeded);

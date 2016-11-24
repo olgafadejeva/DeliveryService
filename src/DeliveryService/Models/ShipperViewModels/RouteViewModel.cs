@@ -1,12 +1,13 @@
-﻿using System;
+﻿using DeliveryService.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DeliveryService.Models.Entities
+namespace DeliveryService.Models.ShipperViewModels
 {
-    public class Route
+    public class RouteViewModel
     {
         public int ID { get; set; }
 
@@ -18,24 +19,24 @@ namespace DeliveryService.Models.Entities
         [DataType(DataType.Date)]
         public DateTime? DeliveryDate { get; set; }
 
-        public int? PickUpAddressID { get; set; }
-
         [Display(Name = "Overall route distance")]
         public double? OverallDistance { get; set; }
 
         [Display(Name = "Estimated route completion time")]
         public double? OverallTimeRequired { get; set; }
 
-        public virtual ICollection<Delivery> Deliveries { get; set; }
+        public ICollection<Delivery> Deliveries { get; set; }
 
-        public virtual PickUpAddress PickUpAddress { get; set; }
+        public PickUpAddress PickUpAddress { get; set; }
 
-        public int? DriverID { get; set; }
+        public Driver Driver { get; set; }
 
-        public int? VehicleID { get; set; }
+        [Display(Name = "Driver's vehicle")]
+        public Vehicle DriversVehicle { get; set; }
 
 
-        public Route() {
+        public RouteViewModel()
+        {
             Deliveries = new List<Delivery>();
         }
     }
