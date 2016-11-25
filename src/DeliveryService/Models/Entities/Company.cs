@@ -15,7 +15,6 @@ namespace DeliveryService.Models.Entities
             PickUpLocations = new List<PickUpAddress>();
             Routes = new List<Route>();
             Team = new Team();
-            Drivers = new List<Driver>();
         }
 
         [Key]
@@ -26,7 +25,6 @@ namespace DeliveryService.Models.Entities
         public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual ICollection<Route> Routes { get; set; }
         public virtual ICollection<Client> Clients { get; set; }
-        public virtual ICollection<Driver> Drivers { get; set; }
         public virtual ICollection<PickUpAddress> PickUpLocations { get; set; }
         public virtual Team Team { get; set; }
     }

@@ -55,9 +55,23 @@
                 @Html.DisplayFor(model => @item.DeliverBy)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                        Options
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a asp-action="Edit" class="list-group-item" asp-route-id="@item.ID">Edit</a></li>
+                        <li><a asp-action="Delete" class="list-group-item" asp-route-id="@item.ID">Delete</a></li>
+                        <li><a asp-action="Details" class="list-group-item" asp-route-id="@item.ID">Details</a></li>
+
+                        <li>
+                            @Html.ActionLink("Map view", "MapDelivery", "Routes", new { id = @item.ID }, new { @class = "list-group-item" })
+
+                        </li>
+                    </ul>
+                </div>
+
             </td>
         </tr>
 }

@@ -1,7 +1,7 @@
 @model IEnumerable<DeliveryService.Models.DriverViewModels.DriverRouteView>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "My Routes";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -62,7 +62,7 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li><a asp-action="RouteDeliveries" asp-route-id="@item.ID">See delivery details</a></li>
-                        <li><a asp-action="MapRoute" asp-route-id="@item.ID">View on the map</a></li>
+                        <li><a asp-action="MapRoute" asp-route-id="@item.ID">Map view</a></li>
                     </ul>
                 </div>
             </td>

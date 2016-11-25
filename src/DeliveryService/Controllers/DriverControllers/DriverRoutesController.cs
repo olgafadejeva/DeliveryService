@@ -9,6 +9,8 @@ using DeliveryService.Data;
 using DeliveryService.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using DeliveryService.Models.DriverViewModels;
+using DeliveryService.Services;
+using DeliveryService.Models;
 
 namespace DeliveryService.Controllers.DriverControllers
 {
@@ -79,7 +81,36 @@ namespace DeliveryService.Controllers.DriverControllers
         public IActionResult MapRoute(int? id)
         {
             Route route = driver.Routes.Where(r => r.ID == id).FirstOrDefault();
-            return View(route.Deliveries);
+            MapRouteView model = new MapRouteView();
+            foreach (Delivery delivery in route.Deliveries)
+            {
+                model.waypoints.Add(DirectionsService.getStringFromAddressInLatLngFormat(delivery.Client.Address));
+            }
+            model.depotAddress = DirectionsService.getStringFromAddressInLatLngFormat(route.PickUpAddress);
+            model.overallRouteTime = route.OverallTimeRequired + "h";
+            model.routeDistance = route.OverallDistance + "mi";
+
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult MapDelivery(int? id)
+        {
+            var delivery = _context.Deliveries
+                 .Include(d => d.Client)
+                 .Include(d => d.Client.Address)
+                 .Include(d => d.DeliveryStatus)
+                 .SingleOrDefault(d => d.ID == id);
+            double locationLat = delivery.Client.Address.Lat;
+            double locationLng = delivery.Client.Address.Lng;
+            string clientName = delivery.Client.FirstName + " " + delivery.Client.LastName;
+            string currentStatus = StatusExtension.DisplayName(delivery.DeliveryStatus.Status);
+            string addressString = DirectionsService.getStringFromAddress(delivery.Client.Address);
+            string deliverByDate = delivery.DeliverBy.Value.Date.ToString();
+            string deliverByString = deliverByDate.Substring(0, deliverByDate.IndexOf(" "));
+            DriverSingleDeliveryMapView model = new DriverSingleDeliveryMapView(locationLat, locationLng, clientName, deliverByString, currentStatus, addressString);
+            return View(model);
         }
 
         private bool RouteExists(int id)

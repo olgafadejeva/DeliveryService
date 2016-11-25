@@ -64,7 +64,7 @@
         var labelIndex = 0;
 
 
-        var deliveries = @Html.Raw(JsonConvert.SerializeObject(Model.Deliveries));
+        var deliveries = @Html.Raw(JsonConvert.SerializeObject(Model.DeliveriesWithAddressString));
         var depots = @Html.Raw(JsonConvert.SerializeObject(Model.Depots));
         var routes = @Html.Raw(JsonConvert.SerializeObject(Model.ExistingRoutes));
         console.log("deliveries " + deliveries);
@@ -84,7 +84,9 @@
                     position:  { lat: parseFloat(delivery.Client.Address.Lat), lng: parseFloat(delivery.Client.Address.Lng)},
                     id: delivery.ID.toString(),
                     added: false,
-                    map:map
+                    map:map,
+                    title: delivery.ClientAddressString
+
 
                 });
 

@@ -28,7 +28,16 @@ namespace DeliveryService.Controllers.ShipperControllers
         {
             var deliveries = DateFilter.getDeliveriesWithinDays(company.Deliveries.ToList(), 2);
             var depots = company.PickUpLocations.ToList();
-            MapObjects objects = new MapObjects(deliveries, depots, company.Routes.ToList());
+            List<DeliveryViewModelWithAddressString> delsWithAddress = new List<DeliveryViewModelWithAddressString>();
+            foreach (Delivery delivery in deliveries) {
+                DeliveryViewModelWithAddressString model = new DeliveryViewModelWithAddressString();
+                model.Client = delivery.Client;
+                model.ClientAddressString = DirectionsService.getStringFromAddress(delivery.Client.Address);
+                model.DeliveryStatus = delivery.DeliveryStatus;
+                model.ID = delivery.ID;
+                delsWithAddress.Add(model);
+            }
+            MapObjects objects = new MapObjects(deliveries, depots, company.Routes.ToList(), delsWithAddress);
             return View(objects);
         }
 
@@ -37,7 +46,17 @@ namespace DeliveryService.Controllers.ShipperControllers
             var deliveries = DateFilter.getDeliveriesWithinDays(company.Deliveries.ToList(), Convert.ToInt32(days));
             var routes = DateFilter.getRoutesWithinDays(company.Routes.ToList(), Convert.ToInt32(days));
             Response.StatusCode = (int)HttpStatusCode.OK;
-            MapObjects result = new MapObjects(deliveries, routes);
+            List<DeliveryViewModelWithAddressString> delsWithAddress = new List<DeliveryViewModelWithAddressString>();
+            foreach (Delivery delivery in deliveries)
+            {
+                DeliveryViewModelWithAddressString model = new DeliveryViewModelWithAddressString();
+                model.Client = delivery.Client;
+                model.ClientAddressString = DirectionsService.getStringFromAddress(delivery.Client.Address);
+                model.DeliveryStatus = delivery.DeliveryStatus;
+                model.ID = delivery.ID;
+                delsWithAddress.Add(model);
+            }
+            MapObjects result = new MapObjects(deliveries, routes, delsWithAddress);
             return Json(result);
         }
 
@@ -83,7 +102,6 @@ namespace DeliveryService.Controllers.ShipperControllers
                     Driver driverEntity = _context.Drivers.Where(d => d.ID == tempRoute.Driver.ID).FirstOrDefault();
                     route.DriverID = driverEntity.ID;
                 }
-                // route.AssignedTo = tempRoute.Driver;
                 route.DeliveryDate = tempRoute.ModifiedDeliverByDate.AddDays(-1);
                 if (tempRoute.DriversVehicle != null)
                 {

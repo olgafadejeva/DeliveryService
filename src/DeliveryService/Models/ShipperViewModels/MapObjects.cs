@@ -10,20 +10,23 @@ namespace DeliveryService.Models.ShipperViewModels
     {
         private object routes;
 
-        public MapObjects(List<Delivery> deliveries, List<Route> routes)
+        public MapObjects(List<Delivery> deliveries, List<Route> routes, List<DeliveryViewModelWithAddressString> delWithAddress)
         {
             this.Deliveries = deliveries;
             this.ExistingRoutes = routes;
+            this.DeliveriesWithAddressString = delWithAddress;
         }
 
-        public MapObjects(List<Delivery> deliveries, List<PickUpAddress> depots, List<Route> routes)
+        public MapObjects(List<Delivery> deliveries, List<PickUpAddress> depots, List<Route> routes, List<DeliveryViewModelWithAddressString> delWithAddress)
         {
             this.Deliveries = deliveries;
             this.Depots = depots;
             this.ExistingRoutes = routes;
+            this.DeliveriesWithAddressString = delWithAddress;
         }
 
         public List<Delivery> Deliveries { get; set; }
+        public List<DeliveryViewModelWithAddressString> DeliveriesWithAddressString { get; set; }
 
         public  List<PickUpAddress> Depots { get; set; }
         public List<Route> ExistingRoutes { get; set; }

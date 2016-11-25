@@ -1,0 +1,141 @@
+﻿@using DeliveryService.Models;
+@using Newtonsoft.Json
+@model MapRouteView
+
+
+@{
+    ViewData["Title"] = "Route map view";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    #main_body {
+        overflow: hidden;
+    }
+
+    #right-panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+    }
+
+        #right-panel select, #right-panel input {
+            font-size: 15px;
+        }
+
+        #right-panel select {
+            width: 100%;
+        }
+
+        #right-panel i {
+            font-size: 12px;
+        }
+
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #map {
+        height: 1000px;
+        width: 100%;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+        .container > .navbar-header, .container-fluid > .navbar-header, .container > .navbar-collapse, .container-fluid > .navbar-collapse {
+            margin-right: 50px;
+            margin-left: 50px;
+        }
+
+    #right-panel {
+        border-width: 2px;
+        float: left;
+        text-align: left;
+        padding-top: 0;
+    }
+
+    #directions-panel {
+        margin-top: 10px;
+        padding: 10px;
+    }
+</style>
+
+<script type="text/javascript">
+    var waypoints = @Html.Raw(JsonConvert.SerializeObject(Model.waypoints));
+    var start = @Html.Raw(JsonConvert.SerializeObject(Model.depotAddress));
+    // initMap();
+    function initMap() {
+        console.log("init map called")
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 7,
+            center: { lat: 53.3811, lng: -1.4701 }
+        });
+        directionsDisplay.setMap(map);
+
+
+        var waypts = [];
+        for (var i = 0; i < waypoints.length; i++) {
+            waypts.push({
+                location: "Brighton,72 Newmarket Road, BN2 3QF",
+                stopover: true
+            });
+        }
+
+        directionsService.route({
+            origin: start,
+            destination: start,
+            waypoints: waypts,
+            optimizeWaypoints: true,
+            travelMode: 'DRIVING'
+        }, function(response, status) {
+            if (status === 'OK') {
+                directionsDisplay.setDirections(response);
+                directionsDisplay.setPanel(document.getElementById('directions-panel'));
+                var route = response.routes[0];
+                var summaryPanel = document.getElementById('right-panel');
+                summaryPanel.innerHTML = '';
+                // For each route, display summary information.
+                for (var i = 0; i < route.legs.length; i++) {
+                    var routeSegment = i + 1;
+                    summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +
+                        '</b><br>';
+                    summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
+                    summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
+                    summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+                }
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+        console.log("init map sdone")
+    }
+
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCruDMQXf92lZMvfCEO_L9E2oYjvuRfPaI&callback=initMap">
+</script>
+<h2>Route Map view</h2>
+<body>
+    <div id="main_body">
+        <div id="row">
+            <div class="col-sm-10">
+                <div id="map"></div>
+            </div>
+            <div class="col-sm-2">
+                <h4>Route summary</h4>
+                <div id="right-panel"></div>
+                <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#directions-panel">Reveal directions</button>
+                <div id="directions-panel" class="collapse pre-scrollable"></div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+
+    @Html.ActionLink("Back to Routes", "Index", "Routes", null, new { @class = "btn btn-default" })
+</body>

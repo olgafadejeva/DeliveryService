@@ -10,6 +10,8 @@ using DeliveryService.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using DeliveryService.Services;
 using DeliveryService.Models.ShipperViewModels;
+using DeliveryService.Models.DriverViewModels;
+using DeliveryService.Models;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
@@ -35,6 +37,7 @@ namespace DeliveryService.Controllers.ShipperControllers
                 model.Driver = company.Team.Drivers.Where(d => d.ID == route.DriverID).FirstOrDefault();
                 model.DeliverBy = route.DeliverBy;
                 model.DeliveryDate = route.DeliveryDate;
+                model.Deliveries = route.Deliveries;
                 viewModels.Add(model);
             }
 
@@ -191,6 +194,41 @@ namespace DeliveryService.Controllers.ShipperControllers
             await routeService.updateRouteDetails(route);
             await _context.SaveChangesAsync();
             return RedirectToAction("RouteDeliveries", new { id = route.ID });
+        }
+
+        public IActionResult MapRoute(int? id)
+        {
+            Route route = company.Routes.Where(r => r.ID == id).FirstOrDefault();
+            MapRouteView model = new MapRouteView();
+            foreach (Delivery delivery in route.Deliveries)
+            {
+                model.waypoints.Add(DirectionsService.getStringFromAddressInLatLngFormat(delivery.Client.Address));
+            }
+            model.depotAddress = DirectionsService.getStringFromAddressInLatLngFormat(route.PickUpAddress);
+            model.overallRouteTime = route.OverallTimeRequired + "h";
+            model.routeDistance = route.OverallDistance + "mi";
+
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult MapDelivery(int? id)
+        {
+            var delivery = _context.Deliveries
+                 .Include(d => d.Client)
+                 .Include(d => d.Client.Address)
+                 .Include(d => d.DeliveryStatus)
+                 .SingleOrDefault(d => d.ID == id);
+            double locationLat = delivery.Client.Address.Lat;
+            double locationLng = delivery.Client.Address.Lng;
+            string clientName = delivery.Client.FirstName + " " + delivery.Client.LastName;
+            string currentStatus = StatusExtension.DisplayName(delivery.DeliveryStatus.Status);
+            string addressString = DirectionsService.getStringFromAddress(delivery.Client.Address);
+            string deliverByDate = delivery.DeliverBy.Value.Date.ToString();
+            string deliverByString = deliverByDate.Substring(0, deliverByDate.IndexOf(" "));
+            DriverSingleDeliveryMapView model = new DriverSingleDeliveryMapView(locationLat, locationLng, clientName, deliverByString, currentStatus, addressString);
+            return View(model);
         }
 
 

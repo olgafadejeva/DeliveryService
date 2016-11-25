@@ -13,19 +13,10 @@
         <thead>
             <tr>
                 <th>
-                    Deliver by date
+                    Date
                 </th>
                 <th>
-                    Delivery date
-                </th>
-                <th>
-                    Number of stops
-                </th>
-                <th>
-                    Route Duration
-                </th>
-                <th>
-                    Overall route distance
+                    General
                 </th>
                 <th>
                     Depot address
@@ -41,19 +32,28 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.DeliverBy)
+                        <p>
+                            <b>Deliver by: </b>
+                            @Html.DisplayFor(modelItem => item.DeliverBy)
+                        </p>
+                        <p>
+                            <b>Assigned delivery date: </b>
+                            @Html.DisplayFor(modelItem => item.DeliveryDate)
+                        </p>
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.DeliveryDate)
-                    </td>
-                    <td>
-                        @item.Deliveries.Count()
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.OverallTimeRequired)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.OverallDistance)
+                        <p>
+                            <b>Number of stops: </b>
+                            @item.Deliveries.Count()
+                        </p>
+                        <p>
+                            <b>Overall time required: </b>
+                            @Html.DisplayFor(modelItem => item.OverallTimeRequired)
+                        </p>
+                        <p>
+                            <b>Overall distance: </b>
+                            @Html.DisplayFor(modelItem => item.OverallDistance)
+                        </p>
                     </td>
                     <td>
                         @Html.DisplayFor(model => @item.PickUpAddress.LineOne) <br />

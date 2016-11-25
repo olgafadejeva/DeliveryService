@@ -9,6 +9,7 @@ using DeliveryService.Services;
 using DeliveryService.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using DeliveryService.Models.DriverViewModels;
 
 namespace DeliveryService.Controllers.DriverControllers
 {
@@ -24,11 +25,6 @@ namespace DeliveryService.Controllers.DriverControllers
             this.directionsService = directionsService;
         }
 
-        public IActionResult Index()
-        {
-            return View(driver.Routes);
-        }
-        
         [HttpPost]
         public JsonResult UpdateStatus([FromBody]StatusUpdateRequest updateRequest)
         {
@@ -61,26 +57,6 @@ namespace DeliveryService.Controllers.DriverControllers
             delivery.DeliveryStatus.Status = updateStatus;
             Response.StatusCode = 200;
             return Json(StatusExtension.DisplayName(delivery.DeliveryStatus.Status));
-
-        }
-
-        [HttpGet]
-        public IActionResult Navigation(int? id)
-        {
-            if (id == null)
-            {
-                return RedirectToAction("Index");
-            }
-            Delivery delivery = _context.Deliveries
-                .Include(d => d.Client)
-                .Include(d => d.Client.Address)
-                .SingleOrDefault(d => d.ID == id);
-            if (delivery == null)
-            {
-                return RedirectToAction("Index");
-            }
-            var directions = directionsService.getDirectionsFromAddresses(new PickUpAddress(), delivery.Client.Address);
-            return View(directions);
 
         }
 

@@ -48,6 +48,10 @@
                         <ul class="dropdown-menu">
                             <li><a asp-action="Edit" class="list-group-item" asp-route-id="@item.ID">Edit</a></li>
                             <li>
+                                @Html.ActionLink("Map view", "MapDelivery", "Routes", new { id = @item.ID }, new { @class = "list-group-item" })
+
+                            </li>
+                            <li>
                                 @using (Html.BeginForm("DeleteDeliveryFromRoute", "Routes", FormMethod.Post)){
 
                                 <input type="hidden" value="@item.ID" name="id" />

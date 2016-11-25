@@ -114,7 +114,7 @@
                                     <button class="list-group-item" onclick="updateStatus(@item.ID, 'Delivered' )">Mark as delivered</button>
                                 </li>
                                 <li>
-                                    @Html.ActionLink("Check driving instructions", "Navigation", "DriverDeliveries", new { id = @item.ID }, new { @class = "list-group-item" })
+                                    @Html.ActionLink("Map view", "MapDelivery", "DriverRoutes", new { id = @item.ID }, new { @class = "list-group-item" })
 
                                 </li>
                             </ul>
@@ -126,5 +126,5 @@
     </table>
 }
 
-@Html.ActionLink("Back to Routes", "Index", "Routes")
+@Html.ActionLink("Back to Routes", "Index", "DriverRoutes")
 
