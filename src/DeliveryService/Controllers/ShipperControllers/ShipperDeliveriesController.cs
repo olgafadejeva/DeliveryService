@@ -56,36 +56,6 @@ namespace DeliveryService.Controllers.ShipperControllers
             return View(delivery);
         }
 
-        // GET: ShipperDeliveries/Assign/4
-        public async Task<IActionResult> Assign(int? id)
-        {
-            var delivery = await getDelivery(id);
-            var team =await  _context.Teams.Include(d => d.Drivers)
-                .SingleOrDefaultAsync(m => m.ID == company.Team.ID);
-            ViewData["AssignedToId"] = new SelectList(team.Drivers, "ID", "User.NormalizedUserName");
-            ViewBag.Company = company;
-            return View(delivery.DeliveryStatus);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Assign([Bind("ID,DriverID,AssignedToId,Status,PickedUpBy")] DeliveryStatus deliveryStatus)
-        {
-
-            Driver driver = _context.Drivers.SingleOrDefault(c => c.ID == deliveryStatus.AssignedToId);
-            DeliveryStatus status = _context.DeliveryStatus.SingleOrDefault(d => d.ID == deliveryStatus.ID);
-            status.AssignedTo = driver;
-            status.AssignedToId = driver.ID;
-
-            var delivery = _context.Deliveries.SingleOrDefault(d => d.DeliveryStatus.ID == status.ID);
-           // driver.Routes.Add(delivery);
-            await _context.SaveChangesAsync();
-
-            Delivery[] deliveries = await getShippersDeliveries();
-            return RedirectToAction("Index");
-        }
-
-
         // GET: ShipperDeliveries/Create
         public IActionResult Create()
         {
@@ -144,7 +114,6 @@ namespace DeliveryService.Controllers.ShipperControllers
 
         private async Task<DeliveryStatus> getDeliveryStatus(int? id) {
             return await _context.DeliveryStatus
-               .Include(d => d.AssignedTo)
                .SingleOrDefaultAsync(m => m.ID == id);
         }
 

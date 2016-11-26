@@ -37,8 +37,6 @@ namespace DeliveryService.Controllers.ShipperControllers
                         .ThenInclude(delivery => delivery.Client)
                    .Include(b => b.Deliveries)
                         .ThenInclude(delivery => delivery.DeliveryStatus)
-                   .Include(b => b.Deliveries)
-                        .ThenInclude(delivery => delivery.DeliveryStatus.AssignedTo)
                     .Include(c => c.Routes)
                     .Include(c => c.Team)
                         .ThenInclude(t => t.Drivers)

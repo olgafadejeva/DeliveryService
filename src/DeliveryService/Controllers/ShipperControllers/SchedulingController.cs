@@ -28,13 +28,21 @@ namespace DeliveryService.Controllers.ShipperControllers
         {
             var deliveries = DateFilter.getDeliveriesWithinDays(company.Deliveries.ToList(), 2);
             var depots = company.PickUpLocations.ToList();
-            List<DeliveryViewModelWithAddressString> delsWithAddress = new List<DeliveryViewModelWithAddressString>();
+            List<ShipperSingleDeliveryMapViewModel> delsWithAddress = new List<ShipperSingleDeliveryMapViewModel>();
             foreach (Delivery delivery in deliveries) {
-                DeliveryViewModelWithAddressString model = new DeliveryViewModelWithAddressString();
+                ShipperSingleDeliveryMapViewModel model = new ShipperSingleDeliveryMapViewModel();
                 model.Client = delivery.Client;
-                model.ClientAddressString = DirectionsService.getStringFromAddress(delivery.Client.Address);
-                model.DeliveryStatus = delivery.DeliveryStatus;
+                model.addressString = DirectionsService.getStringFromAddress(delivery.Client.Address);
                 model.ID = delivery.ID;
+
+                string clientName = delivery.Client.FirstName + " " + delivery.Client.LastName;
+                string currentStatus = StatusExtension.DisplayName(delivery.DeliveryStatus.Status);
+                string deliverByDate = delivery.DeliverBy.Value.Date.ToString();
+                string deliverByString = deliverByDate.Substring(0, deliverByDate.IndexOf(" "));
+
+                model.clientName = clientName;
+                model.currentStatus = currentStatus;
+                model.deliverBy = deliverByString;
                 delsWithAddress.Add(model);
             }
             MapObjects objects = new MapObjects(deliveries, depots, company.Routes.ToList(), delsWithAddress);
@@ -46,14 +54,22 @@ namespace DeliveryService.Controllers.ShipperControllers
             var deliveries = DateFilter.getDeliveriesWithinDays(company.Deliveries.ToList(), Convert.ToInt32(days));
             var routes = DateFilter.getRoutesWithinDays(company.Routes.ToList(), Convert.ToInt32(days));
             Response.StatusCode = (int)HttpStatusCode.OK;
-            List<DeliveryViewModelWithAddressString> delsWithAddress = new List<DeliveryViewModelWithAddressString>();
+            List<ShipperSingleDeliveryMapViewModel> delsWithAddress = new List<ShipperSingleDeliveryMapViewModel>();
             foreach (Delivery delivery in deliveries)
             {
-                DeliveryViewModelWithAddressString model = new DeliveryViewModelWithAddressString();
+                ShipperSingleDeliveryMapViewModel model = new ShipperSingleDeliveryMapViewModel();
                 model.Client = delivery.Client;
-                model.ClientAddressString = DirectionsService.getStringFromAddress(delivery.Client.Address);
-                model.DeliveryStatus = delivery.DeliveryStatus;
+                model.addressString = DirectionsService.getStringFromAddress(delivery.Client.Address);
                 model.ID = delivery.ID;
+
+                string clientName = delivery.Client.FirstName + " " + delivery.Client.LastName;
+                string currentStatus = StatusExtension.DisplayName(delivery.DeliveryStatus.Status);
+                string deliverByDate = delivery.DeliverBy.Value.Date.ToString();
+                string deliverByString = deliverByDate.Substring(0, deliverByDate.IndexOf(" "));
+
+                model.clientName = clientName;
+                model.currentStatus = currentStatus;
+                model.deliverBy = deliverByString;
                 delsWithAddress.Add(model);
             }
             MapObjects result = new MapObjects(deliveries, routes, delsWithAddress);

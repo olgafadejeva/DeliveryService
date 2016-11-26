@@ -9,9 +9,10 @@
 }
 
 <style>
-     #main_body {
-            overflow: hidden;
-        }
+    #main_body {
+        overflow: hidden;
+    }
+
     #right-panel {
         font-family: 'Roboto','sans-serif';
         line-height: 30px;
@@ -35,14 +36,14 @@
         padding: 0;
     }
 
-   #map {
-            height: 1000px;
-            width: 100%;
-        }
+    #map {
+        height: 1000px;
+        width: 100%;
+    }
 
-        .container {
-            width: 100%;
-        }
+    .container {
+        width: 100%;
+    }
 
         .container > .navbar-header, .container-fluid > .navbar-header, .container > .navbar-collapse, .container-fluid > .navbar-collapse {
             margin-right: 50px;
@@ -58,7 +59,6 @@
 
     #directions-panel {
         margin-top: 10px;
-        
         padding: 10px;
     }
 </style>
@@ -128,16 +128,19 @@
             </div>
             <div class="col-sm-2">
                 <h4>Route summary</h4>
+                <h5>Route segments</h5>
                 <div id="right-panel"></div>
-                <!--<div id="directions-panel"></div>-->
-
+                <h5>Route details</h5>
+                <p><b>Route distance:</b> @Model.routeDistance</p>
+                <p><b>Time required:</b> @Model.overallRouteTime</p>
                 <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#directions-panel">Reveal directions</button>
                 <div id="directions-panel" class="collapse pre-scrollable"></div>
+               
             </div>
         </div>
     </div>
-    <br/>
-    <br/>
+    <br />
+    <br />
 
-    @Html.ActionLink("Back to Routes", "Index", "DriverRoutes", null,new { @class = "btn btn-default" })
+    @Html.ActionLink("Back to Routes", "Index", "DriverRoutes", null, new { @class = "btn btn-default" })
 </body>

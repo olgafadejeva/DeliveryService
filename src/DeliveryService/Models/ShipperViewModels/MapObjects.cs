@@ -10,14 +10,14 @@ namespace DeliveryService.Models.ShipperViewModels
     {
         private object routes;
 
-        public MapObjects(List<Delivery> deliveries, List<Route> routes, List<DeliveryViewModelWithAddressString> delWithAddress)
+        public MapObjects(List<Delivery> deliveries, List<Route> routes, List<ShipperSingleDeliveryMapViewModel> delWithAddress)
         {
             this.Deliveries = deliveries;
             this.ExistingRoutes = routes;
             this.DeliveriesWithAddressString = delWithAddress;
         }
 
-        public MapObjects(List<Delivery> deliveries, List<PickUpAddress> depots, List<Route> routes, List<DeliveryViewModelWithAddressString> delWithAddress)
+        public MapObjects(List<Delivery> deliveries, List<PickUpAddress> depots, List<Route> routes, List<ShipperSingleDeliveryMapViewModel> delWithAddress)
         {
             this.Deliveries = deliveries;
             this.Depots = depots;
@@ -26,7 +26,7 @@ namespace DeliveryService.Models.ShipperViewModels
         }
 
         public List<Delivery> Deliveries { get; set; }
-        public List<DeliveryViewModelWithAddressString> DeliveriesWithAddressString { get; set; }
+        public List<ShipperSingleDeliveryMapViewModel> DeliveriesWithAddressString { get; set; }
 
         public  List<PickUpAddress> Depots { get; set; }
         public List<Route> ExistingRoutes { get; set; }

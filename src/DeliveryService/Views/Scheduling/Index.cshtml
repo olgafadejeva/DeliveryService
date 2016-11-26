@@ -84,11 +84,12 @@
                     position:  { lat: parseFloat(delivery.Client.Address.Lat), lng: parseFloat(delivery.Client.Address.Lng)},
                     id: delivery.ID.toString(),
                     added: false,
-                    map:map,
-                    title: delivery.ClientAddressString
+                    map:map
 
 
                 });
+
+                
 
 
                 google.maps.event.addListener(marker, 'click', function() {
@@ -105,6 +106,33 @@
                         document.getElementById("alert").style.visibility = 'hidden';
                     }
                 });
+
+
+                
+
+                var infoWindowContent = '<div id="content">'+
+         '<div id="siteNotice">'+
+         '</div>'+
+         '<h4 id="firstHeading" class="firstHeading">Delivery details</h4>'+
+         '<div id="bodyContent">'+
+         '<p><b>Address: </b>' + delivery.addressString + '</p>'+
+         '<p><b>Current status: </b>' + delivery.currentStatus + '</p>'+
+         '<p><b>Client: </b>' + delivery.clientName + '</p>'+
+         '<p><b>Deliver by: </b>' + delivery.deliverBy + '</p>'+
+         '</div>'+
+         '</div>';
+                var infowindow = new google.maps.InfoWindow({
+                    content: infoWindowContent
+                });
+
+                marker.addListener('mouseover', function() {
+                    infowindow.open(map, marker);
+                });
+
+                marker.addListener('mouseout', function() {
+                    infowindow.close();
+                });
+
                 return marker;
 
             });

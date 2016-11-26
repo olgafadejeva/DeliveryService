@@ -12,11 +12,9 @@ namespace DeliveryService.Models.Entities
         [Key]
         public int ID { get; set; }
 
-        public int? AssignedToId { get; set; }
-
         public Status Status { get; set; }
 
-        public virtual Driver AssignedTo { get; set; }
+        public DateTime? DeliveredDate { get; set; }
     }
 
     public enum Status

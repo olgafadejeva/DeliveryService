@@ -70,10 +70,10 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a asp-action="Delete" asp-route-id="@item.ID">Delete</a></li>
                                 <li><a asp-action="Reassign" asp-route-id="@item.ID">Reassign</a></li>
-                                <li><a asp-action="RouteDeliveries" asp-route-id="@item.ID">See delivery details</a></li>
+                                <li><a asp-action="RouteDeliveries" asp-route-id="@item.ID">Deliveries breakdown</a></li>
                                 <li><a asp-action="MapRoute" asp-route-id="@item.ID">View on the map</a></li>
+                                <li class="list-group-item-danger"><a asp-action="Delete" asp-route-id="@item.ID">Delete</a></li>
                             </ul>
                         </div>
                     </td>
@@ -83,3 +83,5 @@
     </table>
 }
 
+
+@Html.ActionLink("Back to Dashboard", "Index", "ShipperDashboard")

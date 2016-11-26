@@ -136,8 +136,7 @@ namespace DeliveryServiceTests.Services
             Delivery delivery = new Delivery();
             delivery.DeliveryStatus = new DeliveryStatus
             {
-                Status = Status.New,
-                AssignedTo = null
+                Status = Status.New
             };
             
             PickUpAddress address = new PickUpAddress

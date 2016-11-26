@@ -215,7 +215,7 @@ namespace DeliveryServiceTests.ServicesTests
 
             DriverAssignmentResult result = assignmentService.getBestDriverForRoute(route, drivers, new List<Driver>(), new List<Driver>(), new DateTime(2015, 12, 12));
             Assert.Equal(result.Driver, driverOne);
-            Assert.Equal(result.DeliverByDate, new DateTime(2015, 12, 12));
+            Assert.Equal(result.DeliverByDate, new DateTime(2015, 12, 13));
         }
 
         [Fact]
@@ -493,7 +493,7 @@ namespace DeliveryServiceTests.ServicesTests
             RouteAssignment result = assignmentService.assignMultipleRoutes(routes, drivers);
             Assert.Equal(2, result.TempRouteData.Count());
             Assert.Equal(driverTwo, result.TempRouteData.ElementAt(0).Driver);
-            Assert.Equal(driverOne, result.TempRouteData.ElementAt(1).Driver);
+            Assert.Equal(driverTwo, result.TempRouteData.ElementAt(1).Driver);
         }
 
         [Fact]

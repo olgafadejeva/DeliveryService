@@ -128,9 +128,14 @@
             </div>
             <div class="col-sm-2">
                 <h4>Route summary</h4>
+                <h5>Route segments</h5>
                 <div id="right-panel"></div>
+                <h5>Route details</h5>
+                <p><b>Route distance:</b> @Model.routeDistance</p>
+                <p><b>Time required:</b> @Model.overallRouteTime</p>
                 <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#directions-panel">Reveal directions</button>
                 <div id="directions-panel" class="collapse pre-scrollable"></div>
+
             </div>
         </div>
     </div>

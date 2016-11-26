@@ -55,13 +55,12 @@ namespace DeliveryService.Services
         {
             List<Delivery> allDeliveries = context.Deliveries
                                 .Include(d => d.DeliveryStatus)
-                                .Include(d => d.DeliveryStatus.AssignedTo)
                                  .Include(d => d.Client)
                                  .Include(d => d.Client.Address).ToList();
             List<Delivery> selectedDeliveries = new List<Delivery>();
             foreach (Delivery delivery in allDeliveries) {
                 DeliveryStatus status = delivery.DeliveryStatus;
-                if (status != null && status.Status == Status.New && status.AssignedTo == null) {
+                if (status != null && status.Status == Status.New) {
                     selectedDeliveries.Add(delivery);
                 }
             }
@@ -100,7 +99,7 @@ namespace DeliveryService.Services
                         if (delivery != null)
                         {
                             DeliveryStatus status = delivery.DeliveryStatus;
-                            if (status != null && status.Status == Status.New && status.AssignedTo == null)
+                            if (status != null && status.Status == Status.New)
                             {
                                 deliveries.Add(delivery);
                             }
