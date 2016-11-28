@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using DeliveryService.Models.DriverViewModels;
 using DeliveryService.Services;
 using DeliveryService.Models;
+using System.Globalization;
 
 namespace DeliveryService.Controllers.DriverControllers
 {
@@ -68,7 +69,19 @@ namespace DeliveryService.Controllers.DriverControllers
                 DriverDeliveryViewModel model = new DriverDeliveryViewModel();
                 model.ClientName = delivery.Client.FirstName + " " + delivery.Client.LastName;
                 model.DeliverBy = delivery.DeliverBy;
-                model.DeliveryStatusString = StatusExtension.DisplayName(delivery.DeliveryStatus.Status);
+
+                string deliverytatusString = StatusExtension.DisplayName(delivery.DeliveryStatus.Status);
+                if (delivery.DeliveryStatus.Status.Equals(Status.Delivered))
+                {
+                    DateTime deliveredDate = delivery.DeliveryStatus.DeliveredDate.Value;
+                    deliverytatusString += " " + deliveredDate.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);
+                }
+                else if (delivery.DeliveryStatus.Status.Equals(Status.FailedDelivery)) {
+
+                     deliverytatusString = "Failed, reason: " + delivery.DeliveryStatus.ReasonFailed;
+                }
+
+                model.DeliveryStatusString = deliverytatusString;
                 model.ID = delivery.ID;
                 model.ItemSizeString = ItemSizeDimensionsExtension.getItemDimensionsBasedOnSize(delivery.ItemSize).ToString();
                 model.ItemWeight = delivery.ItemWeight;
@@ -105,11 +118,18 @@ namespace DeliveryService.Controllers.DriverControllers
             double locationLat = delivery.Client.Address.Lat;
             double locationLng = delivery.Client.Address.Lng;
             string clientName = delivery.Client.FirstName + " " + delivery.Client.LastName;
-            string currentStatus = StatusExtension.DisplayName(delivery.DeliveryStatus.Status);
+
+            string deliverytatusString = StatusExtension.DisplayName(delivery.DeliveryStatus.Status);
+            if (delivery.DeliveryStatus.Status.Equals(Status.Delivered))
+            {
+                DateTime deliveredDate = delivery.DeliveryStatus.DeliveredDate.Value;
+                deliverytatusString += " " + deliveredDate.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);
+            }
+           
             string addressString = DirectionsService.getStringFromAddress(delivery.Client.Address);
             string deliverByDate = delivery.DeliverBy.Value.Date.ToString();
             string deliverByString = deliverByDate.Substring(0, deliverByDate.IndexOf(" "));
-            DriverSingleDeliveryMapView model = new DriverSingleDeliveryMapView(locationLat, locationLng, clientName, deliverByString, currentStatus, addressString);
+            DriverSingleDeliveryMapView model = new DriverSingleDeliveryMapView(locationLat, locationLng, clientName, deliverByString, deliverytatusString, addressString);
             return View(model);
         }
 

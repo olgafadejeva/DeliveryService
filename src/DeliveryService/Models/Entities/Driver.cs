@@ -12,12 +12,15 @@ namespace DeliveryService.Models.Entities
         public Driver() {
             Vehicles = new List<Vehicle>();
             Routes = new List<Route>();
+            Holidays = new List<DriverHoliday>();
         }
 
         [Key]
         public int ID { get; set; }
 
         public DriverAddress Address { get; set; }
+
+        public List<DriverHoliday> Holidays { get; set; }
 
         public virtual ICollection<Vehicle> Vehicles { get; set; }
         public virtual ICollection<Route> Routes { get; set; }

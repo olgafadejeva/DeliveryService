@@ -50,7 +50,7 @@ namespace DeliveryService.DriverControllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,RegistrationNumber,Height,Length,Width,MaxLoad")] Vehicle vehicle)
+        public async Task<IActionResult> Create([Bind("ID,RegistrationNumber,Height,Length,Width,MaxLoad,VehicleName")] Vehicle vehicle)
         {
             if (ModelState.IsValid)
             {
@@ -80,7 +80,7 @@ namespace DeliveryService.DriverControllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,RegistrationNumber,Length,Width,Height,MaxLoad")] Vehicle vehicle)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,RegistrationNumber,Length,Width,Height,MaxLoad,VehicleName")] Vehicle vehicle)
         {
             if (id != vehicle.ID)
             {
@@ -97,6 +97,7 @@ namespace DeliveryService.DriverControllers
                     vehicleEntity.Height = vehicle.Height;
                     vehicleEntity.Width = vehicle.Width;
                     vehicleEntity.MaxLoad = vehicle.MaxLoad;
+                    vehicleEntity.VehicleName = vehicle.VehicleName;
                     _context.Update(vehicleEntity);
                     await _context.SaveChangesAsync();
                 }

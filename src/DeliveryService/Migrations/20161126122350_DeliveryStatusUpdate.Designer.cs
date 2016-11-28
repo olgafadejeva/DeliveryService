@@ -8,9 +8,10 @@ using DeliveryService.Data;
 namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161126122350_DeliveryStatusUpdate")]
+    partial class DeliveryStatusUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -191,8 +192,6 @@ namespace DeliveryService.Migrations
 
                     b.Property<DateTime?>("DeliveredDate");
 
-                    b.Property<string>("ReasonFailed");
-
                     b.Property<int>("Status");
 
                     b.HasKey("ID");
@@ -220,24 +219,6 @@ namespace DeliveryService.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Drivers");
-                });
-
-            modelBuilder.Entity("DeliveryService.Models.Entities.DriverHoliday", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("DriverID");
-
-                    b.Property<DateTime>("From");
-
-                    b.Property<DateTime>("To");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DriverID");
-
-                    b.ToTable("DriverHolidays");
                 });
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Route", b =>
@@ -301,9 +282,6 @@ namespace DeliveryService.Migrations
                     b.Property<double>("MaxLoad");
 
                     b.Property<string>("RegistrationNumber");
-
-                    b.Property<string>("VehicleName")
-                        .IsRequired();
 
                     b.Property<double>("Width");
 
@@ -532,13 +510,6 @@ namespace DeliveryService.Migrations
                     b.HasOne("DeliveryService.Models.DriverUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("DeliveryService.Models.Entities.DriverHoliday", b =>
-                {
-                    b.HasOne("DeliveryService.Models.Entities.Driver")
-                        .WithMany("Holidays")
-                        .HasForeignKey("DriverID");
                 });
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Route", b =>

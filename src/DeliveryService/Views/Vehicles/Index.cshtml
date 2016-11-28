@@ -16,6 +16,9 @@
         <thead>
             <tr>
                 <th>
+                    @Html.DisplayNameFor(model => model.VehicleName)
+                </th>
+                <th>
                     @Html.DisplayNameFor(model => model.RegistrationNumber)
                 </th>
                 <th>Dimensions</th>
@@ -28,31 +31,32 @@
             {
                 <tr>
                     <td>
+                        @Html.DisplayFor(modelItem => item.VehicleName)
+                    </td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.RegistrationNumber)
                     </td>
                     <td>
-                        <p>
-                            @Html.DisplayNameFor(model => model.Length)
-                            @Html.DisplayFor(modelItem => item.Length)
-                        </p>
-
-                        <p>
-                            @Html.DisplayNameFor(model => model.Height)
-                            @Html.DisplayFor(modelItem => item.Height)
-                        </p>
-                        <p>
-                            @Html.DisplayNameFor(model => model.Width)
+                            @Html.DisplayFor(modelItem => item.Length) x
+                            @Html.DisplayFor(modelItem => item.Height) x
                             @Html.DisplayFor(modelItem => item.Width)
-                        </p>
+                        
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.MaxLoad)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-                    </td>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                Options
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a asp-action="Edit" asp-route-id="@item.ID">Edit</a> </li>
+                                <li class="list-group-item-danger"><a asp-action="Delete" asp-route-id="@item.ID">Delete</a></li>
+                            </ul>
+                        </div>
+
                 </tr>
             }
         </tbody>

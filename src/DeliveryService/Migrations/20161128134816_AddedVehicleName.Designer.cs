@@ -8,9 +8,10 @@ using DeliveryService.Data;
 namespace DeliveryService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161128134816_AddedVehicleName")]
+    partial class AddedVehicleName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")
@@ -237,7 +238,7 @@ namespace DeliveryService.Migrations
 
                     b.HasIndex("DriverID");
 
-                    b.ToTable("DriverHolidays");
+                    b.ToTable("DriverHoliday");
                 });
 
             modelBuilder.Entity("DeliveryService.Models.Entities.Route", b =>

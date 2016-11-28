@@ -12,6 +12,7 @@ using DeliveryService.Services;
 using DeliveryService.Models.ShipperViewModels;
 using DeliveryService.Models.DriverViewModels;
 using DeliveryService.Models;
+using System.Globalization;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
@@ -223,11 +224,18 @@ namespace DeliveryService.Controllers.ShipperControllers
             double locationLat = delivery.Client.Address.Lat;
             double locationLng = delivery.Client.Address.Lng;
             string clientName = delivery.Client.FirstName + " " + delivery.Client.LastName;
-            string currentStatus = StatusExtension.DisplayName(delivery.DeliveryStatus.Status);
+
+            string deliverytatusString = StatusExtension.DisplayName(delivery.DeliveryStatus.Status);
+            if (delivery.DeliveryStatus.Status.Equals(Status.Delivered))
+            {
+                DateTime deliveredDate = delivery.DeliveryStatus.DeliveredDate.Value;
+                deliverytatusString += " " + deliveredDate.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);
+            }
+
             string addressString = DirectionsService.getStringFromAddress(delivery.Client.Address);
             string deliverByDate = delivery.DeliverBy.Value.Date.ToString();
             string deliverByString = deliverByDate.Substring(0, deliverByDate.IndexOf(" "));
-            DriverSingleDeliveryMapView model = new DriverSingleDeliveryMapView(locationLat, locationLng, clientName, deliverByString, currentStatus, addressString);
+            DriverSingleDeliveryMapView model = new DriverSingleDeliveryMapView(locationLat, locationLng, clientName, deliverByString, deliverytatusString, addressString);
             return View(model);
         }
 

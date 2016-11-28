@@ -33,6 +33,41 @@
             });
 
         }
+        var failedDeliveryId;
+        function showDialogBox(id) {
+            console.log(id);
+            var currentStatus =  document.getElementById(id + "+status").innerHTML;
+            if (currentStatus.includes("In transit")) {
+                failedDeliveryId = id;
+                document.getElementById("dialogBox").style.display = "block";
+            } else {
+                document.getElementById("errorDialogue").style.display = "block";
+            }
+        }
+
+        function updateStatusToFailed() {
+            console.log(failedDeliveryId);
+            var reasonString = document.getElementById("reason").value;
+            var statusUpdateObject = { id: failedDeliveryId, status: "Failed", reason: reasonString }
+            var jsonString = JSON.stringify(statusUpdateObject)
+            console.log(jsonString)
+            $.ajax({
+                type: "POST",
+                url: "/DriverDeliveries/UpdateStatusToFailed",
+                dataType: "json",
+                data: jsonString,
+                contentType: 'application/json; charset=utf-8',
+                success: function (result, textStatus, xhr) {
+                    document.getElementById("successDialogue").style.display = "block";
+                    document.getElementById(failedDeliveryId + "+status").innerHTML = result;
+                    document.getElementById("reason").innerHTML = "";
+                },
+                error: function (result, textStatus, xhr) {
+                    document.getElementById("errorDialogue").style.display = "block";
+                }
+            });
+            document.getElementById("dialogBox").style.display = "none";
+        }
     </script>
 </head>
 <h2>Route deliveries</h2>
@@ -114,6 +149,9 @@
                                     <button class="list-group-item" onclick="updateStatus(@item.ID, 'Delivered' )">Mark as delivered</button>
                                 </li>
                                 <li>
+                                    <button class="list-group-item" onclick="showDialogBox(@item.ID )">Mark as failed delivery</button>
+                                </li>
+                                <li>
                                     @Html.ActionLink("Map view", "MapDelivery", "DriverRoutes", new { id = @item.ID }, new { @class = "list-group-item" })
 
                                 </li>
@@ -121,10 +159,18 @@
                         </div>
                     </td>
                 </tr>
+                
             }
+
+            <div class="form-group" id="dialogBox" style="display:none">
+                <label for="reason">Reason why delivery failed:</label>
+                <textarea class="form-control" rows="2" id="reason" maxlength="50" minlength="5"></textarea>
+                <button class="btn btn-default" onclick="updateStatusToFailed()">Submit <span id="sizeHelp" class="glyphicon glyphicon-ok" aria-hidden="true" style="cursor: pointer;white-space:nowrap;"></span></button>
+            </div>
         </tbody>
     </table>
 }
+
 
 @Html.ActionLink("Back to Routes", "Index", "DriverRoutes")
 

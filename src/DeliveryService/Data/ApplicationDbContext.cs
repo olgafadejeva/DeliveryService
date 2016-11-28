@@ -42,6 +42,7 @@ namespace DeliveryService.Data
         public virtual DbSet<Company> Companies { get; set; }
         public DbSet<PickUpAddress> PickUpAddress { get; set; }
         public DbSet<Route> Routes { get; set; }
+        public DbSet<DriverHoliday> DriverHolidays { get; set; }
 
 
     }

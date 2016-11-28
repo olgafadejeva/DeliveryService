@@ -12,6 +12,10 @@ namespace DeliveryService.Models.Entities
 
         [Key]
         public int ID { get; set; }
+        
+        [Display(Name = "Name")]
+        [Required]
+        public string VehicleName { get; set; }
 
         [Display(Name = "Registration number")]
         [MinLength(5, ErrorMessage="Registration number must be longer than 5 characters")]

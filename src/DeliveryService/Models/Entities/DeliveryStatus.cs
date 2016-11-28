@@ -14,6 +14,9 @@ namespace DeliveryService.Models.Entities
 
         public Status Status { get; set; }
 
+        public string ReasonFailed { get; set; }
+        
+        [DataType(DataType.Date)]
         public DateTime? DeliveredDate { get; set; }
     }
 
@@ -37,7 +40,9 @@ namespace DeliveryService.Models.Entities
                 case Status.PickedUpByDriver:
                     return new List<Status> { Status.InTransit };
                 case Status.InTransit:
-                    return new List<Status> { Status.Delivered };
+                    return new List<Status> { Status.Delivered, Status.FailedDelivery };
+                case Status.Delivered:
+                    return new List<Status>();
                 case Status.FailedDelivery:
                     return new List<Status> { Status.New };
                 default:
@@ -76,7 +81,7 @@ namespace DeliveryService.Models.Entities
                 case Status.Delivered:
                     return "Delivered";
                 case Status.FailedDelivery:
-                    return "Failed delivery";
+                    return "Failed";
                 default:
                     return "New";
             }
