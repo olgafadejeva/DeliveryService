@@ -1,0 +1,51 @@
+﻿@using DeliveryService.Models.Entities
+@model DriverAddress
+
+@{
+    ViewData["Title"] = "My details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>My details</h1>
+
+<h3>My address</h3>
+@if (@Model !=null) {
+<dl class="dl-horizontal">
+    <dt>
+        @Html.DisplayNameFor(model => model.City)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.City)
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(model => model.LineOne)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.LineOne)
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(model => model.LineTwo)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.LineTwo)
+    </dd>
+    <dt>
+        @Html.DisplayNameFor(model => model.PostCode)
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.PostCode)
+    </dd>
+</dl>
+    <a class="btn btn-default" asp-action="Edit" asp-route-id="@Model.ID">Edit address</a>
+
+} else {
+<p>
+    <a class="btn btn-default" asp-action="Create">Add address</a>
+</p>
+}
+
+<br/>
+<p class="btn btn-default">@Html.ActionLink("My time off", "Index", "DriverHolidays")</p>
+<br />
+<br/>
+<p class="btn btn-default">@Html.ActionLink("Back to dashoard", "Index", "DriverDashboard")</p>
+

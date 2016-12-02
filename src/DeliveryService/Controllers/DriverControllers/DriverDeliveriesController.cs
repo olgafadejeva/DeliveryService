@@ -59,6 +59,23 @@ namespace DeliveryService.Controllers.DriverControllers
                 delivery.DeliveryStatus.DeliveredDate = deliveredDate;
                 updateStatusString += " " + deliveredDate.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);
             }
+
+            Route route = _context.Routes.Where(r => r.ID == delivery.RouteID).SingleOrDefault();
+            bool allDelivered = false;
+            foreach (Delivery del in route.Deliveries) {
+                if (del.DeliveryStatus.Status != Status.Delivered) {
+                    allDelivered = false;
+                    break;
+                }
+            }
+
+            if (allDelivered)
+            {
+                route.Status = RouteStatus.Completed;
+            }
+            else {
+                route.Status = RouteStatus.InProgress;
+            }
             Response.StatusCode = 200;
             _context.SaveChanges();
             return Json(updateStatusString);
@@ -89,6 +106,9 @@ namespace DeliveryService.Controllers.DriverControllers
                 return Json(HttpStatusCode.BadRequest);
             }
 
+            Route route = _context.Routes.Where(r => r.ID == delivery.RouteID).SingleOrDefault();
+            //set route status to pending when delivery failed
+            route.Status = RouteStatus.Pending;
             delivery.DeliveryStatus.Status = updateStatus;
             string updateStatusString = "Failed, reason: " + updateRequest.reason;
             delivery.DeliveryStatus.ReasonFailed = updateRequest.reason;

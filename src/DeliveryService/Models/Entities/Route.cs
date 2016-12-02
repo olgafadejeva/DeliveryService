@@ -23,6 +23,8 @@ namespace DeliveryService.Models.Entities
         [Display(Name = "Overall route distance")]
         public double? OverallDistance { get; set; }
 
+        public RouteStatus? Status { get; set; }
+
         [Display(Name = "Estimated route completion time")]
         public double? OverallTimeRequired { get; set; }
 
@@ -37,6 +39,35 @@ namespace DeliveryService.Models.Entities
 
         public Route() {
             Deliveries = new List<Delivery>();
+        }
+    }
+
+    public enum RouteStatus
+    {
+        New,
+        InProgress,
+        Completed,
+        Pending
+    }
+
+    public static class RouteStatusExtension
+    {
+
+        public static string DisplayName(this RouteStatus status)
+        {
+            switch (status)
+            {
+                case RouteStatus.New:
+                    return "New";
+                case RouteStatus.InProgress:
+                    return "In progress";
+                case RouteStatus.Completed:
+                    return "Completed";
+                case RouteStatus.Pending:
+                    return "Pending";
+                default:
+                    return "New";
+            }
         }
     }
 }

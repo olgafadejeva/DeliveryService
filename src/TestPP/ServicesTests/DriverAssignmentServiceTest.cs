@@ -497,19 +497,58 @@ namespace DeliveryServiceTests.ServicesTests
         }
 
         [Fact]
-        public void testSorting() {
-            Driver one = new Driver();
-            one.Routes.Add(new Route());
+        public void testAssignmentWhenDriverIsOnHolidayButDeliveryIsRolledBackACoupleOfDays() {
+            Driver driverOne = new Driver();
+            DriverHoliday hols = new DriverHoliday();
+            hols.From = new DateTime(2012, 12, 12);
+            hols.To = new DateTime(2012, 12, 20);
+            driverOne.Holidays.Add(hols);
+            driverOne.Address = new DriverAddress();
+            Vehicle vehicleOne = new Vehicle(300, 100, 109, 100);
+            driverOne.Vehicles.Add(vehicleOne);
+            Route driverRoute = new Route();
+            driverRoute.DeliverBy = new DateTime(2015, 12, 12);
+            driverOne.Routes.Add(driverRoute);
 
-            Driver two = new Driver();
-            two.Routes.Add(new Route());
-            two.Routes.Add(new Route());
+            var responseMessageOne = new HttpResponseMessage();
+            responseMessageOne.Content = new StringContent("{\"destination_addresses\":[\"Village Way, Brighton BN1, United Kingdom\"],\"origin_addresses\":[\"Arts Rd, Falmer, Brighton BN1 9QN, United Kingdom\"],\"rows\":[{\"elements\":[{\"distance\":{\"text\":\"0.8 mi\",\"value\":2},\"duration\":{\"text\":\"4 min\",\"value\":235},\"status\":\"OK\"}]}],\"status\":\"OK\"}");
 
-            Driver three = new Driver();
-            List<Driver> drivers = new List<Driver> { one, two, three };
-            drivers = drivers.OrderBy(d => d.Routes.Count()).ToList();
-            int a = 5;
+           
+            List<HttpResponseMessage> responses = new List<HttpResponseMessage> { responseMessageOne, responseMessageOne, responseMessageOne, responseMessageOne, responseMessageOne };
+            TestGoogleMapsUtil googleMaps = new TestGoogleMapsUtil(responses);
 
+            Route routeOne = new Route();
+            routeOne.PickUpAddress = (PickUpAddress)getAddress(false);
+            routeOne.DeliverBy = new DateTime(2012, 12, 13);
+            List<Route> routes = new List<Route> { routeOne };
+
+
+            LocationService locationService = new LocationService(googleMaps);
+            DriverAssignmentService assignmentService = new DriverAssignmentService(locationService);
+            RouteAssignment result = assignmentService.assignMultipleRoutes(routes, new List<Driver> { driverOne });
+            Assert.Equal(1, result.TempRouteData.Count());
+            Assert.Equal(driverOne, result.TempRouteData.ElementAt(0).Driver);
+        }
+
+        [Fact]
+        public void testAssignmentWhenDriverIsOnHoliday()
+        {
+            Driver driverOne = new Driver();
+            DriverHoliday hols = new DriverHoliday();
+            hols.From = new DateTime(2012, 12, 12);
+            hols.To = new DateTime(2012, 12, 20);
+            driverOne.Holidays.Add(hols);
+
+            Route routeOne = new Route();
+            routeOne.DeliverBy = new DateTime(2012, 12, 17);
+            List<Route> routes = new List<Route> { routeOne };
+
+
+            LocationService locationService = new LocationService(null);
+            DriverAssignmentService assignmentService = new DriverAssignmentService(locationService);
+            RouteAssignment result = assignmentService.assignMultipleRoutes(routes, new List<Driver> { driverOne });
+            Assert.Equal(1, result.TempRouteData.Count());
+            Assert.Null( result.TempRouteData.ElementAt(0).Driver);
         }
 
 

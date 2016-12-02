@@ -103,7 +103,7 @@ namespace DeliveryService.Services
                 if (numberOfTries < 3)
                 {
                     numberOfTries++;
-                    DateTime deliverBy = route.DeliverBy.AddDays(-1);
+                    DateTime deliverBy = route.DeliverBy.AddDays(-numberOfTries);
                     return getBestDriverForRoute(route, drivers, unavailableDrivers, driversAlreadyAssignedRoutesInThisSession, deliverBy);
                 } else {
                     DriverAssignmentResult result = new DriverAssignmentResult();
@@ -134,7 +134,10 @@ namespace DeliveryService.Services
         {
             double profit = 0;
             DriverAssignmentResult result = new DriverAssignmentResult(route.ID, route.DeliverBy, driver);
-
+            if (driverIsOnHoliday(driver, DeliverBy)) {
+                result.AssignmentProfit = 0;
+                return result;
+            }
             //if there is already a delivery on a day before deliveryby day 
             if (driver.Routes.Where(r => r.DeliverBy.Equals(DeliverBy.AddDays(-1))).ToList().Count() != 0) {
                // return 0; //ifdriver is not available on a day, no need to check other 
@@ -179,6 +182,18 @@ namespace DeliveryService.Services
 
         private double calculateCapacity(DeliveryItemDimensions dimensions) {
             return dimensions.Height * dimensions.Length * dimensions.Width;
+        }
+
+        private bool driverIsOnHoliday(Driver driver, DateTime deliveryDate) {
+            var holidays = driver.Holidays;
+            var onHoliday = false;
+            foreach (DriverHoliday holiday in holidays) {
+                if (deliveryDate >= holiday.From && deliveryDate <= holiday.To) {
+                    onHoliday = true;
+                    return onHoliday;
+                }
+            }
+            return onHoliday;
         }
     }
 }

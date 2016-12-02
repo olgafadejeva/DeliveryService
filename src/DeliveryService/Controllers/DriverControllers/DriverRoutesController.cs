@@ -31,6 +31,7 @@ namespace DeliveryService.Controllers.DriverControllers
             {
                 DriverRouteView model = new DriverRouteView();
                 model.ID = route.ID;
+                model.RouteStatusString = RouteStatusExtension.DisplayName(route.Status.Value);
                 model.OverallDistance = route.OverallDistance;
                 model.OverallTimeRequired = route.OverallTimeRequired;
                 model.PickUpAddress = route.PickUpAddress;

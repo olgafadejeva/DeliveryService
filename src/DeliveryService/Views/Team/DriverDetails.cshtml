@@ -1,33 +1,164 @@
 @model DeliveryService.Models.Entities.Driver
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Driver Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
+<script type="text/javascript">
+    function changeToggleButtonText() {
+        var button = document.getElementById("toggleButton");
+        if (button.innerText.startsWith("Show")) {
+            button.innerHTML = "Hide routes";
+        } else {
+            button.innerHTML = "Show routes";
+        }
+    }
+
+
+</script>
+<h2>Driver Details</h2>
 
 <div>
-    <h4>Team</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            Name
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.User.NormalizedUserName)
-        </dd>
-        <dt>
-            Number of deliveries
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Deliveries.Count)
-        </dd>
-        <dd>
-            @Html.ActionLink("Delete", "DeleteDriver", "Team", Model.ID)
-        </dd>
-    </dl>
+    <ul class="list-group">
+        <li class="list-group-item"><b>Name: </b>@Model.User.NormalizedUserName </li>
+        <li class="list-group-item">
+            <b>Routes assigned: </b> @Model.Routes.Count
+            <button id="toggleButton" data-toggle="collapse" data-target="#driverRoutes" class="btn btn-default" onclick="changeToggleButtonText()">Show routes</button>
+        </li>
+            <div id="driverRoutes" class="collapse">
+            @if (@Model.Routes.Count != 0)
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Date
+                            </th>
+                            <th>
+                                General
+                            </th>
+                            <th>
+                                Route status
+                            </th>
+                            <th>
+                                Depot address
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Routes)
+                        {
+                            <tr>
+                                <td>
+                                    <p>
+                                        <b>Deliver by: </b>
+                                        @Html.DisplayFor(modelItem => item.DeliverBy)
+                                    </p>
+                                    <p>
+                                        <b>Assigned delivery date: </b>
+                                        @Html.DisplayFor(modelItem => item.DeliveryDate)
+                                    </p>
+                                </td>
+                                <td>
+                                    <p>
+                                        <b>Number of stops: </b>
+                                        @item.Deliveries.Count()
+                                    </p>
+                                    <p>
+                                        <b>Overall time required: </b>
+                                        @Html.DisplayFor(modelItem => item.OverallTimeRequired)
+                                    </p>
+                                    <p>
+                                        <b>Overall distance: </b>
+                                        @Html.DisplayFor(modelItem => item.OverallDistance)
+                                    </p>
+                                </td>
+                                <td>
+                                    @if (item.Status.Value.ToString().Equals("Completed"))
+                                    {
+                                        <span class="label label-success">Completed</span>
+                                    }
+                                    else if (item.Status.Value.ToString().Equals("InProgress"))
+                                    {
+                                        <span class="label label-warning">In progress</span>
+                                    }
+                                    else if (item.Status.Value.ToString().Equals("Pending"))
+                                    {
+                                        <span class="label label-danger">Pending</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="label label-info">@Html.DisplayFor(modelItem => item.Status.Value.ToString())</span>
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => @item.PickUpAddress.LineOne) <br />
+                                    @Html.DisplayFor(model => @item.PickUpAddress.City)<br />
+                                    @Html.DisplayFor(model => @item.PickUpAddress.PostCode)<br />
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                            Options
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a asp-action="Reassign" asp-route-id="@item.ID" asp-controller="Routes">Reassign</a></li>
+                                            <li><a asp-action="RouteDeliveries" asp-route-id="@item.ID" asp-controller="Routes">Deliveries breakdown</a></li>
+                                            <li><a asp-action="MapRoute" asp-route-id="@item.ID" asp-controller="Routes">View on the map</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            </div>
+        
+
+        <li class="list-group-item"><b>Holidays booked: </b> 
+            @foreach (var item in Model.Holidays) { 
+               
+                <p>@item.From.ToString("dd/MM/yy") <span>-</span>  @item.To.ToString("dd/MM/yy")
+                @if (item.To < DateTime.Now)
+                {
+                    <span class="label label-info">finished</span>
+                }
+                else if (item.From < DateTime.Now && item.To > DateTime.Now)
+                {
+                    <span class="label label-warning">current</span>
+                }
+                else
+                {
+                    <span class="label label-primary">future</span>
+                }
+            </p>
+            }
+
+            </li>
+        <li class="list-group-item"><b>Vehicles </b> 
+        @foreach (var item in Model.Vehicles)
+        {
+            <div style="padding-left:50px">
+                <p><b>Name: </b>@item.VehicleName</p>
+                <p><b>Registration Number: </b>@item.RegistrationNumber</p>
+                <p><b>Max load: </b>@item.MaxLoad</p>
+                <p><b>Dimensions: </b>@item.Height<span> x </span>@item.Width<span> x </span>@item.Length</p>
+                <br/>
+            </div>
+        }
+        </li>
+</ul>
+
+    
+    <div style="float:right">
+        @Html.ActionLink("Remove this driver", "DeleteDriver", "Team", Model.ID, new { @class = "btn btn-danger" })
+    </div>
+        
 </div>
 <div>
-    <a asp-action="Index">Back to Team</a>
+    <a asp-action="Index" class="btn btn-default">Back to Team</a>
 </div>

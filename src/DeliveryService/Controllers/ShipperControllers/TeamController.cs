@@ -28,20 +28,9 @@ namespace DeliveryService.ShipperControllers
             return View(team);
         }
         
-        public async Task<IActionResult> DriverDetails(int? id, int? driverId)
+        public IActionResult DriverDetails(int? id)
         {
-            if (id == null  || company.Team.ID != id)
-            {
-                return NotFound();
-            }
-
-            var team = await _context.Teams.SingleOrDefaultAsync(m => m.ID == id);
-            if (team == null)
-            {
-                return NotFound();
-            }
-
-            var driver = team.Drivers.SingleOrDefault(d => d.ID == driverId);
+            var driver = company.Team.Drivers.SingleOrDefault(d => d.ID == id);
             if (driver == null) {
                 return NotFound();
             }

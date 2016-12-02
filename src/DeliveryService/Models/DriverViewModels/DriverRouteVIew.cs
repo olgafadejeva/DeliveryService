@@ -30,6 +30,8 @@ namespace DeliveryService.Models.DriverViewModels
         [Display(Name = "Depot address")]
         public  PickUpAddress PickUpAddress { get; set; }
 
+        public string RouteStatusString { get; set; }
+
         [Display(Name = "Suitable Vehicle")]
         public Vehicle Vehicle { get; set; }
     }

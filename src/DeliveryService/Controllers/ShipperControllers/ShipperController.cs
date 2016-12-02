@@ -40,6 +40,7 @@ namespace DeliveryService.Controllers.ShipperControllers
                     .Include(c => c.Routes)
                     .Include(c => c.Team)
                         .ThenInclude(t => t.Drivers)
+                        .ThenInclude(d => d.Holidays)
                     .Include(c => c.Team.Drivers)
                         .ThenInclude(t => t.User)
                     .Include(c => c.Team.Drivers)

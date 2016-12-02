@@ -30,6 +30,7 @@ namespace DeliveryService.Controllers.DriverControllers
             {
                 driver = context.Drivers
                    .Include(b => b.User)
+                   .Include(b => b.Address)
                    .Include(b => b.Holidays)
                    .Include(b => b.Vehicles)
                    .Include(c => c.Routes)

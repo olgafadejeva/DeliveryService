@@ -6,6 +6,40 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<script type="text/javascript">
+    function updateResultsTable(status) {
+        var input, filter, table, tr, td, i;
+        table = document.getElementById("myTable");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                console.log("inner html " + td.innerHTML);
+                if (td.innerText.startsWith(status) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    function showAll() {
+        table = document.getElementById("myTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+
+                tr[i].style.display = "";
+
+            }
+        }
+    }
+</script>
 <h2>Deliveries</h2>
 
 <p>
@@ -13,57 +47,80 @@
 </p>
 @if (Model.Count() != 0)
 {
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Client
-            </th>
-            <th>
-                Status summary
-            </th>
-            <th>Deliver by</th>
-            <th></th>
-            
-        </tr>
-    </thead>
-    <tbody>
-        
-@foreach (var item in Model)
-{
-        <tr>
-            <td>
-
-                @Html.ActionLink( item.Client.FirstName + " " + item.Client.LastName, "Details", "Clients", new  { id=item.ClientID})
-            </td>
-            <td>
-                @Html.DisplayFor(model => @item.DeliveryStatus.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(model => @item.DeliverBy)
-            </td>
-            <td>
+    <div>
+        <ul class="nav nav-pills">
+            <li>
                 <div class="dropdown">
                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                        Options
+                        Sort by status
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a asp-action="Edit" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Edit</a></li>
-                        <li><a asp-action="Delete" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Delete</a></li>
-                        <li><a asp-action="Details" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Details</a></li>
-
-                        <li>
-                            @Html.ActionLink("Map view", "MapDelivery", "Routes", new { id = @item.ID }, new { @class = "list-group-item", @style= "border: none"  })
-
-                        </li>
+                        <li onclick="updateResultsTable('New')"><a role="menuitem" href="#">New</a></li>
+                        <li onclick="updateResultsTable('Picked up')"><a role="menuitem" href="#">Picked up</a></li>
+                        <li onclick="updateResultsTable('In transit')"><a role="menuitem" href="#">In transit</a></li>
+                        <li onclick="updateResultsTable('Delivered')"><a role="menuitem" href="#">Delivered</a></li>
+                        <li onclick="updateResultsTable('Failed')"><a role="menuitem" href="#">Failed delivery</a></li>
                     </ul>
                 </div>
+            </li>
+            <li>
+                <button type="button" class="btn btn-default" onclick="showAll()">Show all deliveries</button>
+            </li>
+        </ul>
+    </div>
 
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <table class="table" id="myTable">
+        <thead>
+            <tr>
+                <th>
+                    Client
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>Deliver by</th>
+                <th></th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+
+                        @Html.ActionLink(item.Client.FirstName + " " + item.Client.LastName, "Details", "Clients", new { id = item.ClientID })
+                    </td>
+                    <td>
+                        @item.DeliveryStatus.Status.DisplayName()
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => @item.DeliverBy)
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                Options
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a asp-action="Edit" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Edit</a></li>
+                                <li><a asp-action="Delete" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Delete</a></li>
+                                <li><a asp-action="Details" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Details</a></li>
+
+                                <li>
+                                    @Html.ActionLink("Map view", "MapDelivery", "Routes", new { id = @item.ID }, new { @class = "list-group-item", @style = "border: none" })
+
+                                </li>
+                            </ul>
+                        </div>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 @Html.ActionLink("Back to Dashboard", "Index", "ShipperDashboard")

@@ -6,10 +6,65 @@
 }
 
 <h2>Routes</h2>
+<script type="text/javascript">
+    function updateResultsTable(status) {
+        var input, filter, table, tr, td, i;
+        table = document.getElementById("myTable");
+        tr = table.getElementsByTagName("tr");
 
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[3];
+            if (td) {
+                console.log(td.innerText.trim());
+                if (td.innerText.trim().startsWith(status)) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    function showAll() {
+        table = document.getElementById("myTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+
+                tr[i].style.display = "";
+
+            }
+        }
+    }
+</script>
 @if (Model.ToList().Count != 0)
 {
-    <table class="table">
+<div>
+    <ul class="nav nav-pills">
+        <li>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    Sort by status
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li onclick="updateResultsTable('New')"><a role="menuitem" href="#">New</a></li>
+                    <li onclick="updateResultsTable('In progress')"><a role="menuitem" href="#">In Progress</a></li>
+                    <li onclick="updateResultsTable('Completed')"><a role="menuitem" href="#">Completed</a></li>
+                    <li onclick="updateResultsTable('Pending')"><a role="menuitem" href="#">Pending</a></li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <button type="button" class="btn btn-default" onclick="showAll()">Show all routes</button>
+        </li>
+    </ul>
+</div>
+
+    <table class="table" id="myTable">
         <thead>
             <tr>
                 <th>
@@ -20,6 +75,9 @@
                 </th>
                 <th>
                     Depot address
+                </th>
+                <th>
+                    Route status
                 </th>
                 <th>
                     Driver Assigned
@@ -59,6 +117,24 @@
                         @Html.DisplayFor(model => @item.PickUpAddress.LineOne) <br />
                         @Html.DisplayFor(model => @item.PickUpAddress.City)<br />
                         @Html.DisplayFor(model => @item.PickUpAddress.PostCode)<br />
+                    </td>
+                    <td>
+                       @if (item.RouteStatusString.Equals("Completed"))
+                       {
+                        <span class="label label-success">@Html.DisplayFor(modelItem => item.RouteStatusString)</span>
+                       }
+                       else if (item.RouteStatusString.Equals("In progress"))
+                       {
+                        <span class="label label-warning">@Html.DisplayFor(modelItem => item.RouteStatusString)</span>
+                       }
+                       else if (item.RouteStatusString.Equals("Pending"))
+                       {
+                        <span class="label label-danger">@Html.DisplayFor(modelItem => item.RouteStatusString)</span>
+                       }
+                       else
+                       {
+                        <span class="label label-info">@Html.DisplayFor(modelItem => item.RouteStatusString)</span>
+                       }
                     </td>
                     <td>
                         @Html.DisplayFor(model => @item.Driver.User.NormalizedUserName) <br /> 

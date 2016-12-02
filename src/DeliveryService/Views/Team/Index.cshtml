@@ -6,19 +6,16 @@
 }
 
 <h1>My Team</h1>
-@if (Model == null)
-{
+
 <p>
-    <a asp-action="Create">Create new team</a>
+    <a class="btn btn-default" asp-action="AddEmployee">Add Employee</a>  <span id="addEmployeeHelp" class="glyphicon glyphicon-question-sign" aria-hidden="true" style="cursor: pointer;white-space:nowrap;"></span>
+    <a class="btn btn-default" asp-action="AddDriver">Invite a driver</a><span id="addDriverHelp" class="glyphicon glyphicon-question-sign" aria-hidden="true" style="cursor: pointer;white-space:nowrap;"></span>
 </p>
-}
-else 
-{
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Drivers)
+                @Html.DisplayNameFor(model => model.Drivers) 
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Employees)
@@ -32,20 +29,13 @@ else
 
         <tr>
             <td>
-                @if (Model.Drivers.Count == 0)
-                {
-
-                    <a asp-action="AddDriver" class="btn" >Invite driver</a>
-
-                }
-                else
-                {
+              
                 @foreach (var driver in Model.Drivers)
                 {
-                    @driver.User.NormalizedUserName<br/>
-                }
-                }
+                    @driver.User.NormalizedUserName  
 
+                    <a class="btn btn-default" asp-action="DriverDetails" asp-route-id="@driver.ID">See driver details</a>
+                }
             </td>
             <td>
                 @foreach (var employee in Model.Employees   )
@@ -53,17 +43,45 @@ else
                     @employee.NormalizedUserName<br />
                 }
             </td>
-           
-            <td>
-                <a asp-action="AddEmployee" class="btn">Add Employee</a> 
-                <a asp-action="AddDriver" class="btn" >Invite driver</a>
-
-            </td>
+          
         </tr>
         }
         
     </tbody>
 </table>
-}
+
+    <div id="addDriverPopup" style="display: none; width:300px;border: 2px solid black; padding: 20px;">
+        <h3>Adding a driver</h3>
+        <p>Adding a driver means completing a form with driver details which will trigger and email to be sent to your team member.
+        Once they activate their account, you can assign routes to them</p>
+        <button class="btn btn-default" onclick="closeGuidelinesDriver()">Ok <span id="sizeHelp" class="glyphicon glyphicon-ok" aria-hidden="true" style="cursor: pointer;white-space:nowrap;"></span></button>
+    </div>
+    <div id="addEmployeePopup" style="display: none; width:300px;border: 2px solid black; padding: 20px;">
+        <h3>Adding an employee</h3>
+        <p>By adding an employee you are creating accounts for your colleagues who can later access the system with the same permissions as you.
+        An email will be sent to your colleague asking to confirm their account</p>
+        <button class="btn btn-default" onclick="closeGuidelinesEmployee()">Ok <span id="sizeHelp" class="glyphicon glyphicon-ok" aria-hidden="true" style="cursor: pointer;white-space:nowrap;"></span></button>
+    </div>
+
+
 
 @Html.ActionLink("Back to Dashboard", "Index", "ShipperDashboard")
+
+<script type="text/javascript">
+        document.getElementById("addEmployeeHelp").addEventListener("click", function () {
+            document.getElementById('addEmployeePopup').style.display = 'block';
+        });
+
+        function closeGuidelinesEmployee() {
+            document.getElementById('addEmployeePopup').style.display = 'none';
+        }
+
+        document.getElementById("addDriverHelp").addEventListener("click", function () {
+            document.getElementById('addDriverPopup').style.display = 'block';
+        });
+
+        function closeGuidelinesDriver() {
+            document.getElementById('addDriverPopup').style.display = 'none';
+        }
+
+</script>

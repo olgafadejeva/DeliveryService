@@ -25,6 +25,8 @@ namespace DeliveryService.Models.ShipperViewModels
         [Display(Name = "Estimated route completion time")]
         public double? OverallTimeRequired { get; set; }
 
+        public string RouteStatusString { get; set; }
+
         public ICollection<Delivery> Deliveries { get; set; }
 
         public PickUpAddress PickUpAddress { get; set; }

@@ -11,5 +11,14 @@
 
 <p class="btn btn-default">@Html.ActionLink("My Routes", "Index", "DriverRoutes")</p>
 <p class="btn btn-default">@Html.ActionLink("My Details", "Index", "DriverDetails")</p>
+
+@if (Model.Vehicles.ToList().Count == 0)
+{
+    <p> Please take time to add your vehicles into the system! Otherwise no routes can be assigned to you.</p>
+
+    @Html.ActionLink("Add vehicles", "Create", "Vehicles", null, new { @class = "btn btn-warning" })
+}
+else
+{
 <p class="btn btn-default">@Html.ActionLink("My vehicles", "Index", "Vehicles")</p>
-<p class="btn btn-default">@Html.ActionLink("My time off", "Index", "DriverHolidays")</p>
+}

@@ -32,11 +32,10 @@ namespace DeliveryService.Services
                     Route route = new Route();
                     route.Deliveries = deliveriesInARoute;
                     route.DeliverBy = DateFilter.getEarliestDeliverByDate(deliveriesInARoute);
-                   // context.Routes.Add(route);
-                    //company.Routes.Add(route);
                     var depot = await LocationService.FindClosestDepotLocationForRoute(company.PickUpLocations, routeDelivery.center);
                     route.PickUpAddress = depot;
-                    //route.PickUpAddressID = depot.ID;
+                    route.Status = RouteStatus.New;
+                    route.PickUpAddressID = depot.ID;
                     RouteDetails details = await LocationService.getRouteDurationAndOverallDistance(depot, deliveriesInARoute);
                     route.OverallDistance = details.OverallDistance;
 

@@ -32,6 +32,7 @@ namespace DeliveryService.Controllers.ShipperControllers
             foreach (Route route in routes) {
                 RouteViewModel model = new RouteViewModel();
                 model.ID = route.ID;
+                model.RouteStatusString = RouteStatusExtension.DisplayName(route.Status.Value);
                 model.OverallDistance = route.OverallDistance;
                 model.OverallTimeRequired = route.OverallTimeRequired;
                 model.PickUpAddress = route.PickUpAddress;
