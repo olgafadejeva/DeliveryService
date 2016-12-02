@@ -71,6 +71,7 @@ namespace DeliveryService
             services.AddTransient<IDirectionsService, DirectionsService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IGoogleMapsUtil, GoogleMapsUtil>();
+            services.AddTransient<INotificationService, NotificationService>();
 
 
             services.Configure<MvcOptions>(options =>

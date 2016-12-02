@@ -31,8 +31,12 @@ namespace DeliveryServiceTests.Services
             context.Deliveries.Add(delivery);
             delivery.DeliveryStatus = new DeliveryStatus();
             delivery.DeliveryStatus.Status = Status.New;
+            Route route = new Route();
+            route.Deliveries.Add(delivery);
+            context.Routes.Add(route);
             await context.SaveChangesAsync();
             bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, Status.PickedUpByDriver);
+            Assert.Equal(RouteStatus.InProgress, route.Status);
             Assert.True(statusUpdated);
         }
         
@@ -44,8 +48,12 @@ namespace DeliveryServiceTests.Services
             context.Deliveries.Add(delivery);
             delivery.DeliveryStatus = new DeliveryStatus();
             delivery.DeliveryStatus.Status = Status.PickedUpByDriver;
+            Route route = new Route();
+            route.Deliveries.Add(delivery);
+            context.Routes.Add(route);
             await context.SaveChangesAsync();
             bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, Status.InTransit);
+            Assert.Equal(RouteStatus.InProgress, route.Status);
             Assert.True(statusUpdated);
         }
 
@@ -56,8 +64,28 @@ namespace DeliveryServiceTests.Services
             context.Deliveries.Add(delivery);
             delivery.DeliveryStatus = new DeliveryStatus();
             delivery.DeliveryStatus.Status = Status.InTransit;
+            Route route = new Route();
+            route.Deliveries.Add(delivery);
+            context.Routes.Add(route);
             await context.SaveChangesAsync();
             bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, Status.Delivered);
+            Assert.Equal(RouteStatus.Completed, route.Status);
+            Assert.True(statusUpdated);
+        }
+
+        [Fact]
+        public async Task testValidTransitionFromInTransitToDelivered()
+        {
+            Delivery delivery = new Delivery();
+            context.Deliveries.Add(delivery);
+            delivery.DeliveryStatus = new DeliveryStatus();
+            delivery.DeliveryStatus.Status = Status.InTransit;
+            Route route = new Route();
+            route.Deliveries.Add(delivery);
+            context.Routes.Add(route);
+            await context.SaveChangesAsync();
+            bool statusUpdated = statusUpdateService.UpdateDeliveryStatus(delivery, Status.Delivered);
+            Assert.Equal(RouteStatus.Completed, route.Status);
             Assert.True(statusUpdated);
         }
 

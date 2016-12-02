@@ -20,22 +20,19 @@ namespace DeliveryService.Controllers.DriverControllers
 
         private DeliveryStatusUpdateService statusUpdateService { get; set; }
         private IDirectionsService directionsService { get; set; }
+        private INotificationService notificationService { get; set; }
 
-        public DriverDeliveriesController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, DeliveryStatusUpdateService statusUpdateService, IDirectionsService directionsService) : base(context, contextAccessor)
+        public DriverDeliveriesController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, DeliveryStatusUpdateService statusUpdateService, IDirectionsService directionsService, INotificationService notService) : base(context, contextAccessor)
         {
             this.statusUpdateService = statusUpdateService;
             this.directionsService = directionsService;
+            this.notificationService = notService;
         }
 
         [HttpPost]
         public JsonResult UpdateStatus([FromBody]StatusUpdateRequest updateRequest)
         {
             Status updateStatus = StatusExtension.statusFromString(updateRequest.status);
-            if (updateRequest.id == null)
-            {
-                Response.StatusCode = 400;
-                return Json(HttpStatusCode.BadRequest);
-            }
             Delivery delivery = _context.Deliveries
                 .Include(d => d.DeliveryStatus)
                 .SingleOrDefault(d => d.ID == updateRequest.id);
@@ -60,22 +57,10 @@ namespace DeliveryService.Controllers.DriverControllers
                 updateStatusString += " " + deliveredDate.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);
             }
 
-            Route route = _context.Routes.Where(r => r.ID == delivery.RouteID).SingleOrDefault();
-            bool allDelivered = false;
-            foreach (Delivery del in route.Deliveries) {
-                if (del.DeliveryStatus.Status != Status.Delivered) {
-                    allDelivered = false;
-                    break;
-                }
-            }
+            Company company = _context.Companies.Include(c=> c.Team.Employees).Where(c => c.ID == driver.User.CompanyID).SingleOrDefault();
 
-            if (allDelivered)
-            {
-                route.Status = RouteStatus.Completed;
-            }
-            else {
-                route.Status = RouteStatus.InProgress;
-            }
+            notificationService.SendStatusUpdateEmailToAdminAsync(updateStatusString, delivery, company.Team.Employees.ToList());
+            notificationService.SendStatusUpdateEmailToClientAsync(updateStatus, delivery, delivery.Client);
             Response.StatusCode = 200;
             _context.SaveChanges();
             return Json(updateStatusString);
@@ -106,9 +91,6 @@ namespace DeliveryService.Controllers.DriverControllers
                 return Json(HttpStatusCode.BadRequest);
             }
 
-            Route route = _context.Routes.Where(r => r.ID == delivery.RouteID).SingleOrDefault();
-            //set route status to pending when delivery failed
-            route.Status = RouteStatus.Pending;
             delivery.DeliveryStatus.Status = updateStatus;
             string updateStatusString = "Failed, reason: " + updateRequest.reason;
             delivery.DeliveryStatus.ReasonFailed = updateRequest.reason;

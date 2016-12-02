@@ -24,6 +24,33 @@ namespace DeliveryService.Services
           //  delivery.DeliveryStatus.Status = status;
             var deliveryStatus = context.DeliveryStatus.SingleOrDefault(st => st.ID == delivery.DeliveryStatus.ID);
             deliveryStatus.Status = status;
+            Route route = context.Routes.Where(r => r.ID == delivery.RouteID).SingleOrDefault();
+            bool allDelivered = true;
+            foreach (Delivery del in route.Deliveries)
+            {
+                if (del.DeliveryStatus.Status != Status.Delivered)
+                {
+                    allDelivered = false;
+                    break;
+                }
+            }
+
+            if (status.Equals(Status.FailedDelivery))
+            {
+                route.Status = RouteStatus.Pending;
+            }
+            else
+            {
+                if (allDelivered)
+                {
+                    route.Status = RouteStatus.Completed;
+                }
+                else
+                {
+                    route.Status = RouteStatus.InProgress;
+                }
+            }
+            
             context.SaveChangesAsync();
             return true;
         }

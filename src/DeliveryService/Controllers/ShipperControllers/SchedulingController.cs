@@ -18,10 +18,13 @@ namespace DeliveryService.Controllers.ShipperControllers
     {
         public RouteCreationService RouteCreationService;
         public DriverAssignmentService DriverAssignmentService { get; set; }
-        public SchedulingController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, RouteCreationService routeService, DriverAssignmentService driverService) : base(context, contextAccessor)
+        public INotificationService notificationService { get; set; }
+
+        public SchedulingController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, RouteCreationService routeService, DriverAssignmentService driverService, INotificationService notService) : base(context, contextAccessor)
         {
             this.RouteCreationService = routeService;
             this.DriverAssignmentService = driverService;
+            this.notificationService = notService;
         }
 
         public IActionResult Index()
@@ -117,6 +120,7 @@ namespace DeliveryService.Controllers.ShipperControllers
                 {
                     Driver driverEntity = _context.Drivers.Where(d => d.ID == tempRoute.Driver.ID).FirstOrDefault();
                     route.DriverID = driverEntity.ID;
+                    await notificationService.SendAnEmailToDriverAboutAssignedRouteAsync(route, driverEntity.User);
                 }
                 route.DeliveryDate = tempRoute.ModifiedDeliverByDate.AddDays(-1);
                 if (tempRoute.DriversVehicle != null)
