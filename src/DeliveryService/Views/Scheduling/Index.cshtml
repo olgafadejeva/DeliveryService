@@ -459,7 +459,15 @@
                         <button id="withinDays" style="float: right" onclick="filterDeliveriesByDeliveryDate()" class="btn btn-default">Submit</button>
                         <input type="number" style="overflow: hidden;width:60%" class="form-control" min="1" max="100" size="3" step="1" id="daysDeliverBy">
                      </div>
-                <button class="btn btn-primary btn-block" onclick="location.href='@Url.Action("Assign", "Scheduling")'" >Assign routes to drivers >></button>
+                @if (Model.Company.Team.Drivers.ToList().Count != 0)
+                {
+                    <button class="btn btn-primary btn-block" onclick="location.href='@Url.Action("Assign", "Scheduling")'" >Assign routes to drivers >></button>
+                }
+                else
+                {
+                    <p>In order to start assigning deliveries, you need to add drivers to you team </p>
+                    <button class="btn btn-primary btn-block" onclick="location.href='@Url.Action("AddDriver", "Team")'">Invite drivers >></button>
+                }
             </div>
         </div>
 

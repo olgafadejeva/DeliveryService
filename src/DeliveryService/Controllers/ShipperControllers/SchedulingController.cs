@@ -48,7 +48,7 @@ namespace DeliveryService.Controllers.ShipperControllers
                 model.deliverBy = deliverByString;
                 delsWithAddress.Add(model);
             }
-            MapObjects objects = new MapObjects(deliveries, depots, company.Routes.ToList(), delsWithAddress);
+            MapObjects objects = new MapObjects(deliveries, depots, company.Routes.ToList(), delsWithAddress, company);
             return View(objects);
         }
 
@@ -75,7 +75,7 @@ namespace DeliveryService.Controllers.ShipperControllers
                 model.deliverBy = deliverByString;
                 delsWithAddress.Add(model);
             }
-            MapObjects result = new MapObjects(deliveries, routes, delsWithAddress);
+            MapObjects result = new MapObjects(deliveries, routes, delsWithAddress, company);
             return Json(result);
         }
 
