@@ -13,6 +13,7 @@ using DeliveryService.Models.ShipperViewModels;
 using DeliveryService.Models.DriverViewModels;
 using DeliveryService.Models;
 using System.Globalization;
+using System.Net;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
@@ -78,6 +79,32 @@ namespace DeliveryService.Controllers.ShipperControllers
             ViewData["AssignedToID"] = new SelectList(_context.Drivers, "ID", "ID", route.DriverID);
             ViewData["PickUpAddressID"] = new SelectList(_context.PickUpAddress, "ID", "City", route.PickUpAddressID);
             return View(route);
+        }
+
+        public IActionResult AddDeliveries(int id) {
+            List<Delivery> deliveries = company.Deliveries.Where(d => d.DeliveryStatus.Status.Equals(Status.New) 
+            || d.DeliveryStatus.Status.Equals(Status.FailedDelivery)).Where(d => d.RouteID == null).ToList();
+            AvailableDelveriesModel model = new AvailableDelveriesModel();
+            model.deliveries = deliveries;
+            model.RouteId = id;
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> AddDeliveries([FromBody] AdditionalDeliveriesModel additionalDeliveriesModel)
+        {
+            int id = additionalDeliveriesModel.routeId;
+            int[] deliveryIds = additionalDeliveriesModel.deliveries;
+            Route route = company.Routes.Where(r => r.ID == id).FirstOrDefault();
+            List<Delivery> additionalDeliveries = company.Deliveries.Where(d => deliveryIds.Contains(d.ID)).ToList();
+            foreach (Delivery del in additionalDeliveries) {
+                route.Deliveries.Add(del);
+            }
+            Response.StatusCode = (int) HttpStatusCode.OK;
+            await routeService.updateRouteDetails(route);
+            _context.SaveChanges();
+            string successResult = "Deliveries adde to route";
+            return Json(successResult);
         }
 
         public async Task<IActionResult> Reassign(int? id)
@@ -246,5 +273,15 @@ namespace DeliveryService.Controllers.ShipperControllers
         {
             return _context.Routes.Any(e => e.ID == id);
         }
+    }
+
+    public class AdditionalDeliveriesModel {
+        public int routeId { get; set; }
+        public int[] deliveries { get; set; }
+    }
+
+    public class AvailableDelveriesModel {
+        public List<Delivery> deliveries { get; set; }
+        public int RouteId { get; set; }
     }
 }

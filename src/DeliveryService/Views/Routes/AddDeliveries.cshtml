@@ -1,0 +1,135 @@
+﻿@using DeliveryService.Controllers.ShipperControllers;
+@using DeliveryService.Models.Entities;
+@model AvailableDelveriesModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    var deliveryList = [];
+
+    function addToList(id) {
+        deliveryList.push(id);
+
+        document.getElementById("addButton+" + id).style.display= 'none';
+        document.getElementById("cancelButton+" + id).style.display = 'block';
+    }
+
+    function removeFromList(id){
+        var index = deliveryList.indexOf(id);
+        if (index > -1) {
+            deliveryList.splice(index, 1);
+        }
+        document.getElementById("addButton+" + id).style.display= 'block';
+        document.getElementById("cancelButton+" + id).style.display = 'none';
+    }
+
+    function sendData(RouteID) {
+        var finalData = {
+            routeId : RouteID,
+            deliveries : deliveryList
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/routes/addDeliveries",
+            dataType: "json",
+            data: JSON.stringify(finalData),
+            contentType: 'application/json; charset=utf-8',
+            success: function (result) {
+                document.getElementById("successStatus").style.display = 'block'
+
+            },
+            error: function(result) {console.log(result.statusCode())}
+        });
+    }
+
+</script>
+<h2>Deliveries</h2>
+
+<p>
+    <a class="btn btn-default"  asp-action="Create">Create New</a>
+</p>
+@if (Model.deliveries.Count() != 0)
+    {
+        <div class="alert alert-success alert-dismissible" id="successStatus" style="display:none">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Success!</strong> Route updated with more deliveries
+        </div>
+    <table class="table" id="myTable">
+        <thead>
+            <tr>
+                <th>
+                    Recipient
+                </th>
+                <th>
+                    Delivery address
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>Deliver by</th>
+
+                <th>Item details</th>
+                <th></th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model.deliveries)
+            {
+                <tr>
+                    <td>
+
+                        @Html.ActionLink(item.Client.FirstName + " " + item.Client.LastName, "Details", "Clients", new { id = item.ClientID })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => @item.Client.Address.LineOne) <br />
+                        @Html.DisplayFor(model => @item.Client.Address.City)<br />
+                        @Html.DisplayFor(model => @item.Client.Address.PostCode)<br />
+
+                    </td>
+                    <td>
+                        @item.DeliveryStatus.Status.DisplayName()
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => @item.DeliverBy)
+                    </td>
+                    <td>
+                        <p>
+                            @Html.LabelFor(model => @item.ItemSize)
+                            @item.ItemSize.ToString()
+                        </p>
+
+                        <p>
+                            @Html.LabelFor(model => @item.ItemWeight)
+                            @Html.DisplayFor(model => @item.ItemWeight)
+                        </p>
+                    </td>
+                    <td>
+                        <div>
+                            <button id="addButton+@item.ID" type="button" class="btn btn-default" onclick="addToList(@item.ID)" aria-label="Left Align">
+                                Add
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        <div id="cancelButton+@item.ID" style="display:none">
+
+                            <button type="button" class="btn btn-default" onclick="removeFromList(@item.ID)" aria-label="Left Align">
+                                Remove<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<button type="button" class="btn-success btn btn-primary btn-lg" onclick="sendData(@Model.RouteId)" aria-label="Left Align">Submit</button>
+<br/>
+<br/>
+@Html.ActionLink("Back to routes", "Index", "Routes", null, new { @class = "btn btn-default" })

@@ -60,7 +60,10 @@ namespace DeliveryService.Controllers.DriverControllers
             Company company = _context.Companies.Include(c=> c.Team.Employees).Where(c => c.ID == driver.User.CompanyID).SingleOrDefault();
 
             notificationService.SendStatusUpdateEmailToAdminAsync(updateStatusString, delivery, company.Team.Employees.ToList());
-            notificationService.SendStatusUpdateEmailToClientAsync(updateStatus, delivery, delivery.Client);
+            if (updateStatus.Equals(Status.InTransit))
+            {
+                notificationService.SendStatusUpdateEmailToClientAsync(updateStatus, delivery, delivery.Client);
+            }
             Response.StatusCode = 200;
             _context.SaveChanges();
             return Json(updateStatusString);
@@ -93,14 +96,14 @@ namespace DeliveryService.Controllers.DriverControllers
 
             delivery.DeliveryStatus.Status = updateStatus;
             string updateStatusString = "Failed, reason: " + updateRequest.reason;
+
+            Company company = _context.Companies.Include(c => c.Team.Employees).Where(c => c.ID == driver.User.CompanyID).SingleOrDefault();
+            notificationService.SendStatusUpdateEmailToAdminAsync(updateStatusString, delivery, company.Team.Employees.ToList());
             delivery.DeliveryStatus.ReasonFailed = updateRequest.reason;
             Response.StatusCode = 200;
             _context.SaveChanges();
             return Json(updateStatusString);
         }
-
-
-
     }
 
     public class StatusUpdateRequest
