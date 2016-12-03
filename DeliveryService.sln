@@ -12,9 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DeliveryService", "src\DeliveryService\DeliveryService.xproj", "{AC66151E-BD3C-473D-87F4-FD98D6F7613C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7D11E7C2-66B4-4BBA-8979-E058B08DE730}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DeliveryServiceTests", "src\TestPP\DeliveryServiceTests.xproj", "{A14D97F4-CFAB-4AB1-A4B6-8492960CBC29}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DeliveryServiceTests", "src\test\DeliveryServiceTests.xproj", "{8BE0A2AC-0931-47D1-849D-0290CDE1AC28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,16 +24,15 @@ Global
 		{AC66151E-BD3C-473D-87F4-FD98D6F7613C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC66151E-BD3C-473D-87F4-FD98D6F7613C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC66151E-BD3C-473D-87F4-FD98D6F7613C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A14D97F4-CFAB-4AB1-A4B6-8492960CBC29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A14D97F4-CFAB-4AB1-A4B6-8492960CBC29}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A14D97F4-CFAB-4AB1-A4B6-8492960CBC29}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A14D97F4-CFAB-4AB1-A4B6-8492960CBC29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BE0A2AC-0931-47D1-849D-0290CDE1AC28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BE0A2AC-0931-47D1-849D-0290CDE1AC28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BE0A2AC-0931-47D1-849D-0290CDE1AC28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BE0A2AC-0931-47D1-849D-0290CDE1AC28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AC66151E-BD3C-473D-87F4-FD98D6F7613C} = {1861A126-72AF-42DA-BF9D-D769213C5CF6}
-		{A14D97F4-CFAB-4AB1-A4B6-8492960CBC29} = {7D11E7C2-66B4-4BBA-8979-E058B08DE730}
 	EndGlobalSection
 EndGlobal
