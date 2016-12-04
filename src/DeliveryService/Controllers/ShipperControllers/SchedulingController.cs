@@ -29,7 +29,7 @@ namespace DeliveryService.Controllers.ShipperControllers
 
         public IActionResult Index()
         {
-            var deliveries = DateFilter.getDeliveriesWithinDays(company.Deliveries.ToList(), 2);
+            var deliveries = company.Deliveries.Where(d => d.DeliveryStatus.Status.Equals(Status.New)).ToList();
             var depots = company.PickUpLocations.ToList();
             List<ShipperSingleDeliveryMapViewModel> delsWithAddress = new List<ShipperSingleDeliveryMapViewModel>();
             foreach (Delivery delivery in deliveries) {

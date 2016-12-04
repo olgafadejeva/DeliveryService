@@ -1,6 +1,5 @@
 ﻿@using Newtonsoft.Json
 @model DeliveryService.Models.ShipperViewModels.MapObjects
-
 <html>
 <head>
     <style>
@@ -13,10 +12,11 @@
             width: 100%;
         }
 
-        .container > .navbar-header, .container-fluid > .navbar-header, .container > .navbar-collapse, .container-fluid > .navbar-collapse {
-            margin-right: 50px;
-            margin-left: 50px;
-        }
+            .container > .navbar-header, .container-fluid > .navbar-header, .container > .navbar-collapse, .container-fluid > .navbar-collapse {
+                margin-right: 50px;
+                margin-left: 50px;
+            }
+
         #legend {
             font-family: Arial, sans-serif;
             background: #fff;
@@ -33,386 +33,11 @@
                 vertical-align: middle;
             }
 
-            #main_body {
+        #main_body {
             overflow: hidden;
         }
     </style>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script type="text/javascript">
-        function filterDeliveriesByDeliveryDate() {
-                $.ajax({
-                    type: 'GET',
-                    url: '/scheduling/DeliverWithinDays',
-                    data: { days:document.getElementById("daysDeliverBy").value },
-
-                    dataType: "json",
-                    contentType: 'application/json; charset=utf-8',
-                    success: function (result) {
-                        deliveries = result.Deliveries;
-                        routes = result.ExistingRoutes;
-                        initMap();
-                    },
-                    error: function (result) {
-                        alert('Oh no: '+ result.responseText);
-                    }
-                        });
-            }
-
-
-        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var labelIndex = 0;
-
-
-        var deliveries = @Html.Raw(JsonConvert.SerializeObject(Model.DeliveriesWithAddressString));
-        var depots = @Html.Raw(JsonConvert.SerializeObject(Model.Depots));
-        var routes = @Html.Raw(JsonConvert.SerializeObject(Model.ExistingRoutes));
-        console.log("deliveries " + deliveries);
-        console.log(routes)
-
-        var googleMap;
-        function initMap() {
-
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 7,
-                center: { lat: 53.3811, lng: -1.4701 }
-            });
-            googleMap = map;
-
-            var markers = deliveries.map(function (delivery, i) {
-                var marker =   new google.maps.Marker({
-                    position:  { lat: parseFloat(delivery.Client.Address.Lat), lng: parseFloat(delivery.Client.Address.Lng)},
-                    id: delivery.ID.toString(),
-                    added: false,
-                    map:map
-
-
-                });
-
-                
-
-
-                google.maps.event.addListener(marker, 'click', function() {
-                    if (marker.added) {
-                        document.getElementById("alert").style.visibility = 'visible';
-                    } else {
-                        console.log(marker.position.lat())
-                        route.ids.push(marker.id);
-                        route.points.push(marker.getPosition())
-                        marker.setIcon(route.icon);
-                        marker.added = true;
-
-                        currentSpan.innerHTML = route.ids.length;
-                        document.getElementById("alert").style.visibility = 'hidden';
-                    }
-                });
-
-
-                
-
-                var infoWindowContent = '<div id="content">'+
-         '<div id="siteNotice">'+
-         '</div>'+
-         '<h4 id="firstHeading" class="firstHeading">Delivery details</h4>'+
-         '<div id="bodyContent">'+
-         '<p><b>Address: </b>' + delivery.addressString + '</p>'+
-         '<p><b>Current status: </b>' + delivery.currentStatus + '</p>'+
-         '<p><b>Client: </b>' + delivery.clientName + '</p>'+
-         '<p><b>Deliver by: </b>' + delivery.deliverBy + '</p>'+
-         '</div>'+
-         '</div>';
-                var infowindow = new google.maps.InfoWindow({
-                    content: infoWindowContent
-                });
-
-                marker.addListener('mouseover', function() {
-                    infowindow.open(map, marker);
-                });
-
-                marker.addListener('mouseout', function() {
-                    infowindow.close();
-                });
-
-                return marker;
-
-            });
-
-            var depotMarkers  = depots.map(function(marker,i) {
-                var marker =   new google.maps.Marker({
-                    position:  { lat: parseFloat(marker.Lat), lng: parseFloat(marker.Lng)},
-                    map:map,
-                    icon:"data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIiBvdmVyZmxvdz0iaW5oZXJpdCI+PHBhdGggZD0iTTguNTI0IDMwLjc5NWMtMS45NzggMC0zLjU4NSAxLjYxNy0zLjU4NSAzLjYwNCAwIDEuOTg4IDEuNjA4IDMuNjAxIDMuNTg1IDMuNjAxIDEuOTgyIDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODYtMS42MDctMy42MDMtMy41OS0zLjYwM3ptMCA1LjQ2MWMtLjk4OCAwLTEuNzkyLS44MDctMS43OTItMS44MDMgMC0uOTkyLjgwNC0xLjgwMSAxLjc5Mi0xLjgwMS45OTMgMCAxLjc5Ny44MDkgMS43OTcgMS44MDEuMDAxLjk5Ni0uODAzIDEuODAzLTEuNzk3IDEuODAzem0zMS41NDMtNS40NjFjLTEuOTgxIDAtMy41ODcgMS42MTctMy41ODcgMy42MDQgMCAxLjk4OCAxLjYwNSAzLjYwMiAzLjU4NyAzLjYwMiAxLjk4IDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODctMS42MDktMy42MDQtMy41OS0zLjYwNHptMCA1LjQ2MWMtLjk4OSAwLTEuNzk0LS44MDctMS43OTQtMS44MDMuMDAxLS45OTIuODA1LTEuODAxIDEuNzk0LTEuODAxLjk5MiAwIDEuNzk3LjgwOSAxLjc5NyAxLjgwMSAwIC45OTYtLjgwNCAxLjgwMy0xLjc5NyAxLjgwM3ptNy45NC0yMi4yNTZoLTMxLjU0NmMtLjU0NyAwLS45OTMuNDQ2LS45OTMuOTk3djkuMDQyaC0xLjk4N3YtNS41NTFjMC0uNTUyLS40NDUtLjk5Ny0uOTk0LS45OTdoLTYuNzY4Yy0xLjE4IDAtMi4yMzQuODcyLTIuNDIzIDIuMTJ2LS4wNjVsLTEuMDU2IDUuOTg3LjAwMi4wMjFjLS43MTcuMTIyLTEuMjQyLjc0NS0xLjI0MiAxLjQ3NmwuMDMzLjMyLS4wMzMtLjAwOSAxLjQ5IDYuNzM1aDEuNTUydi0uMDYxYzAtMi40MTQgMS45NzUtNC4zNjkgNC40MS00LjM2OSAyLjQzMyAwIDQuNDA5IDEuOTU1IDQuNDA5IDQuMzY5di4wNjFoMjIuNzI2di0uMDYxYzAtMi40MTQgMS45NzYtNC4zNjkgNC40MDctNC4zNjkgMi40MzUgMCA0LjQxMSAxLjk1NSA0LjQxMSA0LjM2OWwtLjAwNC4wNjFoNC41OTl2LTE5LjA3OWMwLS41NS0uNDQ0LS45OTctLjk5My0uOTk3em0tMzguMDA0IDUuMTExdjQuOTI4aC01Ljk2bC43NDUtNC4xODFjLjA2Mi0uNS40OTctLjg2OS45MzEtLjg2OWg0LjI4NHYuMTIyeiIvPjwvc3ZnPg=="
-                })
-            });
-
-
-            // Add a marker clusterer to manage the markers.
-            var markerCluster = new MarkerClusterer(map, markers,
-                { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
-
-            var markerCluster = new MarkerClusterer(map, depotMarkers);
-            var icons = {
-                depot: {
-                    name: 'Depot location',
-                    icon:"data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIiBvdmVyZmxvdz0iaW5oZXJpdCI+PHBhdGggZD0iTTguNTI0IDMwLjc5NWMtMS45NzggMC0zLjU4NSAxLjYxNy0zLjU4NSAzLjYwNCAwIDEuOTg4IDEuNjA4IDMuNjAxIDMuNTg1IDMuNjAxIDEuOTgyIDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODYtMS42MDctMy42MDMtMy41OS0zLjYwM3ptMCA1LjQ2MWMtLjk4OCAwLTEuNzkyLS44MDctMS43OTItMS44MDMgMC0uOTkyLjgwNC0xLjgwMSAxLjc5Mi0xLjgwMS45OTMgMCAxLjc5Ny44MDkgMS43OTcgMS44MDEuMDAxLjk5Ni0uODAzIDEuODAzLTEuNzk3IDEuODAzem0zMS41NDMtNS40NjFjLTEuOTgxIDAtMy41ODcgMS42MTctMy41ODcgMy42MDQgMCAxLjk4OCAxLjYwNSAzLjYwMiAzLjU4NyAzLjYwMiAxLjk4IDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODctMS42MDktMy42MDQtMy41OS0zLjYwNHptMCA1LjQ2MWMtLjk4OSAwLTEuNzk0LS44MDctMS43OTQtMS44MDMuMDAxLS45OTIuODA1LTEuODAxIDEuNzk0LTEuODAxLjk5MiAwIDEuNzk3LjgwOSAxLjc5NyAxLjgwMSAwIC45OTYtLjgwNCAxLjgwMy0xLjc5NyAxLjgwM3ptNy45NC0yMi4yNTZoLTMxLjU0NmMtLjU0NyAwLS45OTMuNDQ2LS45OTMuOTk3djkuMDQyaC0xLjk4N3YtNS41NTFjMC0uNTUyLS40NDUtLjk5Ny0uOTk0LS45OTdoLTYuNzY4Yy0xLjE4IDAtMi4yMzQuODcyLTIuNDIzIDIuMTJ2LS4wNjVsLTEuMDU2IDUuOTg3LjAwMi4wMjFjLS43MTcuMTIyLTEuMjQyLjc0NS0xLjI0MiAxLjQ3NmwuMDMzLjMyLS4wMzMtLjAwOSAxLjQ5IDYuNzM1aDEuNTUydi0uMDYxYzAtMi40MTQgMS45NzUtNC4zNjkgNC40MS00LjM2OSAyLjQzMyAwIDQuNDA5IDEuOTU1IDQuNDA5IDQuMzY5di4wNjFoMjIuNzI2di0uMDYxYzAtMi40MTQgMS45NzYtNC4zNjkgNC40MDctNC4zNjkgMi40MzUgMCA0LjQxMSAxLjk1NSA0LjQxMSA0LjM2OWwtLjAwNC4wNjFoNC41OTl2LTE5LjA3OWMwLS41NS0uNDQ0LS45OTctLjk5My0uOTk3em0tMzguMDA0IDUuMTExdjQuOTI4aC01Ljk2bC43NDUtNC4xODFjLjA2Mi0uNS40OTctLjg2OS45MzEtLjg2OWg0LjI4NHYuMTIyeiIvPjwvc3ZnPg=="
-                },
-                deliveryNotInRoute: {
-                    name: 'Delivery not added to route',
-                    icon: "https://www.google.com/mapfiles/marker.png"
-                },
-                deliveryInRoute: {
-                    name: 'Delivery added to route',
-                    icon: generateIcon().url
-                }
-            };
-
-            var legend = document.getElementById('legend');
-            for (var key in icons) {
-                var type = icons[key];
-                var name = type.name;
-                var icon = type.icon;
-                var div = document.createElement('div');
-                div.innerHTML = '<img src="' + icon + '"> ' + name;
-                legend.appendChild(div);
-            }
-
-            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
-        }
-
-
-        var allRoutes = [];
-        var route = {
-            icon : "",
-            ids: [],
-            points: []
-
-        };
-
-        var currentSpan;
-        function createRoute() {
-            route = {
-                icon: generateIcon(),
-                ids: [],
-                points: []
-            }
-
-
-            document.getElementById("successAlert").style.display = 'hidden';
-            document.getElementById("successAlert").style.visibility = 'hidden';
-            document.getElementById("alert").style.display = 'block';
-            document.getElementById("alert").style.display = 'block';
-
-            var ul = document.getElementById("routeList");
-            var li = document.createElement("li");
-            var oImg=document.createElement("img");
-            oImg.setAttribute('src', route.icon.url);
-
-
-            li.appendChild(oImg);
-            li.classList.add("list-group-item");
-            li.appendChild(document.createTextNode("Route " + labels[labelIndex % labels.length]));
-            labelIndex++;
-            currentSpan = document.createElement('span');
-            currentSpan.innerHTML = route.ids.length;
-            currentSpan.classList.add("badge");
-
-            li.appendChild(currentSpan);
-            ul.appendChild(li);
-        }
-
-
-        function finishRoute() {
-            document.getElementById("successAlert").style.visibility = 'visible';
-            document.getElementById("successAlert").style.display = 'block';
-            document.getElementById("alert").style.display = 'none';
-
-            //calculate poly centre here?
-            var bounds = new google.maps.LatLngBounds();
-            var i;
-            console.log(route.points);
-            var polygonCoords = route.points.map(function (point, i) {
-                console.log(point.lat())
-                console.log(point.lng())
-                return { lat:point.lat(), lng: point.lng()}
-                });
-
-            for (i = 0; i < polygonCoords.length; i++) {
-                bounds.extend(polygonCoords[i]);
-            }
-
-
-
-            allRoutes.push({ids: route.ids,
-                center: {lat: bounds.getCenter().lat(),
-                    lng: bounds.getCenter().lng()
-                }});
-          }
-
-          function generateIcon() {
-              var randomColor = Math.floor(Math.random()*16777215).toString(16);
-              
-
-              var image = {
-                  url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + randomColor,
-                  size: new google.maps.Size(20, 34),
-                  origin: new google.maps.Point(0, 0),
-
-              };
-              return image;
-          }
-
-          function sendData() {
-              document.getElementById("progress").style.visibility = 'visible';
-              document.getElementById("progress").style.display = 'block';
-              $.ajax({
-                  type: "POST",
-                  async: "false",
-                  url: "/scheduling/data",
-                  dataType: "json",
-                  data: JSON.stringify(allRoutes),
-                  contentType: 'application/json; charset=utf-8',
-                  success: function (result) {
-                      document.getElementById("progress").style.visibility = 'hidden';
-                      document.getElementById("progress").style.display = 'none';
-                      createTable(result);
-
-                      $("#myModal").modal();
-                  },
-                  error: function(result) {console.log(result.statusCode())}
-              }).done(function() {
-                  console.log("done");
-              });
-
-          }
-
-
-
-          function createTable(data) {
-              var myTableDiv = document.getElementById("routesTable")
-              var table = document.createElement('TABLE')
-              table.classList.add("table");
-              var tableBody = document.createElement('TBODY')
-
-              table.appendChild(tableBody);
-
-              var heading = new Array();
-              heading[0] = "Route"
-              heading[1] = "Depot Address"
-              heading[2] = "Duration"
-              heading[3] = "Distance"
-              //heading[2] = ""
-
-              //TABLE COLUMNS
-              var tr = document.createElement('TR');
-              tableBody.appendChild(tr);
-              for (i = 0; i < heading.length; i++) {
-                  var th = document.createElement('TH')
-                  th.appendChild(document.createTextNode(heading[i]));
-                  tr.appendChild(th);
-              }
-
-              //TABLE ROWS
-              for (i = 0; i < data.length; i++) {
-                  var tr = document.createElement('TR');
-                  var td = document.createElement('TD')
-                  td.appendChild(document.createTextNode("Delivery by date: " + data[i].DeliverBy));
-                  tr.appendChild(td)
-
-                  td= document.createElement('TD')
-                  p = document.createElement('p')
-                  p.appendChild(document.createTextNode(data[i].PickUpAddress.LineOne))
-                  td.appendChild(p)
-
-                  p = document.createElement('p')
-                  p.appendChild(document.createTextNode(data[i].PickUpAddress.City))
-                  td.appendChild(p)
-
-                  p = document.createElement('p')
-                  p.appendChild(document.createTextNode(data[i].PickUpAddress.PostCode))
-                  td.appendChild(p)
-                  tr.appendChild(td)
-
-                  td  = document.createElement("td");
-                  td.appendChild(document.createTextNode(data[i].OverallTimeRequired + "h"));
-                  tr.appendChild(td);
-
-                  td  = document.createElement("td");
-                  td.appendChild(document.createTextNode(data[i].OverallDistance + "km"));
-                  tr.appendChild(td);
-
-
-
-                  tableBody.appendChild(tr);
-              }
-              myTableDiv.appendChild(table)
-
-          }
-
-          function displayRoutes() {
-              var checked = document.getElementById("includeRoutes").checked;
-              if (checked) {
-                  addRoutes()
-              } else {
-                  hideRoutes()
-              }
-          }
-
-          function hideRoutes(){
-              document.getElementById("existingRoutes").style.display="none";
-              console.log(markersForDeliveriesInRoutes.length)
-              for (var i = 0; i < markersForDeliveriesInRoutes.length; i++) {
-                  markersForDeliveriesInRoutes[i].setMap(null);
-              }
-              markersForDeliveriesInRoutes = []
-              document.getElementById("existingRouteList").innerHTML = "";
-          }
-
-          var markersForDeliveriesInRoutes = []
-
-          function addRoutes() {
-
-              document.getElementById("existingRoutes").style.display="block";
-              markersForDeliveriesInRoutes = [];
-              console.log(routes)
-              routes.forEach(getDeliveries)
-              function getDeliveries(route) {
-                  var icon = generateIcon()
-                  var ul = document.getElementById("existingRouteList");
-                  var li = document.createElement("li");
-                  var oImg=document.createElement("img");
-                  oImg.setAttribute('src', icon.url);
-                  li.appendChild(oImg);
-                  li.classList.add("list-group-item");
-                  li.appendChild(document.createTextNode("Route " + labels[labelIndex % labels.length]));
-                  labelIndex++;
-                  var  span = document.createElement('span');
-                  span.innerHTML = route.Deliveries.length;
-                  span.classList.add("badge");
-
-                  li.appendChild(span);
-                  ul.appendChild(li);
-
-
-                  route.Deliveries.forEach(function (delivery) {
-                      var marker =   new google.maps.Marker({
-                          position:  { lat: parseFloat(delivery.Client.Address.Lat), lng: parseFloat(delivery.Client.Address.Lng)},
-                          id: delivery.ID.toString(),
-                          added: true,
-                          map : googleMap
-                      });
-                      marker.setIcon(icon)
-                      markersForDeliveriesInRoutes.push(marker)
-                  })
-              }
-          }
-
-
-    </script>
-    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
-    </script>
-    <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCruDMQXf92lZMvfCEO_L9E2oYjvuRfPaI&callback=initMap">
-    </script>
 </head>
 <body>
     <div id="main_body">
@@ -421,12 +46,10 @@
                 Creating routes... Please wait
             </div>
         </div>
-
         <div id="successAlert" class="alert alert-success fade in" style="visibility:hidden; display:none;">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            <strong>Success!</strong> A route was created
+            <strong>Success!</strong> Deliveries were added to a route. Click on the "Create routes" to finish route creation
         </div>
-
         <div id="alert" class="alert alert-danger fade in" style="visibility:hidden">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
             <strong>Attention!</strong> The delivery you have selected has already been added to a different route.
@@ -434,18 +57,16 @@
         <div id="row">
             <div class="col-sm-10">
                 <div id="map"></div>
-
                 <div id="legend"><h2>Legend</h2></div>
             </div>
             <div class="col-sm-2">
                 <div class="checkbox">
-                    <label><input id="includeRoutes" type="checkbox" onchange="displayRoutes()">Show deliveries already in routes</label>
+                    <label><input id="includeRoutes" type="checkbox" onchange="displayRoutes()">Include deliveries already in routes</label>
                 </div>
-                <button onclick="createRoute()" class="btn btn-default">New route</button>
-                <button onclick="finishRoute()" class="btn btn-default">Finish route</button>
-
-                <button onclick="sendData()" class="btn btn-default">Finish</button>
-
+                <button id="createRouteButton" onclick="createRoute()" style="margin: 20px" class="btn btn-default">New route  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+                <button id="finishRouteButton" onclick="finishRoute()" class="btn btn-default">Finish route <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></button>
+                <br />
+                <button id="submitRoutesButton" onclick="sendData()" class="btn btn-success btn-block">Create routes</button>
 
                 <ul id="routeList" class="list-group"></ul>
                 <div id="existingRoutes" style="display:none">
@@ -453,15 +74,14 @@
                     <ul id="existingRouteList" class="list-group"></ul>
                 </div>
 
-
-                    <div class="form-group" >
-                        <label for="days">Show deliveries to deliver within days:</label>
-                        <button id="withinDays" style="float: right" onclick="filterDeliveriesByDeliveryDate()" class="btn btn-default">Submit</button>
-                        <input type="number" style="overflow: hidden;width:60%" class="form-control" min="1" max="100" size="3" step="1" id="daysDeliverBy">
-                     </div>
+                <div class="form-group">
+                    <label for="days">Show deliveries to deliver within days:</label>
+                    <button id="withinDays" style="float: right" onclick="filterDeliveriesByDeliveryDate()" class="btn btn-default">Submit</button>
+                    <input type="number" style="overflow: hidden;width:60%" class="form-control" min="1" max="100" size="3" step="1" id="daysDeliverBy">
+                </div>
                 @if (Model.Company.Team.Drivers.ToList().Count != 0)
                 {
-                    <button class="btn btn-primary btn-block" onclick="location.href='@Url.Action("Assign", "Scheduling")'" >Assign routes to drivers >></button>
+                    <button class="btn btn-primary btn-block" onclick="location.href='@Url.Action("Assign", "Scheduling")'">Assign routes to drivers >></button>
                 }
                 else
                 {
@@ -470,14 +90,11 @@
                 }
             </div>
         </div>
-
     </div>
     <button type="button" class="btn btn-info btn-lg" data-target="#myModal" style="display:none">Open Modal</button>
-
     <!-- Modal -->
     <div id="myModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
-
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
@@ -487,21 +104,409 @@
                 <div class="modal-body">
                     <p>The routes have been created, please review the selected depot locations for each route</p>
                 </div>
-
                 <div id="routesTable"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
-
         </div>
-        
-    </div>
 
+    </div>
     <!--Routes table-->
 
-  
-
     @Html.ActionLink("Back to Dashboard", "Index", "ShipperDashboard")
-</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+    var finishRouteButton = document.getElementById("finishRouteButton");
+    var createRouteButton = document.getElementById("createRouteButton");
+    var submitRoutesButton = document.getElementById("submitRoutesButton");
+    
+
+    submitRoutesButton.disabled = true;
+    finishRouteButton.disabled = true;
+    function filterDeliveriesByDeliveryDate() {
+        $.ajax({
+            type: 'GET',
+            url: '/scheduling/DeliverWithinDays',
+            data: { days:document.getElementById("daysDeliverBy").value },
+
+            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            success: function (result) {
+                deliveries = result.DeliveriesWithAddressString;
+
+                routes = result.ExistingRoutes;
+                console.log("Legend test" + document.getElementById("legend"));
+                initMap();
+            },
+            error: function (result) {
+                alert('Oh no: '+ result.responseText);
+            }
+        });
+    }
+
+
+    var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var labelIndex = 0;
+
+
+    var deliveries = @Html.Raw(JsonConvert.SerializeObject(Model.DeliveriesWithAddressString));
+    var depots = @Html.Raw(JsonConvert.SerializeObject(Model.Depots));
+    var routes = @Html.Raw(JsonConvert.SerializeObject(Model.ExistingRoutes));
+    console.log("deliveries " + deliveries);
+    console.log(routes)
+
+    var googleMap;
+    var legend = document.getElementById("legend");
+    var legendAdded = false;
+    function initMap() {
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 7,
+            center: { lat: 53.3811, lng: -1.4701 }
+        });
+        googleMap = map;
+
+        var markers = deliveries.map(function (delivery, i) {
+            var marker =   new google.maps.Marker({
+                position:  { lat: parseFloat(delivery.Client.Address.Lat), lng: parseFloat(delivery.Client.Address.Lng)},
+                id: delivery.ID.toString(),
+                added: false,
+                map:map
+
+
+            });
+
+            google.maps.event.addListener(marker, 'click', function() {
+                if (marker.added) {
+                    document.getElementById("alert").style.visibility = 'visible';
+                } else {
+                    console.log(marker.position.lat())
+                    route.ids.push(marker.id);
+                    route.points.push(marker.getPosition())
+                    marker.setIcon(route.icon);
+                    marker.added = true;
+
+                    currentSpan.innerHTML = route.ids.length;
+                    document.getElementById("alert").style.visibility = 'hidden';
+                }
+            });
+
+            var infoWindowContent = '<div id="content">'+
+     '<div id="siteNotice">'+
+     '</div>'+
+     '<h4 id="firstHeading" class="firstHeading">Delivery details</h4>'+
+     '<div id="bodyContent">'+
+     '<p><b>Address: </b>' + delivery.addressString + '</p>'+
+     '<p><b>Current status: </b>' + delivery.currentStatus + '</p>'+
+     '<p><b>Client: </b>' + delivery.clientName + '</p>'+
+     '<p><b>Deliver by: </b>' + delivery.deliverBy + '</p>'+
+     '</div>'+
+     '</div>';
+            var infowindow = new google.maps.InfoWindow({
+                content: infoWindowContent
+            });
+
+            marker.addListener('mouseover', function() {
+                infowindow.open(map, marker);
+            });
+
+            marker.addListener('mouseout', function() {
+                infowindow.close();
+            });
+
+            return marker;
+
+        });
+
+        var depotMarkers  = depots.map(function(marker,i) {
+            var marker =   new google.maps.Marker({
+                position:  { lat: parseFloat(marker.Lat), lng: parseFloat(marker.Lng)},
+                map:map,
+                icon:"data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIiBvdmVyZmxvdz0iaW5oZXJpdCI+PHBhdGggZD0iTTguNTI0IDMwLjc5NWMtMS45NzggMC0zLjU4NSAxLjYxNy0zLjU4NSAzLjYwNCAwIDEuOTg4IDEuNjA4IDMuNjAxIDMuNTg1IDMuNjAxIDEuOTgyIDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODYtMS42MDctMy42MDMtMy41OS0zLjYwM3ptMCA1LjQ2MWMtLjk4OCAwLTEuNzkyLS44MDctMS43OTItMS44MDMgMC0uOTkyLjgwNC0xLjgwMSAxLjc5Mi0xLjgwMS45OTMgMCAxLjc5Ny44MDkgMS43OTcgMS44MDEuMDAxLjk5Ni0uODAzIDEuODAzLTEuNzk3IDEuODAzem0zMS41NDMtNS40NjFjLTEuOTgxIDAtMy41ODcgMS42MTctMy41ODcgMy42MDQgMCAxLjk4OCAxLjYwNSAzLjYwMiAzLjU4NyAzLjYwMiAxLjk4IDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODctMS42MDktMy42MDQtMy41OS0zLjYwNHptMCA1LjQ2MWMtLjk4OSAwLTEuNzk0LS44MDctMS43OTQtMS44MDMuMDAxLS45OTIuODA1LTEuODAxIDEuNzk0LTEuODAxLjk5MiAwIDEuNzk3LjgwOSAxLjc5NyAxLjgwMSAwIC45OTYtLjgwNCAxLjgwMy0xLjc5NyAxLjgwM3ptNy45NC0yMi4yNTZoLTMxLjU0NmMtLjU0NyAwLS45OTMuNDQ2LS45OTMuOTk3djkuMDQyaC0xLjk4N3YtNS41NTFjMC0uNTUyLS40NDUtLjk5Ny0uOTk0LS45OTdoLTYuNzY4Yy0xLjE4IDAtMi4yMzQuODcyLTIuNDIzIDIuMTJ2LS4wNjVsLTEuMDU2IDUuOTg3LjAwMi4wMjFjLS43MTcuMTIyLTEuMjQyLjc0NS0xLjI0MiAxLjQ3NmwuMDMzLjMyLS4wMzMtLjAwOSAxLjQ5IDYuNzM1aDEuNTUydi0uMDYxYzAtMi40MTQgMS45NzUtNC4zNjkgNC40MS00LjM2OSAyLjQzMyAwIDQuNDA5IDEuOTU1IDQuNDA5IDQuMzY5di4wNjFoMjIuNzI2di0uMDYxYzAtMi40MTQgMS45NzYtNC4zNjkgNC40MDctNC4zNjkgMi40MzUgMCA0LjQxMSAxLjk1NSA0LjQxMSA0LjM2OWwtLjAwNC4wNjFoNC41OTl2LTE5LjA3OWMwLS41NS0uNDQ0LS45OTctLjk5My0uOTk3em0tMzguMDA0IDUuMTExdjQuOTI4aC01Ljk2bC43NDUtNC4xODFjLjA2Mi0uNS40OTctLjg2OS45MzEtLjg2OWg0LjI4NHYuMTIyeiIvPjwvc3ZnPg=="
+            })
+        });
+
+        // Add a marker clusterer to manage the markers.
+        var markerCluster = new MarkerClusterer(map, markers,
+            { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
+
+        var markerCluster = new MarkerClusterer(map, depotMarkers);
+
+        if (!legendAdded) {
+            createLegend();
+            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+        } else {
+            map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+        }
+
+    }
+
+    function createLegend() {
+        var icons = {
+            depot: {
+                name: 'Depot location',
+                icon:"data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIiBvdmVyZmxvdz0iaW5oZXJpdCI+PHBhdGggZD0iTTguNTI0IDMwLjc5NWMtMS45NzggMC0zLjU4NSAxLjYxNy0zLjU4NSAzLjYwNCAwIDEuOTg4IDEuNjA4IDMuNjAxIDMuNTg1IDMuNjAxIDEuOTgyIDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODYtMS42MDctMy42MDMtMy41OS0zLjYwM3ptMCA1LjQ2MWMtLjk4OCAwLTEuNzkyLS44MDctMS43OTItMS44MDMgMC0uOTkyLjgwNC0xLjgwMSAxLjc5Mi0xLjgwMS45OTMgMCAxLjc5Ny44MDkgMS43OTcgMS44MDEuMDAxLjk5Ni0uODAzIDEuODAzLTEuNzk3IDEuODAzem0zMS41NDMtNS40NjFjLTEuOTgxIDAtMy41ODcgMS42MTctMy41ODcgMy42MDQgMCAxLjk4OCAxLjYwNSAzLjYwMiAzLjU4NyAzLjYwMiAxLjk4IDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODctMS42MDktMy42MDQtMy41OS0zLjYwNHptMCA1LjQ2MWMtLjk4OSAwLTEuNzk0LS44MDctMS43OTQtMS44MDMuMDAxLS45OTIuODA1LTEuODAxIDEuNzk0LTEuODAxLjk5MiAwIDEuNzk3LjgwOSAxLjc5NyAxLjgwMSAwIC45OTYtLjgwNCAxLjgwMy0xLjc5NyAxLjgwM3ptNy45NC0yMi4yNTZoLTMxLjU0NmMtLjU0NyAwLS45OTMuNDQ2LS45OTMuOTk3djkuMDQyaC0xLjk4N3YtNS41NTFjMC0uNTUyLS40NDUtLjk5Ny0uOTk0LS45OTdoLTYuNzY4Yy0xLjE4IDAtMi4yMzQuODcyLTIuNDIzIDIuMTJ2LS4wNjVsLTEuMDU2IDUuOTg3LjAwMi4wMjFjLS43MTcuMTIyLTEuMjQyLjc0NS0xLjI0MiAxLjQ3NmwuMDMzLjMyLS4wMzMtLjAwOSAxLjQ5IDYuNzM1aDEuNTUydi0uMDYxYzAtMi40MTQgMS45NzUtNC4zNjkgNC40MS00LjM2OSAyLjQzMyAwIDQuNDA5IDEuOTU1IDQuNDA5IDQuMzY5di4wNjFoMjIuNzI2di0uMDYxYzAtMi40MTQgMS45NzYtNC4zNjkgNC40MDctNC4zNjkgMi40MzUgMCA0LjQxMSAxLjk1NSA0LjQxMSA0LjM2OWwtLjAwNC4wNjFoNC41OTl2LTE5LjA3OWMwLS41NS0uNDQ0LS45OTctLjk5My0uOTk3em0tMzguMDA0IDUuMTExdjQuOTI4aC01Ljk2bC43NDUtNC4xODFjLjA2Mi0uNS40OTctLjg2OS45MzEtLjg2OWg0LjI4NHYuMTIyeiIvPjwvc3ZnPg=="
+            },
+            deliveryNotInRoute: {
+                name: 'Delivery not added to route',
+                icon: "https://www.google.com/mapfiles/marker.png"
+            },
+            deliveryInRoute: {
+                name: 'Delivery added to route',
+                icon: generateIcon().url
+            }
+        };
+
+        for (var key in icons) {
+            var type = icons[key];
+            var name = type.name;
+            var icon = type.icon;
+            var div = document.createElement('div');
+            div.innerHTML = '<img src="' + icon + '"> ' + name;
+            legend.appendChild(div);
+        }
+        legendAdded = true;
+    }
+
+    var allRoutes = [];
+    var route = {
+        icon : "",
+        ids: [],
+        points: []
+
+    };
+
+    var currentSpan;
+    function createRoute() {
+        finishRouteButton.disabled = false;
+        createRouteButton.disabled = true;
+        submitRoutesButton.disabled = true;
+        route = {
+            icon: generateIcon(),
+            ids: [],
+            points: []
+        }
+
+
+        document.getElementById("successAlert").style.display = 'hidden';
+        document.getElementById("successAlert").style.visibility = 'hidden';
+        document.getElementById("alert").style.display = 'block';
+        document.getElementById("alert").style.display = 'block';
+
+        var ul = document.getElementById("routeList");
+        var li = document.createElement("li");
+        var oImg=document.createElement("img");
+        oImg.setAttribute('src', route.icon.url);
+
+
+        li.appendChild(oImg);
+        li.classList.add("list-group-item");
+        li.appendChild(document.createTextNode("Route " + labels[labelIndex % labels.length]));
+        labelIndex++;
+        currentSpan = document.createElement('span');
+        currentSpan.innerHTML = route.ids.length;
+        currentSpan.classList.add("badge");
+
+        li.appendChild(currentSpan);
+        ul.appendChild(li);
+    }
+
+
+    function finishRoute() {
+        finishRouteButton.disabled = true;
+        createRouteButton.disabled = false;
+        submitRoutesButton.disabled = false;
+
+        document.getElementById("successAlert").style.visibility = 'visible';
+        document.getElementById("successAlert").style.display = 'block';
+        document.getElementById("alert").style.display = 'none';
+
+        //calculate poly centre here
+        var bounds = new google.maps.LatLngBounds();
+        var i;
+        console.log(route.points);
+        var polygonCoords = route.points.map(function (point, i) {
+            console.log(point.lat())
+            console.log(point.lng())
+            return { lat:point.lat(), lng: point.lng()}
+        });
+
+        for (i = 0; i < polygonCoords.length; i++) {
+            bounds.extend(polygonCoords[i]);
+        }
+
+
+
+        allRoutes.push({ids: route.ids,
+            center: {lat: bounds.getCenter().lat(),
+                lng: bounds.getCenter().lng()
+            }});
+    }
+
+    function generateIcon() {
+        var randomColor = Math.floor(Math.random()*16777215).toString(16);
+
+
+        var image = {
+            url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + randomColor,
+            size: new google.maps.Size(20, 34),
+            origin: new google.maps.Point(0, 0),
+
+        };
+        return image;
+    }
+
+    function sendData() {
+        document.getElementById("progress").style.visibility = 'visible';
+        document.getElementById("progress").style.display = 'block';
+        $.ajax({
+            type: "POST",
+            async: "false",
+            url: "/scheduling/data",
+            dataType: "json",
+            data: JSON.stringify(allRoutes),
+            contentType: 'application/json; charset=utf-8',
+            success: function (result) {
+                document.getElementById("progress").style.visibility = 'hidden';
+                document.getElementById("progress").style.display = 'none';
+                createTable(result);
+
+                $("#myModal").modal();
+            },
+            error: function(result) {console.log(result.statusCode())}
+        }).done(function() {
+            console.log("done");
+        });
+
+    }
+
+
+
+    function createTable(data) {
+        var myTableDiv = document.getElementById("routesTable")
+        var table = document.createElement('TABLE')
+        table.classList.add("table");
+        var tableBody = document.createElement('TBODY')
+
+        table.appendChild(tableBody);
+
+        var heading = new Array();
+        heading[0] = "Route"
+        heading[1] = "Depot Address"
+        heading[2] = "Duration"
+        heading[3] = "Distance"
+
+        var tr = document.createElement('TR');
+        tableBody.appendChild(tr);
+        for (i = 0; i < heading.length; i++) {
+            var th = document.createElement('TH')
+            th.appendChild(document.createTextNode(heading[i]));
+            tr.appendChild(th);
+        }
+
+        //TABLE ROWS
+        for (i = 0; i < data.length; i++) {
+            var tr = document.createElement('TR');
+            var td = document.createElement('TD')
+            td.appendChild(document.createTextNode("Deliver by date: " + data[i].DeliverBy));
+            tr.appendChild(td)
+
+            td= document.createElement('TD')
+            p = document.createElement('p')
+            p.appendChild(document.createTextNode(data[i].PickUpAddress.LineOne))
+            td.appendChild(p)
+
+            p = document.createElement('p')
+            p.appendChild(document.createTextNode(data[i].PickUpAddress.City))
+            td.appendChild(p)
+
+            p = document.createElement('p')
+            p.appendChild(document.createTextNode(data[i].PickUpAddress.PostCode))
+            td.appendChild(p)
+            tr.appendChild(td)
+
+            td  = document.createElement("td");
+            td.appendChild(document.createTextNode(data[i].OverallTimeRequired + "h"));
+            tr.appendChild(td);
+
+            td  = document.createElement("td");
+            td.appendChild(document.createTextNode(data[i].OverallDistance + "km"));
+            tr.appendChild(td);
+
+
+
+            tableBody.appendChild(tr);
+        }
+        myTableDiv.appendChild(table)
+
+    }
+
+    function displayRoutes() {
+        var checked = document.getElementById("includeRoutes").checked;
+        if (checked) {
+            addRoutes()
+        } else {
+            hideRoutes()
+        }
+    }
+
+    function hideRoutes(){
+        document.getElementById("existingRoutes").style.display="none";
+        console.log(markersForDeliveriesInRoutes.length)
+        for (var i = 0; i < markersForDeliveriesInRoutes.length; i++) {
+            markersForDeliveriesInRoutes[i].setMap(null);
+        }
+        markersForDeliveriesInRoutes = []
+        document.getElementById("existingRouteList").innerHTML = "";
+    }
+
+    var markersForDeliveriesInRoutes = []
+
+    function addRoutes() {
+
+        document.getElementById("existingRoutes").style.display="block";
+        markersForDeliveriesInRoutes = [];
+        console.log(routes)
+        routes.forEach(getDeliveries)
+        function getDeliveries(route) {
+            var icon = generateIcon()
+            var ul = document.getElementById("existingRouteList");
+            var li = document.createElement("li");
+            var oImg=document.createElement("img");
+            oImg.setAttribute('src', icon.url);
+            li.appendChild(oImg);
+            li.classList.add("list-group-item");
+            li.appendChild(document.createTextNode("Route " + labels[labelIndex % labels.length]));
+            labelIndex++;
+            var  span = document.createElement('span');
+            span.innerHTML = route.Deliveries.length;
+            span.classList.add("badge");
+
+            li.appendChild(span);
+            ul.appendChild(li);
+
+            route.Deliveries.forEach(function (delivery) {
+                var marker =   new google.maps.Marker({
+                    position:  { lat: parseFloat(delivery.Client.Address.Lat), lng: parseFloat(delivery.Client.Address.Lng)},
+                    id: delivery.ID.toString(),
+                    added: true,
+                    map : googleMap
+                });
+                marker.setIcon(icon)
+                markersForDeliveriesInRoutes.push(marker)
+            })
+        }
+    }
+
+
+</script>
+<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCruDMQXf92lZMvfCEO_L9E2oYjvuRfPaI&callback=initMap">
+</script>
+    </body>
 </html>

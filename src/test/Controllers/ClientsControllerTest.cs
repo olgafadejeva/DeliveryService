@@ -1,4 +1,5 @@
 ﻿using DeliveryService.Controllers;
+using DeliveryService.Data;
 using DeliveryService.Models;
 using DeliveryService.Models.Entities;
 using DeliveryService.Models.ShipperViewModels;
@@ -6,6 +7,7 @@ using DeliveryService.Services;
 using DeliveryService.ShipperControllers;
 using DeliveryServiceTests.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -110,6 +112,7 @@ namespace DeliveryServiceTests.Controllers
             Assert.Equal(context.Clients.Count<Client>(), 0);
             Assert.Equal(context.Addresses.Count<Address>(), 0);
         }
+
 
         private static Client getClient() {
             Client client = new Client();
