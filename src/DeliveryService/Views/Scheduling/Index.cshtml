@@ -155,8 +155,6 @@
     var deliveries = @Html.Raw(JsonConvert.SerializeObject(Model.DeliveriesWithAddressString));
     var depots = @Html.Raw(JsonConvert.SerializeObject(Model.Depots));
     var routes = @Html.Raw(JsonConvert.SerializeObject(Model.ExistingRoutes));
-    console.log("deliveries " + deliveries);
-    console.log(routes)
 
     var googleMap;
     var legend = document.getElementById("legend");
@@ -469,7 +467,6 @@
 
         document.getElementById("existingRoutes").style.display="block";
         markersForDeliveriesInRoutes = [];
-        console.log(routes)
         routes.forEach(getDeliveries)
         function getDeliveries(route) {
             var icon = generateIcon()
@@ -496,6 +493,30 @@
                     map : googleMap
                 });
                 marker.setIcon(icon)
+                console.log(delivery);
+                var infoWindowContent = '<div id="content">'+
+'<div id="siteNotice">'+
+'</div>'+
+'<h4 id="firstHeading" class="firstHeading">Delivery details</h4>'+
+'<div id="bodyContent">'+
+'<p><b>Address: </b>' + delivery.addressString + '</p>'+
+'<p><b>Current status: </b>' + delivery.currentStatus + '</p>'+
+'<p><b>Client: </b>' + delivery.clientName + '</p>'+
+'<p><b>Deliver by: </b>' + delivery.deliverBy + '</p>'+
+'</div>'+
+'</div>';
+                var infowindow = new google.maps.InfoWindow({
+                    content: infoWindowContent
+                });
+
+                marker.addListener('mouseover', function() {
+                    infowindow.open(map, marker);
+                });
+
+                marker.addListener('mouseout', function() {
+                    infowindow.close();
+                });
+
                 markersForDeliveriesInRoutes.push(marker)
             })
         }
