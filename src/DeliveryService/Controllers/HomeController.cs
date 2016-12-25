@@ -12,18 +12,13 @@ using DeliveryService.Data;
 
 namespace DeliveryService.Controllers
 {
-    [RequireHttps]
+   // [RequireHttps]
     public class HomeController : Controller
     {
         public HomeController() {
           
         }
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Test()
         {
             return View();
         }

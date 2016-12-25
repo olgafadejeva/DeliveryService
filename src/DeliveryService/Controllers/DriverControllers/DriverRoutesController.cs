@@ -12,6 +12,7 @@ using DeliveryService.Models.DriverViewModels;
 using DeliveryService.Services;
 using DeliveryService.Models;
 using System.Globalization;
+using DeliveryService.Util;
 
 namespace DeliveryService.Controllers.DriverControllers
 {
@@ -25,21 +26,7 @@ namespace DeliveryService.Controllers.DriverControllers
         // GET: DriverRoutes
         public async Task<IActionResult> Index()
         {
-            List<Route> routes = driver.Routes.OrderBy(r => r.DeliveryDate).ToList();
-            List<DriverRouteView> viewModels = new List<DriverRouteView>();
-            foreach (Route route in routes)
-            {
-                DriverRouteView model = new DriverRouteView();
-                model.ID = route.ID;
-                model.RouteStatusString = RouteStatusExtension.DisplayName(route.Status.Value);
-                model.OverallDistance = route.OverallDistance;
-                model.OverallTimeRequired = route.OverallTimeRequired;
-                model.PickUpAddress = route.PickUpAddress;
-                model.DeliverBy = route.DeliverBy;
-                model.DeliveryDate = route.DeliveryDate;
-                model.Vehicle = driver.Vehicles.Where(v => v.ID == route.VehicleID).FirstOrDefault();
-                viewModels.Add(model);
-            }
+            List<DriverRouteView> viewModels = EntityToModelConverter.convertDriverRouteToDisplayViews(driver);
 
             return View(viewModels);
         }

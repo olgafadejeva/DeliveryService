@@ -46,7 +46,11 @@
     "Microsoft.EntityFrameworkCore": "1.0.0",
     "MailKit": "1.4.2.1",
     "Microsoft.IdentityModel.Clients.ActiveDirectory": "3.13.5",
-    "Microsoft.AspNetCore.Session": "1.0.0"  },
+    "Microsoft.AspNetCore.Session": "1.0.0"
+  },
+  "commands": {
+    "web": "Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:44302;http://192.168.1.7:44302"
+  },
 
   "tools": {
     "BundlerMinifier.Core": "2.0.238",

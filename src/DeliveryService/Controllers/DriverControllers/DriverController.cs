@@ -12,7 +12,7 @@ using System.Security.Claims;
 
 namespace DeliveryService.Controllers.DriverControllers
 {
-    [RequireHttps]
+    //[RequireHttps]
     [Authorize(Roles = "Driver")]
     public abstract class DriverController : Controller
     {

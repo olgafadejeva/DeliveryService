@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DeliveryService.Controllers.ShipperControllers
 {
     [Authorize(Roles = "Shipper")]
-    [RequireHttps]
+   // [RequireHttps]
     public abstract class ShipperController : Controller
     {
         protected  ApplicationDbContext _context;

@@ -74,10 +74,10 @@ namespace DeliveryService
             services.AddTransient<INotificationService, NotificationService>();
 
 
-            services.Configure<MvcOptions>(options =>
+          /*  services.Configure<MvcOptions>(options =>
             {
                 options.Filters.Add(new RequireHttpsAttribute());
-            });
+            });*/
            
 
             services.Configure<AppProperties>(Configuration);

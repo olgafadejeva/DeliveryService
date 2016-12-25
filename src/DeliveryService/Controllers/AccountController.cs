@@ -21,7 +21,7 @@ using DeliveryService.Controllers.DriverControllers;
 
 namespace DeliveryService.Controllers
 {
-    [RequireHttps]
+   // [RequireHttps]
     public class AccountController : Controller
     {
         private UserManager<ApplicationUser> _userManager;
@@ -301,6 +301,9 @@ namespace DeliveryService.Controllers
         [HttpGet]
         public async Task<IActionResult> AccessDenied() {
             var user = await GetCurrentUserAsync();
+            if (user == null) {
+                return View();
+            }
             var userRole = _userManager.GetRolesAsync(user).Result;
             if (userRole.Contains(AppRole.DRIVER))
             {
