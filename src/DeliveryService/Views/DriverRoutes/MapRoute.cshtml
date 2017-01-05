@@ -68,7 +68,6 @@
     var start = @Html.Raw(JsonConvert.SerializeObject(Model.depotAddress));
     // initMap();
     function initMap() {
-        console.log("init map called")
         var directionsService = new google.maps.DirectionsService;
         var directionsDisplay = new google.maps.DirectionsRenderer;
         var map = new google.maps.Map(document.getElementById('map'), {

@@ -137,7 +137,15 @@
                        }
                     </td>
                     <td>
+                        @if (item.Driver == null)
+                        {
+                           <p>N/A</p>
+
+                        }
+                        else
+                        {
                         @Html.DisplayFor(model => @item.Driver.User.NormalizedUserName) <br /> 
+                        }
                     </td>
                     <td>
                         <div class="dropdown">

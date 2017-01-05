@@ -15,7 +15,7 @@ using DeliveryService.Controllers.DriverControllers;
 namespace DeliveryService.Controllers
 {
     [Authorize]
-    [RequireHttps]
+    //[RequireHttps]
     public class ManageController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

@@ -1,17 +1,163 @@
-﻿@using DeliveryService.Models.Entities
-@model Company
+﻿@using DeliveryService.Models.ShipperViewModels
+@using Newtonsoft.Json
+@model ShipperDashboardModel
 
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h1>Shipper's dashboard</h1>
+<html>
+<head>
+    <style>
+        #map {
+            height: 1000px;
+            width: 100%;
+
+        }
+
+         .container {
+            width: 80%;
+        }
+
+            .container > .navbar-header, .container-fluid > .navbar-header, .container > .navbar-collapse, .container-fluid > .navbar-collapse {
+                margin-right: 50px;
+                margin-left: 50px;
+            }
+
+        #mapArea {
+            height: 1000px;
+        }
+
+    </style>
+
+</head>
+<body>
+    <h1>My dashboard</h1>
+
+    <p class="btn btn-default">@Html.ActionLink("My Team", "Index", "Team")</p>
+    <p class="btn btn-default">@Html.ActionLink("My clients", "Index", "Clients")</p>
+    <p class="btn btn-default">@Html.ActionLink("Deliveries", "Index", "ShipperDeliveries")</p>
+    <p class="btn btn-default">@Html.ActionLink("Depots", "Index", "PickUpLocations")</p>
+    <p class="btn btn-default">@Html.ActionLink("Scheduling", "Index", "Scheduling")</p>
+    <p class="btn btn-default">@Html.ActionLink("Routes", "Index", "Routes")</p>
+    <br />
+    <br/>
+    <h2>Routes summary</h2>
+    <div id="mapArea">
+        <div class="row">
+            <div class="col-sm-10">
+                <div id="map"></div>
+            </div>
+            <div class="col-sm-2" id="infoPanel">
+                <p>All routes on the map are either In Progress or New. The other routes can be acccessed from the Routes tab</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+    function initMap() {
 
 
-<p class="btn btn-default">@Html.ActionLink("My Team", "Index", "Team")</p>
-<p class="btn btn-default">@Html.ActionLink("My clients", "Index", "Clients")</p>
-<p class="btn btn-default">@Html.ActionLink("Deliveries", "Index", "ShipperDeliveries")</p>
-<p class="btn btn-default">@Html.ActionLink("Depots", "Index", "PickUpLocations")</p>
-<p class="btn btn-default">@Html.ActionLink("Scheduling", "Index", "Scheduling")</p>
-<p class="btn btn-default">@Html.ActionLink("Routes", "Index", "Routes")</p>
-<br />
+        var colors = []
+        for (var i =0; i<=20; i++) {
+            colors[i] = Math.floor(Math.random()*16777215).toString(16);
+        }
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 7,
+            center: { lat: 53.3811, lng: -1.4701 }
+        });
+        map.setOptions({'scrollwheel': false});
+        googleMap = map;
+        var directionsService = new google.maps.DirectionsService;
+
+        var routesModel = @Html.Raw(JsonConvert.SerializeObject(Model.routesModel));
+
+        var parentElement = document.getElementById("infoPanel");
+        var list = document.createElement('ul');
+        list.classList.add("list-group");
+
+
+        for (var k = 0; k < routesModel.length; k++) {
+            var directionsDisplay = new google.maps.DirectionsRenderer;
+            var delivery = routesModel[k]
+            var waypoints = delivery.waypoints;
+            var start = delivery.depotAddress;
+
+            directionsDisplay.setMap(map);
+            console.log(routesModel);
+
+            var waypts = [];
+            for (var i = 0; i < waypoints.length; i++) {
+                waypts.push({
+                    location: waypoints[i],
+                    stopover: true
+                });
+            }
+
+
+            var item = document.createElement('div');
+              
+            var label = document.createElement('span');
+            label.classList.add("label");
+            label.classList.add("label-default");
+            label.innerHTML = "route";
+            
+            label.setAttribute("style", "background-color: #" + colors[k] + ";");
+            item.appendChild(label);
+            
+
+            var paragraph = document.createElement('p');
+            if (delivery.scheduledOn != null) {
+                paragraph.innerHTML = "Scheduled on: " + delivery.scheduledOn;
+                item.appendChild(paragraph);
+            }
+
+            var paragraph2 = document.createElement('p');
+            paragraph2.innerHTML =  "Deliver by: " + delivery.deliverBy;
+            item.appendChild(paragraph2);
+            
+            var paragraph3 = document.createElement('p');
+            paragraph3.innerHTML = "Total deliveries: " + waypoints.length;
+            item.appendChild(paragraph3);
+            item.classList.add("list-group-item");
+
+            list.appendChild(item);
+
+            var colorIndex = 0;
+            directionsService.route({
+                origin: start,
+                destination: start,
+                waypoints: waypts,
+                optimizeWaypoints: true,
+                travelMode: 'DRIVING'
+            }, function(result) {
+
+                var directionsRenderer = new google.maps.DirectionsRenderer(); 
+                directionsRenderer.setOptions({'preserveViewport' : true});
+                var polylineOptionsActual = new google.maps.Polyline({
+                    strokeColor: '#' + colors[colorIndex],
+                    strokeOpacity: 1.0,
+                    strokeWeight: 7
+                });
+                directionsRenderer.setOptions({'polylineOptions' : polylineOptionsActual});
+
+                directionsRenderer.setMap(map); 
+                directionsRenderer.setDirections(result); 
+                colorIndex++;
+            });
+            
+            parentElement.appendChild(list);
+        }
+
+    }
+     </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCruDMQXf92lZMvfCEO_L9E2oYjvuRfPaI&callback=initMap">
+    </script>
+</body>
+</html>

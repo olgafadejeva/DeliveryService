@@ -17,6 +17,10 @@ namespace DeliveryService.Models
 
         public string routeDistance { get; set; }
 
+        public string scheduledOn { get; set; }
+
+        public string deliverBy { get; set; }
+
         public MapRouteView()
         {
             waypoints = new List<string>();
