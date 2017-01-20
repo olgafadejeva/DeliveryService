@@ -22,7 +22,7 @@ namespace DeliveryService.Controllers.DriverControllers
 
         public IActionResult Index()
         {
-            return View(driver.Address);
+            return View(driver);
         }
         // GET: PickUpLocations/Create
         public IActionResult Create()

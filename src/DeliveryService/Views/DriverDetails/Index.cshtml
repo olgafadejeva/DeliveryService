@@ -1,5 +1,5 @@
 ﻿@using DeliveryService.Models.Entities
-@model DriverAddress
+@model Driver
 
 @{
     ViewData["Title"] = "My details";
@@ -7,45 +7,59 @@
 }
 <h1>My details</h1>
 
-<h3>My address</h3>
-@if (@Model !=null) {
 <dl class="dl-horizontal">
     <dt>
-        @Html.DisplayNameFor(model => model.City)
+        @Html.DisplayNameFor(model => model.User.Email)
     </dt>
     <dd>
-        @Html.DisplayFor(model => model.City)
+        @Html.DisplayFor(model => model.User.Email)
     </dd>
-    <dt>
-        @Html.DisplayNameFor(model => model.LineOne)
-    </dt>
-    <dd>
-        @Html.DisplayFor(model => model.LineOne)
-    </dd>
-    <dt>
-        @Html.DisplayNameFor(model => model.LineTwo)
-    </dt>
-    <dd>
-        @Html.DisplayFor(model => model.LineTwo)
-    </dd>
-    <dt>
-        @Html.DisplayNameFor(model => model.PostCode)
-    </dt>
-    <dd>
-        @Html.DisplayFor(model => model.PostCode)
-    </dd>
-</dl>
-    <a class="btn btn-default" asp-action="Edit" asp-route-id="@Model.ID">Edit address</a>
+    </dl>
+    <br />
+    <p class="btn btn-default">@Html.ActionLink("Manage my time off", "Index", "DriverHolidays")</p>
+    <br />
+    <h3>My address</h3>
+    <a class="btn btn-default" asp-action="Edit" asp-route-id="@Model.Address.ID">Edit</a>
+    @if (@Model != null)
+    {
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Address.City)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Address.City)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Address.LineOne)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Address.LineOne)
+            </dd>
+            @if (@Model.Address.LineTwo != null)
+            {
 
-} else {
-<p>
-    <a class="btn btn-default" asp-action="Create">Add address</a>
-</p>
-}
+                <dt>
+                    @Html.DisplayNameFor(model => model.Address.LineTwo)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.Address.LineTwo)
+                </dd>
+            }
+            <dt>
+                @Html.DisplayNameFor(model => model.Address.PostCode)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Address.PostCode)
+            </dd>
+        </dl>
 
-<br/>
-<p class="btn btn-default">@Html.ActionLink("My time off", "Index", "DriverHolidays")</p>
-<br />
-<br/>
-<p class="btn btn-default">@Html.ActionLink("Back to dashoard", "Index", "DriverDashboard")</p>
+    }
+    else
+    {
+        <p>
+            <a class="btn btn-default" asp-action="Create">Add address</a>
+        </p>
+    }
 
+    <br />
+    <p class="btn btn-default">@Html.ActionLink("Back to dashoard", "Index", "DriverDashboard")</p>
