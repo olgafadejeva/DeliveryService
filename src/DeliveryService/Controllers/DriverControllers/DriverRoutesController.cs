@@ -13,6 +13,7 @@ using DeliveryService.Services;
 using DeliveryService.Models;
 using System.Globalization;
 using DeliveryService.Util;
+using Newtonsoft.Json;
 
 namespace DeliveryService.Controllers.DriverControllers
 {
@@ -27,7 +28,7 @@ namespace DeliveryService.Controllers.DriverControllers
         public async Task<IActionResult> Index()
         {
             List<DriverRouteView> viewModels = EntityToModelConverter.convertDriverRouteToDisplayViews(driver);
-
+            string json = JsonConvert.SerializeObject(viewModels);
             return View(viewModels);
         }
 

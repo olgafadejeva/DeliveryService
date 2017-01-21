@@ -8,10 +8,11 @@ using DeliveryService.Models;
 using DeliveryService.Models.Entities;
 using DeliveryService.Entities;
 using DeliveryService.Models.ShipperViewModels;
+using OpenIddict;
 
 namespace DeliveryService.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : OpenIddictDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

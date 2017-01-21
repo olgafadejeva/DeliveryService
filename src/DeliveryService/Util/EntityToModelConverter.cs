@@ -22,12 +22,31 @@ namespace DeliveryService.Util
                 model.OverallTimeRequired = route.OverallTimeRequired;
                 model.PickUpAddress = route.PickUpAddress;
                 model.DeliverBy = route.DeliverBy;
-                model.Deliveries = route.Deliveries;
+                model.Deliveries = convertDeliveriesToView(route.Deliveries.ToList());
                 model.DeliveryDate = route.DeliveryDate;
                 model.Vehicle = driver.Vehicles.Where(v => v.ID == route.VehicleID).FirstOrDefault();
                 viewModels.Add(model);
             }
             return viewModels;
+        }
+
+        private static List<DriverDeliveryView> convertDeliveriesToView(List<Delivery> deliveries) {
+            List<DriverDeliveryView> deliveryViews = new List<DriverDeliveryView>();
+            foreach (Delivery del in deliveries) {
+                DriverDeliveryView view = new DriverDeliveryView();
+                view.Client = del.Client;
+                view.ClientID = del.ClientID;
+                view.DeliverBy = del.DeliverBy;
+                view.DeliveryStatus = del.DeliveryStatus;
+                view.DeliveryStatusID = del.DeliveryStatusID;
+                view.ID = del.ID;
+                view.ItemSize = del.ItemSize;
+                view.ItemWeight = del.ItemWeight;
+                view.RouteID = del.RouteID;
+                view.StatusString = del.DeliveryStatus.Status.DisplayName();
+                deliveryViews.Add(view);
+            }
+            return deliveryViews;
         }
     }
 }

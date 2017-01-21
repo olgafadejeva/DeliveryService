@@ -25,7 +25,7 @@ namespace DeliveryService.Models.DriverViewModels
         [Display(Name = "Estimated route completion time")]
         public double? OverallTimeRequired { get; set; }
 
-        public  ICollection<Delivery> Deliveries { get; set; }
+        public  ICollection<DriverDeliveryView> Deliveries { get; set; }
 
         [Display(Name = "Depot address")]
         public  PickUpAddress PickUpAddress { get; set; }

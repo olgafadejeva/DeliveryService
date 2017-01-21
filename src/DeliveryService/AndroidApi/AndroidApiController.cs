@@ -12,6 +12,7 @@ using DeliveryService.Models.AccountViewModels;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Authentication;
+using AspNet.Security.OAuth.Validation;
 
 namespace DeliveryService.AndroidApi
 {
@@ -78,7 +79,7 @@ namespace DeliveryService.AndroidApi
         }
 
         [HttpGet]
-        [Authorize(Roles = "Driver")]
+        [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
         public JsonResult test() {
             return Json("success hahaha");
         }
