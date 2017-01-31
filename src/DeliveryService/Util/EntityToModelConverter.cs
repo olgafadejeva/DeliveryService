@@ -30,23 +30,28 @@ namespace DeliveryService.Util
             return viewModels;
         }
 
-        private static List<DriverDeliveryView> convertDeliveriesToView(List<Delivery> deliveries) {
+        public static List<DriverDeliveryView> convertDeliveriesToView(List<Delivery> deliveries) {
             List<DriverDeliveryView> deliveryViews = new List<DriverDeliveryView>();
             foreach (Delivery del in deliveries) {
-                DriverDeliveryView view = new DriverDeliveryView();
-                view.Client = del.Client;
-                view.ClientID = del.ClientID;
-                view.DeliverBy = del.DeliverBy;
-                view.DeliveryStatus = del.DeliveryStatus;
-                view.DeliveryStatusID = del.DeliveryStatusID;
-                view.ID = del.ID;
-                view.ItemSize = del.ItemSize;
-                view.ItemWeight = del.ItemWeight;
-                view.RouteID = del.RouteID;
-                view.StatusString = del.DeliveryStatus.Status.DisplayName();
+                DriverDeliveryView view = convertDeliveryToDriverView(del);
                 deliveryViews.Add(view);
             }
             return deliveryViews;
+        }
+
+        public static DriverDeliveryView convertDeliveryToDriverView(Delivery del) {
+            DriverDeliveryView view = new DriverDeliveryView();
+            view.Client = del.Client;
+            view.ClientID = del.ClientID;
+            view.DeliverBy = del.DeliverBy;
+            view.DeliveryStatus = del.DeliveryStatus;
+            view.DeliveryStatusID = del.DeliveryStatusID;
+            view.ID = del.ID;
+            view.ItemSize = del.ItemSize;
+            view.ItemWeight = del.ItemWeight;
+            view.RouteID = del.RouteID;
+            view.StatusString = del.DeliveryStatus.Status.DisplayName();
+            return view;
         }
     }
 }
