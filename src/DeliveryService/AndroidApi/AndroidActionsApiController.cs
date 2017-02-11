@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DeliveryService.Controllers.DriverControllers;
 using DeliveryService.Data;
@@ -10,28 +9,33 @@ using DeliveryService.Models.DriverViewModels;
 using DeliveryService.Util;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using DeliveryService.Models;
 using AspNet.Security.OAuth.Validation;
 using DeliveryService.Models.Entities;
+using DeliveryService.Services;
 
 namespace DeliveryService.AndroidApi
 {
+    [Route("api")]
     public class AndroidActionsApiController : DriverController
     {
-        
-        public AndroidActionsApiController(ApplicationDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor) { }
 
-        [HttpGet]
-        //[Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+        private DeliveryStatusUpdateService deliveryStatusUpdateService;
+
+        public AndroidActionsApiController(ApplicationDbContext context, IHttpContextAccessor contextAccessor, DeliveryStatusUpdateService updateService) : base(context, contextAccessor) {
+
+            this.deliveryStatusUpdateService = updateService;
+        }
+
+        [HttpGet("routes")]
+        [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
         public JsonResult Routes() {
             List<DriverRouteView> routes = EntityToModelConverter.convertDriverRouteToDisplayViews(driver);
             Response.StatusCode = (int)HttpStatusCode.OK;
             return Json(routes);
         }
 
-        [HttpGet]
-       // [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+        [HttpGet("routeDeliveries/{id}")]
+        [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
         public JsonResult RouteDeliveries(int? id)
         {
             if (id == null)
@@ -52,8 +56,8 @@ namespace DeliveryService.AndroidApi
 
 
 
-        [HttpGet]
-      //  [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+        [HttpGet("delivery/{id}")]
+        [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
         public JsonResult Delivery(int? id)
         {
             if (id == null) {
@@ -80,13 +84,47 @@ namespace DeliveryService.AndroidApi
             return Json("Error occured");
         }
 
-
-        [HttpGet]
+        [HttpGet("vehicles")]
         [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-        public async Task<String> Message()
+        public JsonResult Vehicles()
         {
-            return "All ok";
+            List<Vehicle> driverVehicles = driver.Vehicles.ToList();
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return Json(driverVehicles);
         }
 
+        [HttpGet("driver")]
+        [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+        public JsonResult DriverDetails()
+        {
+            DriverInformation driverInfo = new DriverInformation();
+            driverInfo.driverAddress = driver.Address;
+            driverInfo.email = driver.User.Email;
+            driverInfo.holidays = driver.Holidays;
+            Response.StatusCode = (int)HttpStatusCode.OK;
+            return Json(driverInfo);
+        }
+
+
+
+        [HttpPost("statusUpdate")]
+        [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+        public JsonResult UpdateStatus([FromBody] DeliveryStatusUpdate update)
+        {
+            Delivery delivery = _context.Deliveries.Where(d => d.ID == Convert.ToInt32(update.DeliveryID)).SingleOrDefault();
+            Status status = StatusExtension.statusFromString(update.Status);
+            if (delivery == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Delivery  not found");
+            }
+            bool statusUpdated = deliveryStatusUpdateService.UpdateDeliveryStatus(delivery, status);
+            if (statusUpdated) {
+                Response.StatusCode = (int)HttpStatusCode.OK;
+                return Json("Status updated");
+            }
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json("Invalid status transition");
+        }
     }
 }

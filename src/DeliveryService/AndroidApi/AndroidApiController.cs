@@ -13,9 +13,11 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Authentication;
 using AspNet.Security.OAuth.Validation;
+using DeliveryService.Services;
 
 namespace DeliveryService.AndroidApi
 {
+    [Route("api")]
     public class AndroidApiController : Controller
     {
         private UserManager<ApplicationUser> userManager;
@@ -78,7 +80,7 @@ namespace DeliveryService.AndroidApi
             return Json("Success");
         }
 
-        [HttpGet]
+        [HttpGet("test")]
         [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
         public JsonResult test() {
             return Json("success hahaha");

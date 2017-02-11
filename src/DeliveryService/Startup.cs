@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 using DeliveryService.Services.Config;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Serialization;
-using System.Security.Cryptography.X509Certificates;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using OpenIddict.Core;
+using OpenIddict.Models;
+using Microsoft.AspNetCore.Builder;
+using DeliveryService.Util;
 
 namespace DeliveryService
 {
@@ -47,17 +53,18 @@ namespace DeliveryService
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseOpenIddict();
             },
                 ServiceLifetime.Scoped);
-            var jwtSigningCert = new X509Certificate2("C:\\Users\\Olga\\Documents\\Visual Studio 2015\\Projects\\my-cert-file.pfx", "password");
+            // var jwtSigningCert = new X509Certificate2("C:\\Users\\Olga\\Documents\\Visual Studio 2015\\Projects\\my-cert-file.pfx", "password");
 
-      /*      services.AddOpenIddict<ApplicationDbContext>()
-                .AddMvcBinders()
-                .EnableTokenEndpoint("/connect/token")
-                .UseJsonWebTokens()
-                .AllowPasswordFlow()
-                .AddSigningCertificate(jwtSigningCert)
-                .DisableHttpsRequirement(); */
+            /*      services.AddOpenIddict<ApplicationDbContext>()
+                      .AddMvcBinders()
+                      .EnableTokenEndpoint("/connect/token")
+                      .UseJsonWebTokens()
+                      .AllowPasswordFlow()
+                      .AddSigningCertificate(jwtSigningCert)
+                      .DisableHttpsRequirement(); */
 
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -72,31 +79,27 @@ namespace DeliveryService
                 .AddDefaultTokenProviders()
                 .AddErrorDescriber<CustomIdentityErrorDescriber>();
 
+            services.AddOpenIddict()
+        // Register the Entity Framework stores.
+        .AddEntityFrameworkCoreStores<ApplicationDbContext>()
 
-            services.AddOpenIddict<ApplicationDbContext>()
+        // Register the ASP.NET Core MVC binder used by OpenIddict.
+        // Note: if you don't call this method, you won't be able to
+        // bind OpenIdConnectRequest or OpenIdConnectResponse parameters.
+        .AddMvcBinders()
 
-               // Register the ASP.NET Core MVC binder used by OpenIddict.
-               // Note: if you don't call this method, you won't be able to
-               // bind OpenIdConnectRequest or OpenIdConnectResponse parameters.
-               .AddMvcBinders()
+        // Enable the token endpoint (required to use the password flow).
+        .EnableTokenEndpoint("/connect/token")
 
-               // Enable the token endpoint.
-               .EnableTokenEndpoint("/connect/token")
+        // Allow client applications to use the grant_type=password flow.
+        .AllowPasswordFlow()
 
-               // Enable the password flow.
-               .AllowPasswordFlow()
-
-               // During development, you can disable the HTTPS requirement.
-               .DisableHttpsRequirement()
-
-               // Register a new ephemeral key, that is discarded when the application
-               // shuts down. Tokens signed using this key are automatically invalidated.
-               // This method should only be used during development.
-               .AddEphemeralSigningKey();
+        // During development, you can disable the HTTPS requirement.
+        .DisableHttpsRequirement();
+        
 
 
-
-            services.AddDistributedMemoryCache();
+        services.AddDistributedMemoryCache();
             services.AddSession();
             services.AddMvc()
                  .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
@@ -127,7 +130,7 @@ namespace DeliveryService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -145,27 +148,27 @@ namespace DeliveryService
             }
 
             app.UseStaticFiles();
+            
+
+            app.UseWhen(context => context.Request.Path.StartsWithSegments("/api"), branch => {
+                // Add a middleware used to validate access
+                // tokens and protect the API endpoints.
+                branch.UseOAuthValidation();
+            });
+            
+            app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api"), branch => {
+                branch.UseStatusCodePagesWithReExecute("/error");
+
+                branch.UseIdentity();
+            });
 
 
-            app.UseOAuthValidation();
+           // app.UseIdentity();
 
+           // app.UseOAuthValidation();
 
-
-
-            app.UseIdentity();
             app.UseOpenIddict();
 
-         /*   app.UseJwtBearerAuthentication(new JwtBearerOptions
-            {
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
-                RequireHttpsMetadata = false,
-                Audience = "http://localhost:44302/",
-                Authority = "http://localhost:44302/"
-            });*/
-
-
-            // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
             app.UseSession();
             app.UseMvc(routes =>
             {
