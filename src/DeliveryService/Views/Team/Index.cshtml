@@ -20,7 +20,8 @@
             <th>
                 @Html.DisplayNameFor(model => model.Employees)
             </th>
-            <th></th>
+            <th>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -32,15 +33,15 @@
               
                 @foreach (var driver in Model.Drivers)
                 {
-                    @driver.User.NormalizedUserName  
+                    @driver.User.DisplayFirstName <span> </span>  @driver.User.DisplayLastName
 
                     <a class="btn btn-default" asp-action="DriverDetails" asp-route-id="@driver.ID">See driver details</a>
                 }
             </td>
             <td>
-                @foreach (var employee in Model.Employees   )
+                @foreach (var employee in Model.Employees)
                 {
-                    @employee.NormalizedUserName<br />
+                    <p>@employee.DisplayFirstName <span>  </span>@employee.DisplayLastName <span>(@employee.Email)</span><br /></p>
                 }
             </td>
           

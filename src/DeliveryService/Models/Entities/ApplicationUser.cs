@@ -12,5 +12,9 @@ namespace DeliveryService.Models
     public class ApplicationUser : IdentityUser
     {
         public int CompanyID { get; set; }
+
+        public String DisplayFirstName { get; set; }
+
+        public String DisplayLastName { get; set; }
     }
 }

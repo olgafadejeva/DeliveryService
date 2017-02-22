@@ -35,7 +35,8 @@ namespace DeliveryService.Services
         public async Task<IdentityResult> CreateDriverUserAsync(DriverRegisterViewModel model)
         {
             Company company = _context.Companies.SingleOrDefault(c => c.Team.ID == Convert.ToInt32(model.DriverTeamId));
-            var user = new DriverUser { UserName = model.Email, Email = model.Email, CompanyID = company.ID };
+            var user = new DriverUser { UserName = model.Email, Email = model.Email, CompanyID = company.ID,
+                DisplayLastName = model.LastName, DisplayFirstName = model.FirstName };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -55,7 +56,8 @@ namespace DeliveryService.Services
             company.CompanyName = model.CompanyName;
             _context.Companies.Add(company);
             await _context.SaveChangesAsync();
-            var user = new EmployeeUser { UserName = model.Email, Email = model.Email, CompanyID = company.ID, PrimaryContact = true };
+            var user = new EmployeeUser { UserName = model.Email, Email = model.Email, CompanyID = company.ID, PrimaryContact = true,
+                DisplayFirstName = model.FirstName, DisplayLastName = model.LastName };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -74,7 +76,8 @@ namespace DeliveryService.Services
         public async Task<IdentityResult> CreateEmployeeUserAsync(EmployeeCreateView model, Company company)
         {
             string DEFAULT_NEW_EMPLOYEE_PASSWORD = company.CompanyName.ToUpper() + "123"; ;
-            ApplicationUser employee = new ApplicationUser { Email = model.Email, CompanyID = company.ID, UserName = model.Email };
+            ApplicationUser employee = new ApplicationUser { Email = model.Email, CompanyID = company.ID, UserName = model.Email,
+                DisplayFirstName = model.FirstName, DisplayLastName = model.LastName };
             var user = new EmployeeUser { UserName = model.Email, Email = model.Email, CompanyID = company.ID, PrimaryContact = false };
             var result = await _userManager.CreateAsync(user, DEFAULT_NEW_EMPLOYEE_PASSWORD);
             if (result.Succeeded)
