@@ -1,5 +1,7 @@
-﻿using DeliveryService.Models.DriverViewModels;
+﻿using DeliveryService.Models;
+using DeliveryService.Models.DriverViewModels;
 using DeliveryService.Models.Entities;
+using DeliveryService.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +54,30 @@ namespace DeliveryService.Util
             view.RouteID = del.RouteID;
             view.StatusString = del.DeliveryStatus.Status.DisplayName();
             return view;
+        }
+
+        public static List<MapRouteView> convertRoutesForDashboardView(List<Route> routes) {
+            List<MapRouteView> routesModel = new List<MapRouteView>();
+            foreach (Route route in routes)
+            {
+                MapRouteView model = new MapRouteView();
+                foreach (Delivery delivery in route.Deliveries)
+                {
+                    model.waypoints.Add(DirectionsService.getStringFromAddressInLatLngFormat(delivery.Client.Address));
+                }
+                model.depotAddress = DirectionsService.getStringFromAddressInLatLngFormat(route.PickUpAddress);
+                model.overallRouteTime = route.OverallTimeRequired + "h";
+                model.routeDistance = route.OverallDistance + "mi";
+                if (route.DeliveryDate != null)
+                {
+                    model.scheduledOn = route.DeliveryDate.Value.ToString("dd/MM/yyyy"); ;
+                }
+                model.deliverBy = route.DeliverBy.ToString("dd/MM/yyyy");
+
+
+                routesModel.Add(model);
+            }
+            return routesModel;
         }
     }
 }

@@ -16,10 +16,8 @@
     </dd>
     </dl>
     <br />
-    <p class="btn btn-default">@Html.ActionLink("Manage my time off", "Index", "DriverHolidays")</p>
     <br />
-    <h3>My address</h3>
-    <a class="btn btn-default" asp-action="Edit" asp-route-id="@Model.Address.ID">Edit</a>
+    <h3>My address   <a class="btn btn-default" asp-action="Edit" asp-route-id="@Model.Address.ID">Edit</a></h3>
     @if (@Model != null)
     {
         <dl class="dl-horizontal">
@@ -61,5 +59,8 @@
         </p>
     }
 
+    <h3>Holidays <span class="btn btn-default">@Html.ActionLink("Manage my time off", "Index", "DriverHolidays")</span></h3>
+
+    <br />
     <br />
     <p class="btn btn-default">@Html.ActionLink("Back to dashoard", "Index", "DriverDashboard")</p>

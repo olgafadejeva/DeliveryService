@@ -1,12 +1,9 @@
 ﻿@model DeliveryService.Models.AccountViewModels.CompanyRegistrationViewModel
-@{
-    ViewData["Title"] = "Sign Up";
-}
 
-<h2>@ViewData["Title"].</h2>
+<h2>Sign up</h2>
+<p>You can register a company account which gives you access to route creation and delivery scheduling</p>
 
 <form asp-controller="Account" asp-action="SignUp" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-    <h4>Sign up</h4>
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>
   

@@ -16,11 +16,12 @@
         for (i = 0; i < tr.length; i++) {
             td = tr[i].getElementsByTagName("td")[1];
             if (td) {
-                console.log("inner html " + td.innerHTML);
-                if (td.innerText.startsWith(status) > -1) {
+                console.log("inner html " + td.innerText);
+                if (td.innerText.trim().startsWith(status)) {
                     tr[i].style.display = "";
                 } else {
                     tr[i].style.display = "none";
+                    console.log("No style executed");
                 }
             }
         }
@@ -43,7 +44,7 @@
 <h2>Deliveries</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-default">Create New <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
 </p>
 @if (Model.Count() != 0)
 {
@@ -81,7 +82,6 @@
                 </th>
                 <th>Deliver by</th>
                 <th></th>
-
             </tr>
         </thead>
         <tbody>
