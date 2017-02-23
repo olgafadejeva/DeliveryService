@@ -1,15 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DeliveryService.Models.Entities;
-using DeliveryService.Controllers.ShipperControllers;
 using DeliveryService.Data;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using DeliveryService.Models;
-using DeliveryService.Services;
 using DeliveryService.Models.ShipperViewModels;
 using DeliveryService.Util;
 

@@ -32,13 +32,13 @@ namespace DeliveryServiceTests.Controllers
             controller.setCompany(company);
 
 
-            var result = (ViewResult)controller.Index().Result;
+            var result = (ViewResult)controller.Index();
             Assert.NotNull(result.Model);
             Assert.Equal(result.Model, company.Clients);
 
             Client newClient = getClient();
             var createResult = await controller.Create(newClient);
-            result = (ViewResult)controller.Index().Result;
+            result = (ViewResult)controller.Index();
             Assert.NotNull(result.Model);
             Assert.Equal(company.Clients.Count, 1);
 
@@ -67,7 +67,7 @@ namespace DeliveryServiceTests.Controllers
             controller.setCompany(company);
 
 
-            var result = (ViewResult)controller.Index().Result;
+            var result = (ViewResult)controller.Index();
             Assert.NotNull(result.Model);
             Assert.Equal(result.Model, company.Clients);
 

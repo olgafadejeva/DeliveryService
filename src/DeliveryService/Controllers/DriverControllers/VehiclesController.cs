@@ -1,14 +1,11 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using DeliveryService.Controllers.DriverControllers;
 using DeliveryService.Data;
 using DeliveryService.Models.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
-using System;
-using DeliveryService.Controllers.DriverControllers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DeliveryService.DriverControllers
 {

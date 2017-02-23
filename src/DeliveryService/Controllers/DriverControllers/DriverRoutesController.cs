@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DeliveryService.Data;
 using DeliveryService.Models.Entities;
@@ -25,7 +24,7 @@ namespace DeliveryService.Controllers.DriverControllers
         }
 
         // GET: DriverRoutes
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             List<DriverRouteView> viewModels = EntityToModelConverter.convertDriverRouteToDisplayViews(driver);
             string json = JsonConvert.SerializeObject(viewModels);

@@ -1,27 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Logging;
 using DeliveryService.Models;
 using DeliveryService.Models.AccountViewModels;
 using DeliveryService.Services;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using DeliveryService.Models.Entities;
 using DeliveryService.Data;
-using DeliveryService.Entities;
-using Microsoft.EntityFrameworkCore;
 using DeliveryService.Controllers.ShipperControllers;
 using DeliveryService.Controllers.DriverControllers;
 
 namespace DeliveryService.Controllers
 {
-   // [RequireHttps]
+    // [RequireHttps]
     public class AccountController : Controller
     {
         private UserManager<ApplicationUser> _userManager;
@@ -50,7 +40,7 @@ namespace DeliveryService.Controllers
             return _userManager;
         }
 
-        //
+        
         // GET: /Account/Login
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
@@ -59,7 +49,7 @@ namespace DeliveryService.Controllers
             return View("Login");
         }
 
-        //
+        
         // POST: /Account/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -142,7 +132,7 @@ namespace DeliveryService.Controllers
             return View(model);
         }
 
-        //
+        
         // GET: /Account/Register
         [HttpGet]
         public IActionResult Register(string returnUrl = null)
@@ -162,7 +152,7 @@ namespace DeliveryService.Controllers
             return View("Register", model);
         }
 
-        //
+        
         // POST: /Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -184,7 +174,7 @@ namespace DeliveryService.Controllers
             return View(model);
         }
 
-        //
+        
         // POST: /Account/LogOff
         [HttpPost]
         [Authorize]
@@ -215,7 +205,7 @@ namespace DeliveryService.Controllers
         }
 
        
-        //
+        
         // GET: /Account/ForgotPassword
         [HttpGet]
         public IActionResult ForgotPassword()
@@ -223,7 +213,7 @@ namespace DeliveryService.Controllers
             return View();
         }
 
-        //
+        
         // POST: /Account/ForgotPassword
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -249,7 +239,7 @@ namespace DeliveryService.Controllers
             return View(model);
         }
 
-        //
+        
         // GET: /Account/ForgotPasswordConfirmation
         [HttpGet]
         public IActionResult ForgotPasswordConfirmation()
@@ -257,7 +247,7 @@ namespace DeliveryService.Controllers
             return View();
         }
 
-        //
+        
         // GET: /Account/ResetPassword
         [HttpGet]
         public IActionResult ResetPassword(string code = null)
@@ -265,7 +255,7 @@ namespace DeliveryService.Controllers
             return code == null ? View("Error") : View("ResetPassword");
         }
 
-        //
+        
         // POST: /Account/ResetPassword
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -290,7 +280,7 @@ namespace DeliveryService.Controllers
             return View();
         }
 
-        //
+        
         // GET: /Account/ResetPasswordConfirmation
         [HttpGet]
         public IActionResult ResetPasswordConfirmation()
