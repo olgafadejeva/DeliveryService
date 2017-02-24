@@ -52,7 +52,14 @@
                 <div id="map"></div>
             </div>
             <div class="col-sm-2" id="infoPanel">
+                @if (Model.routesModel.Count == 0)
+                {
+                    <p>There are currently NO routes assigned to you. Once routes are assigned, you will be able to see them on the map on the left</p>
+                }
+                else
+                {
                 <p>All routes on the map are either In Progress or New. The other routes can be acccessed from the <span>@Html.ActionLink("Routes", "Index", "DriverRoutes") tab</span></p>
+                }
             </div>
         </div>
     </div>

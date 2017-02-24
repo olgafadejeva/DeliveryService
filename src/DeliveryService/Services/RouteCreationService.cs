@@ -41,7 +41,7 @@ namespace DeliveryService.Services
 
                     //adding a time that a driver might need for stopping at the client's location, 10 min per stop
                     double timeForStops = Math.Round((double)10 * deliveriesInARoute.Count() / 60, 2);
-                    route.OverallTimeRequired = details.OverallTimeRequired + timeForStops;
+                    route.OverallTimeRequired = Math.Round(details.OverallTimeRequired + timeForStops, 2);
 
                     routesCreatedInThisSession.Add(route);
                 }

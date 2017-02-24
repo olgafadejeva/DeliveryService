@@ -108,7 +108,6 @@
                             <ul class="dropdown-menu">
                                 <li><a asp-action="Edit" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Edit</a></li>
                                 <li><a asp-action="Delete" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Delete</a></li>
-                                <li><a asp-action="Details" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Details</a></li>
 
                                 <li>
                                     @Html.ActionLink("Map view", "MapDelivery", "Routes", new { id = @item.ID }, new { @class = "list-group-item", @style = "border: none" })

@@ -5,20 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Create</h2>
+<h2>Add a depot location</h2>
 
 <form asp-action="Create">
     <div class="form-horizontal">
-        <h4>Depot location</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="City" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="City" class="form-control" />
-                <span asp-validation-for="City" class="text-danger" />
-            </div>
-        </div>
         <div class="form-group">
             <label asp-for="LineOne" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -31,6 +23,13 @@
             <div class="col-md-10">
                 <input asp-for="LineTwo" class="form-control" />
                 <span asp-validation-for="LineTwo" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="City" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger" />
             </div>
         </div>
         <div class="form-group">

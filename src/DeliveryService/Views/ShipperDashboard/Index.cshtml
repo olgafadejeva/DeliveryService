@@ -41,6 +41,14 @@
     <p class="btn btn-default">@Html.ActionLink("Routes", "Index", "Routes")</p>
     <br />
     <br/>
+
+    @if (Model.routesModel.Count() == 0)
+    {
+
+    }
+    else
+    {
+
     <h2>Routes summary</h2>
     <div id="mapArea">
         <div class="row">
@@ -52,6 +60,7 @@
             </div>
         </div>
     </div>
+    }
 
     <script type="text/javascript">
 

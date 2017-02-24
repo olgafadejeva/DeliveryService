@@ -14,12 +14,26 @@
     <dd>
         @Html.DisplayFor(model => model.User.Email)
     </dd>
+
+    <dt>
+        First name:
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.User.DisplayFirstName)
+    </dd>
+
+    <dt>
+        Last name:
+    </dt>
+    <dd>
+        @Html.DisplayFor(model => model.User.DisplayLastName)
+    </dd>
     </dl>
     <br />
-    <br />
-    <h3>My address   <a class="btn btn-default" asp-action="Edit" asp-route-id="@Model.Address.ID">Edit</a></h3>
-    @if (@Model != null)
+    
+    @if (@Model.Address != null)
     {
+        <h3>My address   <a class="btn btn-default" asp-action="Edit" asp-route-id="@Model.Address.ID">Edit</a></h3>
         <dl class="dl-horizontal">
             <dt>
                 @Html.DisplayNameFor(model => model.Address.City)
