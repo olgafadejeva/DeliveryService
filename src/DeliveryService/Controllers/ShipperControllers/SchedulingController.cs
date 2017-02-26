@@ -91,6 +91,7 @@ namespace DeliveryService.Controllers.ShipperControllers
                 {
                     Driver driverEntity = _context.Drivers.Where(d => d.ID == tempRoute.Driver.ID).FirstOrDefault();
                     route.DriverID = driverEntity.ID;
+                    route.DeliveryDate = tempRoute.ModifiedDeliverByDate.AddDays(-1);
                     await notificationService.SendAnEmailToDriverAboutAssignedRouteAsync(route, driverEntity.User);
                 }
                 route.DeliveryDate = tempRoute.ModifiedDeliverByDate.AddDays(-1);

@@ -4,7 +4,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Driver Assignment Results</h2>
+<h2>Success!</h2>
+<h3>Drivers assigned to the routes that you have created.</h3> 
 
     <table class="table">
         <thead>
@@ -41,7 +42,7 @@
                         @Html.DisplayFor(modelItem => Model.Routes.ElementAt(i).DeliveryDate)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => Model.TempRouteData.ElementAt(i).Driver.User.NormalizedUserName)
+                        @Html.DisplayFor(modelItem => Model.TempRouteData.ElementAt(i).Driver.User.DisplayFirstName)<span> </span>@Html.DisplayFor(modelItem => Model.TempRouteData.ElementAt(i).Driver.User.DisplayLastName)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.OverallTimeRequired)
@@ -60,7 +61,7 @@
         </tbody>
     </table>
 
-@Html.ActionLink("See all routes", "Index", "Routes")
+<a asp-action="Index" asp-controller="Routes" class="btn btn-default">See all routes</a> 
 
-@Html.ActionLink("Back to Route Map", "Index", "Scheduling")
+<a asp-action="Index" asp-controller="Scheduling" class="btn btn-default">Back to scheduling map</a> 
 

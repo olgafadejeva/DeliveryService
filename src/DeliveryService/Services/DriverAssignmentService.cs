@@ -33,6 +33,7 @@ namespace DeliveryService.Services
                 parameters.ModifiedDeliverByDate = assignmentResult.DeliverByDate;
                 parameters.Driver = assignmentResult.Driver;
                 parameters.RouteId = route.ID;
+                route.DeliveryDate = route.DeliverBy.AddDays(-1); //deliver one day before the deliver by date
                 alreadyAssignedDriversForADay.Add(assignmentResult.Driver);
                 tempRouteData.Add(parameters);
                 prevRoute = route;

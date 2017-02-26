@@ -33,12 +33,14 @@
 <body>
     <h1>My dashboard</h1>
 
-    <p class="btn btn-default">@Html.ActionLink("My Team", "Index", "Team")</p>
-    <p class="btn btn-default">@Html.ActionLink("My clients", "Index", "Clients")</p>
-    <p class="btn btn-default">@Html.ActionLink("Deliveries", "Index", "ShipperDeliveries")</p>
-    <p class="btn btn-default">@Html.ActionLink("Depots", "Index", "PickUpLocations")</p>
-    <p class="btn btn-default">@Html.ActionLink("Scheduling", "Index", "Scheduling")</p>
-    <p class="btn btn-default">@Html.ActionLink("Routes", "Index", "Routes")</p>
+    <a asp-action="Index" asp-controller="Team" class="btn btn-default">My team</a>
+
+    <a asp-action="Index" asp-controller="Clients" class="btn btn-default">Clients</a>
+    <a asp-action="Index" asp-controller="ShipperDeliveries" class="btn btn-default">Deliveries</a>
+    <a asp-action="Index" asp-controller="PickUpLocations" class="btn btn-default">Depot locations</a>
+    <a asp-action="Index" asp-controller="Scheduling" class="btn btn-default">Route scheduling</a>
+    <a asp-action="Index" asp-controller="Routes" class="btn btn-default">Routes</a>
+
     <br />
     <br/>
 
@@ -63,15 +65,24 @@
     }
 
     <script type="text/javascript">
-
-    function initMap() {
-
-
+        var map;
         var colors = []
         for (var i =0; i<=20; i++) {
             colors[i] = Math.floor(Math.random()*16777215).toString(16);
         }
-        var map = new google.maps.Map(document.getElementById('map'), {
+        var colorIndex = 0;
+
+
+                
+        var color = '#' + colors[colorIndex];
+        console.log(color);
+        var polylineOptions = {
+            strokeColor: color
+        };
+        var polylines = [];
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
             zoom: 7,
             center: { lat: 53.3811, lng: -1.4701 }
         });
@@ -92,7 +103,7 @@
             var waypoints = delivery.waypoints;
             var start = delivery.depotAddress;
 
-            directionsDisplay.setMap(map);
+           // directionsDisplay.setMap(map);
             console.log(routesModel);
 
             var waypts = [];
@@ -102,7 +113,6 @@
                     stopover: true
                 });
             }
-
 
             var item = document.createElement('div');
               
@@ -132,7 +142,7 @@
 
             list.appendChild(item);
 
-            var colorIndex = 0;
+           
             directionsService.route({
                 origin: start,
                 destination: start,
@@ -140,25 +150,23 @@
                 optimizeWaypoints: true,
                 travelMode: 'DRIVING'
             }, function(result) {
-
-                var directionsRenderer = new google.maps.DirectionsRenderer(); 
-                directionsRenderer.setOptions({'preserveViewport' : true});
-                var polylineOptionsActual = new google.maps.Polyline({
+                var polylineOptionsActual = {
                     strokeColor: '#' + colors[colorIndex],
                     strokeOpacity: 1.0,
-                    strokeWeight: 7
-                });
-                directionsRenderer.setOptions({'polylineOptions' : polylineOptionsActual});
-
+                    strokeWeight: 4 
+                };
+                directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: polylineOptionsActual});
                 directionsRenderer.setMap(map); 
                 directionsRenderer.setDirections(result); 
                 colorIndex++;
+                color = '#' + colors[colorIndex];
             });
             
             parentElement.appendChild(list);
         }
 
     }
+
      </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
