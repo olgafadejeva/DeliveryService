@@ -22,6 +22,7 @@ namespace DeliveryService.Controllers.ShipperControllers
             ShipperDashboardModel finalModel = new ShipperDashboardModel();
             finalModel.company = company;
             finalModel.routesModel = routesModel;
+            finalModel.depots = company.PickUpLocations.ToList();
             return View(finalModel);
         }
 

@@ -10,5 +10,6 @@ namespace DeliveryService.Models.ShipperViewModels
     {
         public Company company { get; set; }
         public List<MapRouteView> routesModel { get; set; }
+        public List<PickUpAddress> depots { get; set; }
     }
 }

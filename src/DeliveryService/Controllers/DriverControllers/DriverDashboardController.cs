@@ -27,6 +27,10 @@ namespace DeliveryService.Controllers.DriverControllers
             DriverDashboardModel finalModel = new DriverDashboardModel();
             finalModel.Driver = driver;
             finalModel.routesModel = routesModel;
+            Company company = _context.Companies.Where(c => c.ID == driver.User.CompanyID).SingleOrDefault();
+            if (company != null) {
+                finalModel.depots = company.PickUpLocations.ToList();
+            }
             return View(finalModel);
         }
 

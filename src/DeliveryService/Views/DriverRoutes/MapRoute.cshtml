@@ -80,7 +80,7 @@
         var waypts = [];
         for (var i = 0; i < waypoints.length; i++) {
             waypts.push({
-                location: "Brighton,72 Newmarket Road, BN2 3QF",
+                location: waypoints[i],
                 stopover: true
             });
         }
@@ -127,7 +127,6 @@
             </div>
             <div class="col-sm-2">
                 <h4>Route summary</h4>
-                <h5>Route segments</h5>
                 <div id="right-panel"></div>
                 <h5>Route details</h5>
                 <p><b>Route distance:</b> @Model.routeDistance</p>

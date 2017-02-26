@@ -10,5 +10,6 @@ namespace DeliveryService.Models.DriverViewModels
     {
         public Driver Driver { get; set; }
         public List<MapRouteView> routesModel { get; set; }
+        public List<PickUpAddress> depots { get; set; }
     }
 }

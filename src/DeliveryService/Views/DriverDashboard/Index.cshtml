@@ -90,6 +90,15 @@
         googleMap = map;
         var directionsService = new google.maps.DirectionsService;
 
+        var depots = @Html.Raw(JsonConvert.SerializeObject(Model.depots));
+        var depotMarkers  = depots.map(function(marker,i) {
+            var marker =   new google.maps.Marker({
+                position:  { lat: parseFloat(marker.Lat), lng: parseFloat(marker.Lng)},
+                map:map,
+                icon:"data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIiBvdmVyZmxvdz0iaW5oZXJpdCI+PHBhdGggZD0iTTguNTI0IDMwLjc5NWMtMS45NzggMC0zLjU4NSAxLjYxNy0zLjU4NSAzLjYwNCAwIDEuOTg4IDEuNjA4IDMuNjAxIDMuNTg1IDMuNjAxIDEuOTgyIDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODYtMS42MDctMy42MDMtMy41OS0zLjYwM3ptMCA1LjQ2MWMtLjk4OCAwLTEuNzkyLS44MDctMS43OTItMS44MDMgMC0uOTkyLjgwNC0xLjgwMSAxLjc5Mi0xLjgwMS45OTMgMCAxLjc5Ny44MDkgMS43OTcgMS44MDEuMDAxLjk5Ni0uODAzIDEuODAzLTEuNzk3IDEuODAzem0zMS41NDMtNS40NjFjLTEuOTgxIDAtMy41ODcgMS42MTctMy41ODcgMy42MDQgMCAxLjk4OCAxLjYwNSAzLjYwMiAzLjU4NyAzLjYwMiAxLjk4IDAgMy41OS0xLjYxMyAzLjU5LTMuNjAyIDAtMS45ODctMS42MDktMy42MDQtMy41OS0zLjYwNHptMCA1LjQ2MWMtLjk4OSAwLTEuNzk0LS44MDctMS43OTQtMS44MDMuMDAxLS45OTIuODA1LTEuODAxIDEuNzk0LTEuODAxLjk5MiAwIDEuNzk3LjgwOSAxLjc5NyAxLjgwMSAwIC45OTYtLjgwNCAxLjgwMy0xLjc5NyAxLjgwM3ptNy45NC0yMi4yNTZoLTMxLjU0NmMtLjU0NyAwLS45OTMuNDQ2LS45OTMuOTk3djkuMDQyaC0xLjk4N3YtNS41NTFjMC0uNTUyLS40NDUtLjk5Ny0uOTk0LS45OTdoLTYuNzY4Yy0xLjE4IDAtMi4yMzQuODcyLTIuNDIzIDIuMTJ2LS4wNjVsLTEuMDU2IDUuOTg3LjAwMi4wMjFjLS43MTcuMTIyLTEuMjQyLjc0NS0xLjI0MiAxLjQ3NmwuMDMzLjMyLS4wMzMtLjAwOSAxLjQ5IDYuNzM1aDEuNTUydi0uMDYxYzAtMi40MTQgMS45NzUtNC4zNjkgNC40MS00LjM2OSAyLjQzMyAwIDQuNDA5IDEuOTU1IDQuNDA5IDQuMzY5di4wNjFoMjIuNzI2di0uMDYxYzAtMi40MTQgMS45NzYtNC4zNjkgNC40MDctNC4zNjkgMi40MzUgMCA0LjQxMSAxLjk1NSA0LjQxMSA0LjM2OWwtLjAwNC4wNjFoNC41OTl2LTE5LjA3OWMwLS41NS0uNDQ0LS45OTctLjk5My0uOTk3em0tMzguMDA0IDUuMTExdjQuOTI4aC01Ljk2bC43NDUtNC4xODFjLjA2Mi0uNS40OTctLjg2OS45MzEtLjg2OWg0LjI4NHYuMTIyeiIvPjwvc3ZnPg=="
+            })
+        });
+
         var routesModel = @Html.Raw(JsonConvert.SerializeObject(Model.routesModel));
 
         var parentElement = document.getElementById("infoPanel");
