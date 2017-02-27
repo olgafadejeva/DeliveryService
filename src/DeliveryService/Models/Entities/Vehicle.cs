@@ -21,14 +21,15 @@ namespace DeliveryService.Models.Entities
         [MinLength(5, ErrorMessage="Registration number must be longer than 5 characters")]
         public string RegistrationNumber { get; set; }
 
-
+        [Display(Name = "Height (in cm)")]
         [Range(0, double.MaxValue, ErrorMessage = "Must be a positive number")]
         public double Height { get; set; }
 
-
+        [Display(Name = "Width (in cm)")]
         [Range(0, double.MaxValue, ErrorMessage = "Must be a positive number")]
         public double Width { get; set; }
 
+        [Display(Name = "Length (in cm)")]
         [Range(0, double.MaxValue, ErrorMessage = "Must be a positive number")]
         public double Length { get; set; }
 

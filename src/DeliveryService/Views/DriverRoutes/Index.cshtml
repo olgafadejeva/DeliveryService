@@ -137,7 +137,7 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li><a asp-action="RouteDeliveries" asp-route-id="@item.ID">See delivery details</a></li>
-                        <li><a asp-action="MapRoute" asp-route-id="@item.ID">Map view</a></li>
+                        <li><a asp-action="MapRoute" asp-route-id="@item.ID">Map view + navigation</a></li>
                     </ul>
                 </div>
             </td>
@@ -145,3 +145,5 @@
 }
     </tbody>
 </table>
+
+<a asp-action="Index" asp-controller="DriverDashboard" class="btn btn-default">Back to Dashboard</a>

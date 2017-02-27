@@ -90,7 +90,7 @@
                                     }
                                     else
                                     {
-                                        <span class="label label-info">@Html.DisplayFor(modelItem => item.Status.Value.ToString())</span>
+                                        <span class="label label-info">@Html.DisplayFor(modelItem => item.Status)</span>
                                     }
                                 </td>
                                 <td>
@@ -118,10 +118,13 @@
             }
             </div>
         
+        @if (Model.Holidays.ToList().Count() != 0)
+        {
 
         <li class="list-group-item"><b>Holidays booked: </b> 
-            @foreach (var item in Model.Holidays) { 
-               
+            @foreach (var item in Model.Holidays)
+            {
+
                 <p>@item.From.ToString("dd/MM/yy") <span>-</span>  @item.To.ToString("dd/MM/yy")
                 @if (item.To < DateTime.Now)
                 {
@@ -139,14 +142,15 @@
             }
 
             </li>
+        }
         <li class="list-group-item"><b>Vehicles </b> 
         @foreach (var item in Model.Vehicles)
         {
             <div style="padding-left:50px">
                 <p><b>Name: </b>@item.VehicleName</p>
                 <p><b>Registration Number: </b>@item.RegistrationNumber</p>
-                <p><b>Max load: </b>@item.MaxLoad</p>
-                <p><b>Dimensions: </b>@item.Height<span> x </span>@item.Width<span> x </span>@item.Length</p>
+                <p><b>Max load (in kg): </b>@item.MaxLoad</p>
+                <p><b>Dimensions (in cm): </b>@item.Height<span> x </span>@item.Width<span> x </span>@item.Length</p>
                 <br/>
             </div>
         }

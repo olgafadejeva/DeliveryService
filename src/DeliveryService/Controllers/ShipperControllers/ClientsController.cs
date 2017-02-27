@@ -5,6 +5,7 @@ using DeliveryService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -40,6 +41,24 @@ namespace DeliveryService.ShipperControllers
             }
 
             return View(client);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Deliveries(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var client = await getClient(id);
+            if (client == null || !company.Clients.Contains(client))
+            {
+                return NotFound();
+            }
+
+            List<Delivery> clientDeliveries = _context.Deliveries.Where(d => d.ClientID == client.ID).ToList();
+            return View(clientDeliveries);
         }
 
         // GET: Clients/Create

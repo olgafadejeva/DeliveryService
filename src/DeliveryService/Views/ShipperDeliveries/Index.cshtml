@@ -78,26 +78,44 @@
                     Client
                 </th>
                 <th>
-                    Status
+                    Delivery address
+                </th>
+                <th>
+                    Delivery status
                 </th>
                 <th>Deliver by</th>
+                <th>Item details</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-
             @foreach (var item in Model)
             {
                 <tr>
                     <td>
-
-                        @Html.ActionLink(item.Client.FirstName + " " + item.Client.LastName, "Details", "Clients", new { id = item.ClientID })
+                        
+                        @Html.DisplayFor(model => @item.Client.FirstName) <span> </span> @Html.DisplayFor(model => @item.Client.LastName) 
                     </td>
                     <td>
-                        @item.DeliveryStatus.Status.DisplayName()
+                        @Html.DisplayFor(model => @item.Client.Address.LineOne) <br />
+                        @Html.DisplayFor(model => @item.Client.Address.City)<br />
+                        @Html.DisplayFor(model => @item.Client.Address.PostCode)<br />
+                    </td>
+                    <td id="@item.ID+status">
+                        @Html.DisplayFor(model => @item.DeliveryStatus.Status)
                     </td>
                     <td>
                         @Html.DisplayFor(model => @item.DeliverBy)
+                    </td>
+                    <td>
+                        <p>
+                            @Html.LabelFor(model => @item.ItemSize)
+                            @Html.DisplayFor(model => @item.ItemSize)
+                        </p>
+                        <p>
+                            @Html.LabelFor(model => @item.ItemWeight)
+                            @Html.DisplayFor(model => @item.ItemWeight)
+                        </p>
                     </td>
                     <td>
                         <div class="dropdown">
@@ -105,19 +123,14 @@
                                 Options
                                 <span class="caret"></span>
                             </button>
-                            <ul class="dropdown-menu">
-                                <li><a asp-action="Edit" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Edit</a></li>
-                                <li><a asp-action="Delete" class="list-group-item" style="border: none;" asp-route-id="@item.ID">Delete</a></li>
-
-                                <li>
-                                    @Html.ActionLink("Map view", "MapDelivery", "Routes", new { id = @item.ID }, new { @class = "list-group-item", @style = "border: none" })
-
-                                </li>
+                            <ul class="dropdown-menu list-group">
+                                <li><a asp-action="Edit" asp-route-id="@item.ID">Edit</a> </li>
+                                <li class="list-group-item-danger"><a asp-action="Delete" asp-route-id="@item.ID">Delete</a></li>
                             </ul>
                         </div>
-
                     </td>
                 </tr>
+
             }
         </tbody>
     </table>

@@ -15,14 +15,13 @@
     </style>
 </head>
 
-<h2>Edit</h2>
+<h2>Edit a delivery</h2>
 
 <div id="main_body">
     <div id="row">
         <div class="col-sm-8">
             <form asp-action="Edit">
                 <div class="form-horizontal">
-                    <h4>Delivery</h4>
                     <hr />
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="ID" />
@@ -84,7 +83,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-default">Back to List</a>
 </div>
 
 @section Scripts {

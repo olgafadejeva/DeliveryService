@@ -73,8 +73,9 @@
         </p>
     }
 
-    <h3>Holidays <span class="btn btn-default">@Html.ActionLink("Manage my time off", "Index", "DriverHolidays")</span></h3>
+    <h3>Holidays <span><a asp-action="Index" asp-controller="DriverHolidays" class="btn btn-default">Manage my time off</a></span></h3>
 
     <br />
     <br />
-    <p class="btn btn-default">@Html.ActionLink("Back to dashoard", "Index", "DriverDashboard")</p>
+
+<a asp-action="Index" asp-controller="DriverDashboard" class="btn btn-default">Back to dashboard</a>

@@ -1,0 +1,62 @@
+@model IEnumerable<DeliveryService.Models.Entities.Delivery>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model.ToList().Count == 0) { 
+    <h2>There are no deliveries for this client yet</h2>
+} else {
+<h2>Deliveries for client: @Html.DisplayFor(model => Model.ElementAt(0).Client.FirstName) <span> </span> @Html.DisplayFor(model => Model.ElementAt(0).Client.LastName)</h2>
+
+<table class="table" id="myTable">
+    <thead>
+        <tr>
+            <th>
+                Delivery status
+            </th>
+            <th>Deliver by</th>
+            <th>Item details</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+            {
+            <tr>
+                <td id="@item.ID+status">
+                    @Html.DisplayFor(model => @item.DeliveryStatus.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => @item.DeliverBy)
+                </td>
+                <td>
+                    <p>
+                        @Html.LabelFor(model => @item.ItemSize)
+                        @Html.DisplayFor(model => @item.ItemSize)
+                    </p>
+                    <p>
+                        @Html.LabelFor(model => @item.ItemWeight)
+                        @Html.DisplayFor(model => @item.ItemWeight)
+                    </p>
+                </td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                            Options
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu list-group">
+                            <li><a asp-action="Edit" asp-route-id="@item.ID">Edit</a> </li>
+                            <li class="list-group-item-danger"><a asp-action="Delete" asp-route-id="@item.ID">Delete</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+}
+
+<a asp-action="Index" class="btn btn-default">Back to Clients</a>
