@@ -1,4 +1,5 @@
 ﻿using DeliveryService.Controllers;
+using DeliveryService.Controllers.DriverControllers;
 using DeliveryService.Controllers.ShipperControllers;
 using DeliveryService.Data;
 using DeliveryService.DriverControllers;
@@ -53,6 +54,25 @@ namespace DeliveryServiceTests.Helpers
                 Constants.DEFAULT_PASSWORD);
             await signInManager.PasswordSignInAsync(Constants.DEFAULT_EMAIL, Constants.DEFAULT_PASSWORD, false, lockoutOnFailure: false);
             var controller = new VehiclesController(context, httpContextAccessor);
+
+            var actionContext = new ActionContext();
+            controller.Url = new UrlHelper(actionContext);
+            return controller;
+        }
+
+        public async static Task<DriverHolidaysController> getDriverHolidaysController()
+        {
+            IServiceProvider _serviceProvider = ServiceBuilder.getServiceProvider();
+            var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
+            var userManagerResult = await userManager.CreateAsync(
+                new ApplicationUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL },
+                Constants.DEFAULT_PASSWORD);
+            await signInManager.PasswordSignInAsync(Constants.DEFAULT_EMAIL, Constants.DEFAULT_PASSWORD, false, lockoutOnFailure: false);
+            var controller = new DriverHolidaysController(context, httpContextAccessor);
 
             var actionContext = new ActionContext();
             controller.Url = new UrlHelper(actionContext);

@@ -19,7 +19,7 @@ namespace DeliveryServiceTests.Controllers
             var context = controller.getDbContext();
             var driverEntity = new DeliveryService.Models.Entities.Driver();
             var user = context.ApplicationUsers.First<ApplicationUser>();
-           // driverEntity.User = user;
+
             context.Drivers.Add(driverEntity);
             await context.SaveChangesAsync();
             controller.setDriver(driverEntity);
@@ -48,7 +48,7 @@ namespace DeliveryServiceTests.Controllers
             var context = controller.getDbContext();
             var driverEntity = new DeliveryService.Models.Entities.Driver();
             var user = context.ApplicationUsers.First<ApplicationUser>();
-           // driverEntity.User = user;
+
             context.Drivers.Add(driverEntity);
             Vehicle vehicle = new Vehicle();
             vehicle.RegistrationNumber = "123456";
@@ -81,7 +81,6 @@ namespace DeliveryServiceTests.Controllers
             var context = controller.getDbContext();
             var driverEntity = new DeliveryService.Models.Entities.Driver();
             var user = context.ApplicationUsers.First<ApplicationUser>();
-            //driverEntity.User = user;
             context.Drivers.Add(driverEntity);
             Vehicle vehicle = new Vehicle();
             vehicle.RegistrationNumber = "123456";

@@ -67,7 +67,15 @@
     <script type="text/javascript">
         var map;
         var colors = []
-        for (var i =0; i<=20; i++) {
+        
+        colors.push("BE2100");
+        colors.push("EB7700");
+        colors.push("183FB0");
+        colors.push("206515");
+        colors.push("F2D802");
+        colors.push("F1D100");
+        colors.push("FC6605");
+        for (var i =7; i<=20; i++) {
             colors[i] = Math.floor(Math.random()*16777215).toString(16);
         }
         var colorIndex = 0;
@@ -85,7 +93,7 @@
 
     function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 7,
+            zoom: 10,
             center: { lat: 53.3811, lng: -1.4701 }
         });
         map.setOptions({'scrollwheel': false});

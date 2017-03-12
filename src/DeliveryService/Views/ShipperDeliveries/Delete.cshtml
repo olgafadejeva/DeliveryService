@@ -19,30 +19,7 @@
             @Html.DisplayFor(model => model.Client.FirstName)
             @Html.ActionLink("See client details", "Details", "Clients", new { id = Model.ClientID })
         </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PickUpAddress.LineOne)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PickUpAddress.LineOne)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PickUpAddress.LineTwo)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PickUpAddress.LineTwo)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PickUpAddress.City)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PickUpAddress.City)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PickUpAddress.PostCode)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PickUpAddress.PostCode)
-        </dd>
+
     </dl>
     
     <form asp-action="Delete">
