@@ -1,14 +1,16 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DeliveryService.Data;
 using DeliveryService.Models.Entities;
 using Microsoft.AspNetCore.Http;
 
+/*
+ * Controller to create and edit driver holidays
+ * 
+ * Extends a generic DriverController that allows access to this controller's methods by a user in driver's role
+ */
 namespace DeliveryService.Controllers.DriverControllers
 {
     public class DriverHolidaysController : DriverController
@@ -17,14 +19,12 @@ namespace DeliveryService.Controllers.DriverControllers
         public DriverHolidaysController(ApplicationDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor)
         {
         }
-
-        // GET: DriverHolidays
+        
         public async Task<IActionResult> Index()
         {
             return View(driver.Holidays.ToList());
         }
-
-        // GET: DriverHolidays/Create
+        
         public IActionResult Create()
         {
             return View();
@@ -42,8 +42,7 @@ namespace DeliveryService.Controllers.DriverControllers
             }
             return View(driverHoliday);
         }
-
-        // GET: DriverHolidays/Edit/5
+        
         public async Task<IActionResult> Edit(int? id)
         {
             var driverHoliday = await _context.DriverHolidays.SingleOrDefaultAsync(m => m.ID == id);
@@ -53,10 +52,7 @@ namespace DeliveryService.Controllers.DriverControllers
             }
             return View(driverHoliday);
         }
-
-        // POST: DriverHolidays/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,From,To")] DriverHoliday driverHoliday)
@@ -74,8 +70,7 @@ namespace DeliveryService.Controllers.DriverControllers
             }
             return View(driverHoliday);
         }
-
-        // GET: DriverHolidays/Delete/5
+        
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

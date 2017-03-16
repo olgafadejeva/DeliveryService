@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using DeliveryService.Data;
@@ -10,6 +9,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
+/*
+ * This is the main controller that loads the driver entity as a current user and all its related entities
+ * The methods here are acessed by a user in driver's role only 
+ */
 namespace DeliveryService.Controllers.DriverControllers
 {
     //[RequireHttps]
@@ -48,7 +51,7 @@ namespace DeliveryService.Controllers.DriverControllers
             }
         }
 
-        // for testing
+        // for testing only
         public void setDriver(Driver driver)
         {
             this.driver = driver;

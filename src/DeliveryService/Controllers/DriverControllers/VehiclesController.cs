@@ -7,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 
+/*
+ * Controller responsible for actions that are undertaken by driver in relation to vehicles
+ * 
+ * Extends a generic DriverController that allows access to this controller's methods by a user in driver's role
+ */ 
 namespace DeliveryService.DriverControllers
 {
     public class VehiclesController : DriverController
@@ -15,36 +20,24 @@ namespace DeliveryService.DriverControllers
         {
         }
 
-        // GET: Vehicles
-        public async Task<IActionResult> Index()
+        
+        public IActionResult Index()
         {
             return View(driver.Vehicles);
         }
 
-        // GET: Vehicles/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var vehicle = await _context.Vehicles.SingleOrDefaultAsync(m => m.ID == id);
-            if (vehicle == null || !driver.Vehicles.Contains(vehicle))
-            {
-                return NotFound();
-            }
-
-            return View(vehicle);
-            
-        }
-
         // GET: Vehicles/Create
+        /*
+         * Returns a creates form for a cehicle
+         */ 
         public IActionResult Create()
         {
             return View();
         }
         
+        /*
+         * Receives the vehicle parameters and creates a vehicle entity
+         */ 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,RegistrationNumber,Height,Length,Width,MaxLoad,VehicleName")] Vehicle vehicle)

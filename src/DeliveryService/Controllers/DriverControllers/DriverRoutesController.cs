@@ -14,6 +14,11 @@ using System.Globalization;
 using DeliveryService.Util;
 using Newtonsoft.Json;
 
+/*
+ * Conroller responsible for driver's actions with routes
+ * 
+ * Extends a generic DriverController that allows access to this controller's methods by a user in driver's role
+ */ 
 namespace DeliveryService.Controllers.DriverControllers
 {
     public class DriverRoutesController : DriverController
@@ -22,32 +27,21 @@ namespace DeliveryService.Controllers.DriverControllers
         public DriverRoutesController(ApplicationDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor)
         { 
         }
-
-        // GET: DriverRoutes
+        
+        /*
+         * Returns the view with the model that contains Driver's route views
+         */ 
         public IActionResult Index()
         {
             List<DriverRouteView> viewModels = EntityToModelConverter.convertDriverRouteToDisplayViews(driver);
             string json = JsonConvert.SerializeObject(viewModels);
             return View(viewModels);
         }
-
-        // GET: DriverRoutes/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var route = await _context.Routes.SingleOrDefaultAsync(m => m.ID == id);
-            if (route == null)
-            {
-                return NotFound();
-            }
-
-            return View(route);
-        }
-
+        
+        /*
+         * Returns all deliveries of the route based on the ID
+         * Deliveries are previously converted into the views
+         */ 
         public IActionResult RouteDeliveries(int? id)
         {
             Route route = driver.Routes.Where(r => r.ID == id).FirstOrDefault();
@@ -79,6 +73,9 @@ namespace DeliveryService.Controllers.DriverControllers
             return View(modelsList);
         }
 
+        /*
+         * Constructs a MapRouteView model which contains all waypoints(client's addresses) for the map to be displayed
+         */ 
         public IActionResult MapRoute(int? id)
         {
             Route route = driver.Routes.Where(r => r.ID == id).FirstOrDefault();
@@ -94,6 +91,7 @@ namespace DeliveryService.Controllers.DriverControllers
 
             return View(model);
         }
+
 
         [HttpGet]
         public IActionResult MapDelivery(int? id)
