@@ -68,7 +68,6 @@ namespace DeliveryServiceTests
 
 
             services.AddTransient<IEmailSender, AuthMessageSender>();
-            services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IDirectionsService, DirectionsService>();
 
 

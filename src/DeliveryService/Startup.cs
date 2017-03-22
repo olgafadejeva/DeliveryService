@@ -106,7 +106,6 @@ namespace DeliveryService
 
 
             services.AddTransient<IEmailSender, AuthMessageSender>();
-            services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IDirectionsService, DirectionsService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IGoogleMapsUtil, GoogleMapsUtil>();

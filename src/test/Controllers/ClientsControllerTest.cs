@@ -22,36 +22,6 @@ namespace DeliveryServiceTests.Controllers
     {
         
         [Fact]
-        public async Task testGetIndexPageAndCreateClient()
-        {
-            var controller = await ControllerSupplier.getClientsController();
-
-            controller.setGoogleMaps(getMockGoogleMaps());
-            //set Shipper to controller
-            Company company = await createCompany(controller);
-            controller.setCompany(company);
-
-
-            var result = (ViewResult)controller.Index();
-            Assert.NotNull(result.Model);
-            Assert.Equal(result.Model, company.Clients);
-
-            Client newClient = getClient();
-            var createResult = await controller.Create(newClient);
-            result = (ViewResult)controller.Index();
-            Assert.NotNull(result.Model);
-            Assert.Equal(company.Clients.Count, 1);
-
-            Client client = company.Clients.First<Client>();
-            Assert.Equal(result.Model, company.Clients);
-            Assert.NotNull(client.Address);
-            Assert.Equal(client.Address.City, Constants.DEFAULT_CITY);
-            Assert.Equal(client.Address.LineOne, Constants.DEFAULT_ADDRESS_LINE_ONE);
-            Assert.Equal(client.Address.PostCode, Constants.DEFAULT_POSTCODE);
-        }
-
-        
-        [Fact]
         public async Task testEditClient() {
             var controller = ControllerSupplier.getClientsController().Result;
 

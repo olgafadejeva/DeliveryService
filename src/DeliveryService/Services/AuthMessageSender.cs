@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 namespace DeliveryService.Services
 {
 
-    public class AuthMessageSender : IEmailSender, ISmsSender
+    public class AuthMessageSender : IEmailSender
     {
         
         public AppProperties options { get; } //set only via Secret Manager

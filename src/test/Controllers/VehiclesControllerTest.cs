@@ -25,14 +25,14 @@ namespace DeliveryServiceTests.Controllers
             controller.setDriver(driverEntity);
 
 
-            var result = (ViewResult) controller.Index().Result;
+            var result = (ViewResult) controller.Index();
             Assert.NotNull(result.Model);
             Assert.Equal(result.Model, driverEntity.Vehicles);
 
             Vehicle vehicle = new Vehicle();
             vehicle.RegistrationNumber = "123456";
             var createResult = await controller.Create(vehicle);
-            result = (ViewResult)controller.Index().Result;
+            result = (ViewResult)controller.Index();
             Assert.NotNull(result.Model);
             Assert.Equal(driverEntity.Vehicles.Count, 1);
             Assert.Equal(result.Model, driverEntity.Vehicles);
@@ -57,7 +57,7 @@ namespace DeliveryServiceTests.Controllers
             controller.setDriver(driverEntity);
 
 
-            var result = (ViewResult)controller.Index().Result;
+            var result = (ViewResult)controller.Index();
             Assert.NotNull(result.Model);
             Assert.Equal(result.Model, driverEntity.Vehicles);
 

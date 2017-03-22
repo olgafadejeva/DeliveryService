@@ -79,7 +79,8 @@
             for (i = 0; i < tr.length; i++) {
                 td = tr[i].getElementsByTagName("td")[2];
                 if (td) {
-                    if (td.innerText.startsWith(status)) {
+                    console.log(td.innerText.trim());
+                    if (td.innerText.trim().startsWith(status)) {
                         tr[i].style.display = "";
                     } else {
                         tr[i].style.display = "none";
