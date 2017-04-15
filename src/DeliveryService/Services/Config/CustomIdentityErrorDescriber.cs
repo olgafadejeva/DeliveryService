@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services.Config
 {
+    /*
+     * ASP.NET class defining identity errors
+     */ 
     public class CustomIdentityErrorDescriber : IdentityErrorDescriber
     {
         public override IdentityError DefaultError() { return new IdentityError { Code = nameof(DefaultError), Description = $"An unknown failure has occurred." }; }

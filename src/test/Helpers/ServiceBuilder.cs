@@ -15,6 +15,10 @@ using DeliveryService.Services;
 
 namespace DeliveryServiceTests.Helpers
 {
+    /*
+     * Builds mock and real services to be used in tests
+     * Also creates an in-memory database
+     */ 
     public static class ServiceBuilder
     {
         public static IServiceProvider getServiceProvider()
@@ -37,8 +41,7 @@ namespace DeliveryServiceTests.Helpers
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders()
                      .AddErrorDescriber<CustomIdentityErrorDescriber>();
-
-            services.AddLogging();
+            
             var context = new DefaultHttpContext();
             context.Features.Set<IHttpAuthenticationFeature>(new HttpAuthenticationFeature() { Handler = new TestAuthHandler() });
             services.AddSingleton<IHttpContextAccessor>(
@@ -48,8 +51,7 @@ namespace DeliveryServiceTests.Helpers
                 });
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<HttpContext>(context);
-
-            services.AddLogging();
+            
             services.AddMvc();
 
             services.AddTransient<IEmailSender, MockAuthMessageSender>();

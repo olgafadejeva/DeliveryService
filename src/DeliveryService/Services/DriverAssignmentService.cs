@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services
 {
+    /*
+     * Selects a suitable driver for a route once one has been created
+     */ 
     public class DriverAssignmentService
     {
         public LocationService locationService { get; set; }

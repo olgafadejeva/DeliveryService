@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http.Features.Authentication;
-using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DeliveryServiceTests.Helpers
 {
+    /*
+     * This class creates an identity handler used for tests that require authentication
+     */
     public class TestAuthHandler : IAuthenticationHandler
     {
         public void Authenticate(AuthenticateContext context)

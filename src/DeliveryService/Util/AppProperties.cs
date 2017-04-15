@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services
 {
-
+    /*
+     * A class used for specifying secrets in storage
+     */ 
     public class AppProperties
     { 
         public string SmtpHost { get; set; }

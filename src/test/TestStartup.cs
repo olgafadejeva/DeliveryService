@@ -80,7 +80,6 @@ namespace DeliveryServiceTests
             services.Configure<AppProperties>(Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<DeliveryStatusUpdateService>();
-            services.AddSingleton<DeliverySearchService>();
             services.AddSingleton<LocationService>();
 
         }

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.AccountViewModels
 {
+    /*
+     * Model which is populated from a "forgot password" screen
+     */ 
     public class ForgotPasswordViewModel
     {
         [Required]

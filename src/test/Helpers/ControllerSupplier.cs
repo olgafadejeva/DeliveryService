@@ -4,6 +4,7 @@ using DeliveryService.Controllers.ShipperControllers;
 using DeliveryService.Data;
 using DeliveryService.DriverControllers;
 using DeliveryService.Models;
+using DeliveryService.Models.Entities;
 using DeliveryService.Services;
 using DeliveryService.ShipperControllers;
 using Microsoft.AspNetCore.Http;
@@ -13,13 +14,16 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Moq;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DeliveryServiceTests.Helpers
 {
+    /*
+     * Creates controllers with mock setup to be used in tests
+     */ 
     public class ControllerSupplier
     {
         public static  AccountController getAccountController()
@@ -54,6 +58,44 @@ namespace DeliveryServiceTests.Helpers
                 Constants.DEFAULT_PASSWORD);
             await signInManager.PasswordSignInAsync(Constants.DEFAULT_EMAIL, Constants.DEFAULT_PASSWORD, false, lockoutOnFailure: false);
             var controller = new VehiclesController(context, httpContextAccessor);
+
+            var actionContext = new ActionContext();
+            controller.Url = new UrlHelper(actionContext);
+            return controller;
+        }
+
+        public async static Task<PickUpLocationsController> getPickUpLocationsController()
+        {
+            IServiceProvider _serviceProvider = ServiceBuilder.getServiceProvider();
+            var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
+            var userManagerResult = await userManager.CreateAsync(
+                new ApplicationUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL },
+                Constants.DEFAULT_PASSWORD);
+            await signInManager.PasswordSignInAsync(Constants.DEFAULT_EMAIL, Constants.DEFAULT_PASSWORD, false, lockoutOnFailure: false);
+            var controller = new PickUpLocationsController(context, httpContextAccessor, getMockGoogleMaps());
+
+            var actionContext = new ActionContext();
+            controller.Url = new UrlHelper(actionContext);
+            return controller;
+        }
+
+        public async static Task<RoutesController> getRoutesController()
+        {
+            IServiceProvider _serviceProvider = ServiceBuilder.getServiceProvider();
+            var context = _serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            var userManager = _serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var signInManager = _serviceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
+            var userManagerResult = await userManager.CreateAsync(
+                new ApplicationUser { Id = Constants.USER_ID, UserName = Constants.DEFAULT_EMAIL, Email = Constants.DEFAULT_EMAIL },
+                Constants.DEFAULT_PASSWORD);
+            await signInManager.PasswordSignInAsync(Constants.DEFAULT_EMAIL, Constants.DEFAULT_PASSWORD, false, lockoutOnFailure: false);
+            var controller = new RoutesController(context, httpContextAccessor, getRouteCreationService(context));
 
             var actionContext = new ActionContext();
             controller.Url = new UrlHelper(actionContext);
@@ -153,6 +195,21 @@ namespace DeliveryServiceTests.Helpers
             var messageSender = new Mock<IEmailSender>();
             messageSender.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Verifiable();
             return messageSender;
+        }
+
+        private static LocationService getMockGoogleMaps()
+        {
+            var mockGoogleMaps = new Mock<LocationService>();
+            var responseMessageOne = new HttpResponseMessage();
+            responseMessageOne.Content = new StringContent("{\"results\":[{\"geometry\":{\"location\":{\"lat\":10,\"lng\":20}}}]}");
+            mockGoogleMaps.SetupSequence(gm => gm.addLocationDataToAddress(It.IsAny<Address>()))
+                .Returns(Task.FromResult(responseMessageOne));
+            return mockGoogleMaps.Object;
+        }
+
+        private static RouteCreationService getRouteCreationService(ApplicationDbContext context) {
+            RouteCreationService service = new RouteCreationService(getMockGoogleMaps(), context);
+            return service;
         }
     }
 }

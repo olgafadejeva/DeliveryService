@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Util
 {
+    /*
+     * Helper class used when setting up the app infrastructure
+     */ 
     public static class AppBuilderExtensions
     {
         public static IApplicationBuilder UseWhen(this IApplicationBuilder app,

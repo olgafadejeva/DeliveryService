@@ -10,6 +10,11 @@ using DeliveryService.Util;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
+    /*
+* Controller responsible for company's dashboard display
+* 
+* Extends a generic ShiperController that allows access to this controller's methods by a user in shipper's role
+*/
     public class ShipperDashboardController : ShipperController
     {
         public ShipperDashboardController(ApplicationDbContext context, IHttpContextAccessor contextAccessor) : base(context, contextAccessor)
@@ -24,12 +29,6 @@ namespace DeliveryService.Controllers.ShipperControllers
             finalModel.routesModel = routesModel;
             finalModel.depots = company.PickUpLocations.ToList();
             return View(finalModel);
-        }
-
-        [HttpGet]
-        public IActionResult AddDefaultPickUpAddress()
-        {
-            return View();
         }
     }
 }

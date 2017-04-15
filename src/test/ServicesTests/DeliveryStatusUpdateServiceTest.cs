@@ -3,16 +3,15 @@ using DeliveryService.Models.Entities;
 using DeliveryService.Services;
 using DeliveryServiceTests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DeliveryServiceTests.Services
 {
+    /*
+     * Verifies status updates are sequential
+     */ 
     public class DeliveryStatusUpdateServiceTest
     {
 

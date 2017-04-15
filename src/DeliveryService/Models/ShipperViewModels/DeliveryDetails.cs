@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using DeliveryService.Models.Entities;
 
-// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace DeliveryService.Models.ShipperViewModels
 {
+    /*
+     * Model that gets populated when shipper creates a delivery
+     */ 
     public class DeliveryDetails 
     {
 

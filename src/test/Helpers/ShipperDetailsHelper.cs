@@ -1,13 +1,14 @@
 ﻿using DeliveryService.Controllers.ShipperControllers;
 using DeliveryService.Models;
 using DeliveryService.Models.Entities;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace DeliveryServiceTests.Helpers
 {
+    /*
+     * Generates data to be used in tests
+     */ 
     public class ShipperDetailsHelper
     {
         public static async Task<Company> createShipperEntity(ShipperController controller)

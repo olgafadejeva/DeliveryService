@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models
 {
+    /*
+     * Model gets populated when a driver adds their details
+     */ 
     public class DriverDetails
     {
         [Required]

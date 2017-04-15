@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.DriverViewModels
 {
+    /* 
+     * Gets populated with the information needed to display a delivery on the map
+     */ 
     public class DriverSingleDeliveryMapView :SingleDeliveryMapViewModel
     {
 

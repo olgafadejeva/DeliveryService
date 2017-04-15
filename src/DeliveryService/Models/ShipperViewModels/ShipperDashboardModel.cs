@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.ShipperViewModels
 {
+    /*
+     * Shipper's dashboard model with routes, depots and company information
+     */ 
     public class ShipperDashboardModel
     {
         public Company company { get; set; }

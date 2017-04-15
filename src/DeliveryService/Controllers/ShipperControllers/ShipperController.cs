@@ -9,8 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
+    /*
+* This is a generic Controller responsible for shipper's entity loading and authorizing access to other controller methods
+* 
+*/
     [Authorize(Roles = "Shipper")]
-   // [RequireHttps]
     public abstract class ShipperController : Controller
     {
         protected  ApplicationDbContext _context;

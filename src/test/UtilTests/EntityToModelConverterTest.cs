@@ -4,11 +4,13 @@ using DeliveryService.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DeliveryServiceTests.UtilTests
 {
+    /*
+     * Tests convertion from entities to view models
+     */
     public class EntityToModelConverterTest
     {
         [Fact]

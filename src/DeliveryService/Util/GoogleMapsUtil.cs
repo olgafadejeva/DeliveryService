@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services
 {
+    /*
+     * Retrieves google maps API key and makes requests to GMaps API 
+     */ 
     public class GoogleMapsUtil : IGoogleMapsUtil
     {
         public AppProperties options { get; set; }

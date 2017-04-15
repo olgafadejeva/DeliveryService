@@ -17,6 +17,11 @@ using System.Net;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
+    /*
+* Controller responsible for actions that are undertaken by company in relation to routes
+* 
+* Extends a generic ShiperController that allows access to this controller's methods by a user in shipper's role
+*/
     public class RoutesController : ShipperController
     {
 
@@ -26,6 +31,9 @@ namespace DeliveryService.Controllers.ShipperControllers
             this.routeService = routeService;
         }
 
+        /*
+         * Need to convert entities into the view models
+         */
         public async Task<IActionResult> Index()
         {
             List<Route> routes = company.Routes.OrderBy(r => r.DeliveryDate).ToList();
@@ -143,10 +151,7 @@ namespace DeliveryService.Controllers.ShipperControllers
 
             return RedirectToAction("Index");
         }
-
-        // POST: Routes/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,AssignedToID,DeliverBy,DeliveryDate,OverallDistance,OverallTimeRequired,PickUpAddressID,VehicleID")] Route route)

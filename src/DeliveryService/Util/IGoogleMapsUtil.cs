@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services
 {
+    /*
+     * Inteface for GoogleMapsUtil, can be mocked in test classes
+     */ 
     public interface IGoogleMapsUtil
     {
         Task<HttpResponseMessage> performGoogleMapsRequestAsync(string uri);

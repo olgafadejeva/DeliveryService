@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services
 {
+    /*
+     * Creates routes from selected deliveries and checks parameters such as time taken and distance
+     */ 
     public class RouteCreationService
     {
         public LocationService LocationService { get; set; }
@@ -53,7 +56,6 @@ namespace DeliveryService.Services
 
         public async Task updateRouteDetails(Route route)
         {
-            List<Route> routesCreatedInThisSession = new List<Route>();
             var deliveriesInARoute = route.Deliveries;
                 if (deliveriesInARoute.Count() != 0)
                 {

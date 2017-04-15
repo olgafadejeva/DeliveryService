@@ -11,7 +11,10 @@ using DeliveryService.Controllers.DriverControllers;
 
 namespace DeliveryService.Controllers
 {
-    // [RequireHttps]
+    /*
+* Controller responsible for actions that are related to account login, logout and user creation
+* 
+*/
     public class AccountController : Controller
     {
         private UserManager<ApplicationUser> _userManager;

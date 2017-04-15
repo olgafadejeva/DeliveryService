@@ -1,16 +1,10 @@
-﻿using DeliveryService.Controllers;
-using DeliveryService.Data;
-using DeliveryService.Models;
+﻿using DeliveryService.Models;
 using DeliveryService.Models.Entities;
-using DeliveryService.Models.ShipperViewModels;
 using DeliveryService.Services;
 using DeliveryService.ShipperControllers;
 using DeliveryServiceTests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -18,11 +12,15 @@ using Xunit;
 
 namespace DeliveryServiceTests.Controllers
 {
+    /*
+     * Tests interactions with the client controller - create, delete, edit
+     */
     public class ClientsControllerTest
     {
         
         [Fact]
         public async Task testEditClient() {
+
             var controller = ControllerSupplier.getClientsController().Result;
 
             controller.setGoogleMaps(getMockGoogleMaps());
@@ -60,7 +58,7 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testDeleteClient()
         {
-            var controller = ControllerSupplier.getClientsController().Result;
+            var controller = await ControllerSupplier.getClientsController();
 
             //set Shipper to controller
             var context = controller.getDbContext();

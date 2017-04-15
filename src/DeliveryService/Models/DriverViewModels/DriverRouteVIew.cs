@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.DriverViewModels
 {
+    /*
+     * Carries information about a single driver's route
+     */ 
     public class DriverRouteView
     {
         public int ID { get; set; }

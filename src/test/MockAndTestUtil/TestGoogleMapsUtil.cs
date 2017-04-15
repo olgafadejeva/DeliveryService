@@ -7,6 +7,9 @@ using System.Net.Http;
 
 namespace DeliveryServiceTests.MockAndTestUtil
 {
+    /*
+     * Represents a test Google maps util class 
+     */ 
     public class TestGoogleMapsUtil : IGoogleMapsUtil
     {
 

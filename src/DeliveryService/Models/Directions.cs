@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models
 {
+    /*
+     * Model that is populated when a turn by turn navigation is displayed within the app
+     */ 
     public class Directions
     {
         public string To { get; set; }

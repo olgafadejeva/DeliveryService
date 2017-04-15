@@ -12,6 +12,9 @@ using OpenIddict;
 
 namespace DeliveryService.Data
 {
+    /*
+     * Represents database context created by entity framework. Used to access and modify database entities 
+     */ 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -22,11 +25,6 @@ namespace DeliveryService.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            
-           
-            // Customize the ASP.NET Identity model and override the defaults if needed.
-            // For example, you can rename the ASP.NET Identity table names and more.
-            // Add your customizations after calling base.OnModelCreating(builder);
         }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }

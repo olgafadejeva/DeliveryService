@@ -15,6 +15,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DeliveryServiceTests.Controllers
 {
+    /*
+     * Tests all interactions with the account controller  - creating an account, login, logout
+     */ 
     public class AccountControllerTest
     {
         private readonly IServiceProvider _serviceProvider;

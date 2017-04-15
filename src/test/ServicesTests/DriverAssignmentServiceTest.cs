@@ -2,16 +2,17 @@
 using DeliveryService.Models.Entities;
 using DeliveryService.Services;
 using DeliveryServiceTests.MockAndTestUtil;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DeliveryServiceTests.ServicesTests
 {
+    /*
+     * Verifies drivers are assigned as desired based on the input conditions
+     */ 
     public class DriverAssignmentServiceTest
     {
         [Fact]

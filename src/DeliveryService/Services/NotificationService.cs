@@ -7,6 +7,9 @@ using DeliveryService.Models.Entities;
 
 namespace DeliveryService.Services
 {
+    /*
+     * Sending e-mail notifications to company staff and clients upon delivery status changes
+     */ 
     public class NotificationService : INotificationService
     {
         public IEmailSender emailSender { get; set; }

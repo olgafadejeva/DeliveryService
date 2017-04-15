@@ -9,20 +9,17 @@ using DeliveryService.Data;
 using DeliveryService.Models;
 using DeliveryService.Services;
 using DeliveryService.Data.Initializer;
-using Microsoft.AspNetCore.Mvc;
 using DeliveryService.Services.Config;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using OpenIddict.Core;
-using OpenIddict.Models;
 using Microsoft.AspNetCore.Builder;
 using DeliveryService.Util;
 
 namespace DeliveryService
 {
+    /*
+     * This class starts up the entire framework and configures the middleware
+     */ 
     public class Startup
     {
         public Startup(IHostingEnvironment env)
@@ -56,17 +53,6 @@ namespace DeliveryService
                 options.UseOpenIddict();
             },
                 ServiceLifetime.Scoped);
-            // var jwtSigningCert = new X509Certificate2("C:\\Users\\Olga\\Documents\\Visual Studio 2015\\Projects\\my-cert-file.pfx", "password");
-
-            /*      services.AddOpenIddict<ApplicationDbContext>()
-                      .AddMvcBinders()
-                      .EnableTokenEndpoint("/connect/token")
-                      .UseJsonWebTokens()
-                      .AllowPasswordFlow()
-                      .AddSigningCertificate(jwtSigningCert)
-                      .DisableHttpsRequirement(); */
-
-
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                {
                    options.Password.RequireDigit = true;
@@ -80,24 +66,18 @@ namespace DeliveryService
                 .AddErrorDescriber<CustomIdentityErrorDescriber>();
 
             services.AddOpenIddict()
-        // Register the Entity Framework stores.
-        .AddEntityFrameworkCoreStores<ApplicationDbContext>()
+                // Register the Entity Framework stores.
+                .AddEntityFrameworkCoreStores<ApplicationDbContext>()
 
-        // Register the ASP.NET Core MVC binder used by OpenIddict.
-        // Note: if you don't call this method, you won't be able to
-        // bind OpenIdConnectRequest or OpenIdConnectResponse parameters.
-        .AddMvcBinders()
+                // Register the ASP.NET Core MVC binder used by OpenIddict
+                .AddMvcBinders()
 
-        // Enable the token endpoint (required to use the password flow).
-        .EnableTokenEndpoint("/connect/token")
+                // Enable the token endpoint (required to use the password flow).
+                .EnableTokenEndpoint("/connect/token")
 
-        // Allow client applications to use the grant_type=password flow.
-        .AllowPasswordFlow()
-
-        // During development, you can disable the HTTPS requirement.
-        .DisableHttpsRequirement();
-        
-
+                // Allow client applications to use the grant_type=password flow.
+                .AllowPasswordFlow()
+                .DisableHttpsRequirement();
 
         services.AddDistributedMemoryCache();
             services.AddSession();
@@ -105,23 +85,15 @@ namespace DeliveryService
                  .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
 
 
+            //Add defined service classes
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<IDirectionsService, DirectionsService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IGoogleMapsUtil, GoogleMapsUtil>();
             services.AddTransient<INotificationService, NotificationService>();
-
-
-            /*  services.Configure<MvcOptions>(options =>
-              {
-                  options.Filters.Add(new RequireHttpsAttribute());
-              });*/
-
-
             services.Configure<AppProperties>(Configuration);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<DeliveryStatusUpdateService>();
-            services.AddSingleton<DeliverySearchService>();
             services.AddSingleton<LocationService>();
             services.AddSingleton<RouteCreationService>();
             services.AddSingleton<DriverAssignmentService>();
@@ -160,12 +132,7 @@ namespace DeliveryService
 
                 branch.UseIdentity();
             });
-
-
-           // app.UseIdentity();
-
-           // app.UseOAuthValidation();
-
+            
             app.UseOpenIddict();
 
             app.UseSession();

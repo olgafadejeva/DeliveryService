@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services
 {
+    /*
+     * Creating data structures used by Google Maps JavaScript API to generate maps for directions. 
+     * This service also retrieves Google Maps API key from secrets and returns it together with the Directions object 
+     */ 
     public class DirectionsService : IDirectionsService
     {
         public AppProperties options { get; set; }

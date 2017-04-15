@@ -8,12 +8,15 @@ using Xunit;
 
 namespace DeliveryServiceTests.Controllers
 {
+    /*
+     * Tests interactions with the driver's vehicle controller - create, delete, edit vehicles
+     */ 
     public class VehiclesControllerTest
     {
 
         [Fact]
         public async Task testGetIndexPageAndAddVehicle() {
-            var controller =  await ControllerSupplier.getVehiclesController();
+            var controller =  ControllerSupplier.getVehiclesController().Result;
 
             //set Driver to controller
             var context = controller.getDbContext();
@@ -41,8 +44,9 @@ namespace DeliveryServiceTests.Controllers
         }
 
         [Fact]
-        public async Task testEditVehicle() {
-            var controller = await ControllerSupplier.getVehiclesController();
+        public async Task testEditVehicle()
+        {
+            var controller =  ControllerSupplier.getVehiclesController().Result;
 
             //set Driver to controller
             var context = controller.getDbContext();
@@ -74,8 +78,8 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testDeleteVehicle()
         {
-            var controller = await ControllerSupplier.getVehiclesController();
-          
+            var controller =  ControllerSupplier.getVehiclesController().Result;
+
 
             //set Driver to controller
             var context = controller.getDbContext();

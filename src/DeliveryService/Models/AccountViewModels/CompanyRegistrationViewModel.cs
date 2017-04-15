@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.AccountViewModels
 {
+    /*
+     * This is a model that is populated when a user completes a registration form
+     */ 
     public class CompanyRegistrationViewModel
     {
 

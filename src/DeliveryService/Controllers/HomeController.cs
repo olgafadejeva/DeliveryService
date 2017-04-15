@@ -12,7 +12,10 @@ using DeliveryService.Data;
 
 namespace DeliveryService.Controllers
 {
-   // [RequireHttps]
+    /*
+* Controller responsible for actions initiaed from the home page 
+* 
+*/
     public class HomeController : Controller
     {
         public HomeController() {

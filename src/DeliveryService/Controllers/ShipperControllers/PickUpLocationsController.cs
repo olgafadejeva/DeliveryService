@@ -9,6 +9,11 @@ using DeliveryService.Services;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
+    /*
+* Controller responsible for actions that are undertaken by company in relation to depot locations
+* 
+* Extends a generic ShiperController that allows access to this controller's methods by a user in shipper's role
+*/
     public class PickUpLocationsController : ShipperController
     {
 

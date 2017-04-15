@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.DriverViewModels
 {
+    /*
+     * Model which carries data that is displayed on driver's dashboard
+     */ 
     public class DriverDashboardModel
     {
         public Driver Driver { get; set; }

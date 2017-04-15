@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Entities
 {
+    /*
+     * An entity that keeps a reference to a team when a driver registration request has been sent out
+     */ 
     public class DriverRegistrationRequest
     {
         [Key]

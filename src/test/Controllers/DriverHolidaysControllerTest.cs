@@ -9,6 +9,9 @@ using Xunit;
 
 namespace DeliveryServiceTests.Controllers
 {
+    /*
+     * Tests interactions with the driver holiday controller - create, delete, edit holidays
+     */
     public class DriverHolidaysControllerTest
     {
         [Fact]
@@ -80,7 +83,7 @@ namespace DeliveryServiceTests.Controllers
         [Fact]
         public async Task testDeleteHoliday()
         {
-            var controller = await ControllerSupplier.getDriverHolidaysController();
+            var controller =  await ControllerSupplier.getDriverHolidaysController();
 
             //set Driver to controller
             var context = controller.getDbContext();

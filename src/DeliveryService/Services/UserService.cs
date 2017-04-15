@@ -14,6 +14,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services
 {
+    /*
+     * Deals with user creation for a team and driver invitations
+     */
     public class UserService : IUserService
     {
         private UserManager<ApplicationUser> _userManager;

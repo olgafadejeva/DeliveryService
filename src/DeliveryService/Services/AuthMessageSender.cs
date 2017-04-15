@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace DeliveryService.Services
 {
-
+    /*
+     * Sends e-mail messages, based on the environment uses different configuration
+     */ 
     public class AuthMessageSender : IEmailSender
     {
         

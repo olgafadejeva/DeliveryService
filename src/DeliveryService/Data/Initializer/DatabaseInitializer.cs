@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Data.Initializer
 {
+    /*
+     * Creates roles in the database as at the start of the development there was no appropriate way to do this 
+     * which might have changed by now
+     */ 
     public class DatabaseInitializer {
 
         public async static void Initialize(IServiceProvider serviceProvider)

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.ShipperViewModels
 {
+    /*
+     * This model is populated when a shipper creates an employee
+     */ 
     public class EmployeeCreateView
     {
         [Required]

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.AccountViewModels
 {
+    /*
+     * Model populated from the login screen
+     */ 
     public class LoginViewModel
     {
         [Required]

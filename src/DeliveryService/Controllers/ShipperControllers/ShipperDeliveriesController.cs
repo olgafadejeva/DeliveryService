@@ -12,6 +12,11 @@ using DeliveryService.Models.ShipperViewModels;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
+    /*
+* Controller responsible for actions that are undertaken by company in relation to deliveries within routes 
+* 
+* Extends a generic ShiperController that allows access to this controller's methods by a user in shipper's role
+*/
     public class ShipperDeliveriesController : ShipperController
     {
 

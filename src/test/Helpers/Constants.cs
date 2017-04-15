@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DeliveryServiceTests.Helpers
 {
+    /*
+     * Constants that can be reused in tests
+     */
     public class Constants
     {
         public const String CONFIRM_CODE = "12345";

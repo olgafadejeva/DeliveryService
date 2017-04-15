@@ -1,19 +1,13 @@
-﻿using DeliveryService.Controllers;
-using DeliveryService.Models;
+﻿using DeliveryService.Models;
 using DeliveryService.Models.Entities;
 using DeliveryService.Services;
-using Microsoft.Extensions.Options;
-using Moq;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DeliveryServiceTests.Services
 {
+    /*
+     * Tests that directions strings are correctly generated
+     */
     public class DirectionsServiceTest
     {
         [Fact]

@@ -14,6 +14,11 @@ using Newtonsoft.Json;
 
 namespace DeliveryService.Controllers.ShipperControllers
 {
+    /*
+* Controller responsible for actions that are undertaken by company in relation to route creation and driver assignment 
+* 
+* Extends a generic ShiperController that allows access to this controller's methods by a user in shipper's role
+*/
     public class SchedulingController : ShipperController
     {
         public RouteCreationService RouteCreationService;

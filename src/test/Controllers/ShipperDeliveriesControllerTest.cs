@@ -4,14 +4,15 @@ using DeliveryService.Models.Entities;
 using DeliveryService.Models.ShipperViewModels;
 using DeliveryServiceTests.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DeliveryServiceTests.Controllers
 {
+    /*
+     * Tests interactions with shipper's deliveries controller
+     */
     public class ShipperDeliveriesControllerTest
     {
         [Fact]
@@ -30,7 +31,6 @@ namespace DeliveryServiceTests.Controllers
 
             DeliveryDetails deliveryDetails = new DeliveryDetails();
             deliveryDetails.ClientID = client.ID;
-           // deliveryDetails.PickUpAddress = ShipperDetailsHelper.getDeliveryPickUpAddress();
 
             var createResult = await controller.Create(deliveryDetails);
             var result = (ViewResult) controller.Index().Result;
@@ -39,7 +39,6 @@ namespace DeliveryServiceTests.Controllers
             Delivery delivery = dbContext.Deliveries.ToList().First<Delivery>();
             Assert.Equal(delivery.Client, client);
             Assert.Equal(delivery.DeliveryStatus.Status, Status.New);
-         //   Assert.Equal(delivery.PickUpAddress, deliveryDetails.PickUpAddress);
         }
 
         private static async Task<Company> createCompany(ShipperController controller)

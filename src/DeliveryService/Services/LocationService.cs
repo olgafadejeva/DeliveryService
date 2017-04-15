@@ -11,6 +11,14 @@ using DeliveryService.Models;
 
 namespace DeliveryService.Services
 {
+    /*
+     * Helper service that utilizes Google Maps and is used for:
+     *      Checking which depot location is most suitable for a route 
+     *      Adding location coordinates to addresses (for displaying markers on the map) 
+     *      Getting route distance and completion time 
+     *       Finding distance between two addresses
+     */       
+
     public class LocationService
     {
         public IGoogleMapsUtil googleMaps { get; set; }

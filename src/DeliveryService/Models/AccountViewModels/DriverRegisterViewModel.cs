@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.AccountViewModels
 {
+    /*
+     * Model populated when a driver is presented with the registration form
+     */ 
     public class DriverRegisterViewModel
     {
 

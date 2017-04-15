@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.AccountViewModels
 {
+    /*
+     * Model populated when a used resets their password
+     */ 
     public class ResetPasswordViewModel
     {
         [Required]

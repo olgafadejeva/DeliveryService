@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services
 {
+    /*
+     * Responsible for validating and updating status of deliveries 
+     */
     public class DeliveryStatusUpdateService
     {
 

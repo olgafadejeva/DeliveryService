@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Services
 {
+    /*
+     * Filters deliveries by dates
+     */ 
     public static class DateFilter
     {
         public static List<Delivery> getDeliveriesWithinDays(IList<Delivery> deliveries, int days) {

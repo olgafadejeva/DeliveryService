@@ -11,6 +11,11 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.ShipperControllers
 {
+    /*
+    * Controller responsible for actions that are undertaken by company in relation to clients
+    * 
+    * Extends a generic ShiperController that allows access to this controller's methods by a user in shipper's role
+    */
     public class ClientsController : ShipperController
     {
 

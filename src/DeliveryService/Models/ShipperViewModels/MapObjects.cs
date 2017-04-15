@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models.ShipperViewModels
 {
+    /*
+     * This model contains the data that is used for maps generation
+     */ 
     public class MapObjects
     {
 

@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Util
 {
+    /*
+     * Converts entity classes to models in the user views
+     */ 
     public class EntityToModelConverter
     {
         public static List<DriverRouteView> convertDriverRouteToDisplayViews(Driver driver) {

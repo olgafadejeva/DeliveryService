@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DeliveryService.Models
 {
+    /*
+     * Contains results of a recent driver assignment
+     */ 
     public class DriverAssignmentResult
     {
         public int RouteID { get; set; }
