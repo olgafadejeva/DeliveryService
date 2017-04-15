@@ -37,7 +37,7 @@ namespace DeliveryServiceTests.Controllers
             var address = ShipperDetailsHelper.getDeliveryPickUpAddress();
             var company = new Company();
 
-            var deletionResult = controller.Delete(123).Result;
+            var deletionResult = await controller.Delete(123);
             Assert.NotNull(deletionResult);
             Assert.Equal(deletionResult.GetType(), typeof(NotFoundResult));
         }
@@ -50,7 +50,7 @@ namespace DeliveryServiceTests.Controllers
             var address = ShipperDetailsHelper.getDeliveryPickUpAddress();
             var company = new Company();
 
-            var deletionResult = controller.Delete(null).Result;
+            var deletionResult = await controller.Delete(null);
             Assert.NotNull(deletionResult);
             Assert.Equal(deletionResult.GetType(), typeof(NotFoundResult));
         }
@@ -68,7 +68,7 @@ namespace DeliveryServiceTests.Controllers
             controller.setCompany(company);
             await controller.Create(address);
 
-            var deletionResult = controller.Delete(address.ID).Result;
+            var deletionResult = await controller.Delete(address.ID);
             var viewResult = Assert.IsType<ViewResult>(deletionResult);
             Assert.Equal(viewResult.Model, address);
         }
